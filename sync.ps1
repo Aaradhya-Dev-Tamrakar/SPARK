@@ -79,10 +79,14 @@ function Update-TrackerLog {
     $todayDate = Get-Date -Format "yyyy-MM-dd"
 
     $content = Get-Content $trackerFile.FullName -Raw
-    if ($content -match '\*\*Last updated:\*\*.*?\·') {
-        $content = $content -replace '\*\*Last updated:\*\*.*?\·', "**Last updated:** $todayDate ·"
+    if ($content -match '\*\*Last updated:\*\*\s*[0-9]{4}-[0-9]{2}-[0-9]{2}\s*\·') {
+        # Bare date, no parenthetical detail yet -- safe to auto-stamp.
+        $content = $content -replace '\*\*Last updated:\*\*\s*[0-9]{4}-[0-9]{2}-[0-9]{2}\s*\·', "**Last updated:** $todayDate ·"
         Set-Content -Path $trackerFile.FullName -Value $content -NoNewline
         Write-Host "[Git Sync] Updated $($trackerFile.Name) timestamp to $todayDate." -ForegroundColor Cyan
+    } elseif ($content -match '\*\*Last updated:\*\*.*?\(.*?\).*?\·') {
+        # Line already has a hand-written parenthetical (v17-v23 convention) -- leave it alone.
+        Write-Host "[Git Sync] $($trackerFile.Name) already has a detailed 'Last updated' line, skipping auto-stamp." -ForegroundColor DarkGray
     }
 }
 

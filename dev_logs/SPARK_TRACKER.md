@@ -2,7 +2,7 @@
 
 *Optimized for day-to-day use. Full history/rationale archive moved to §7 (Appendix) — read once, not needed for weekly tracking.*
 
-**Last updated:** 2026-07-23 · **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) · **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) · **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+**Last updated:** July 23, 2026 (v23 — first training code committed: SisFall raw-to-window parser, verified end-to-end against actual dataset) · **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) · **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) · **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
 
 **v23 change log (July 23, 2026 — same session as v22, dataset work only; no BOM/design/scope-lock change):**
 
