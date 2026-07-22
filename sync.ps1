@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     1. Pulls with --autostash so local work is preserved.
-    2. Auto-updates SPARK_TRACKER_v##.md's "Last updated" line if a message is provided or generated.
+    2. Auto-updates dev_logs/SPARK_TRACKER.md's "Last updated" line if a message is provided or generated.
     3. Auto-generates a smart commit message if none is provided.
     4. Stages, commits, and pushes, retrying via rebase on push rejection.
 
@@ -73,7 +73,7 @@ function Get-AutoCommitMessage {
 
 function Update-TrackerLog {
     param ([string]$CommitMsg)
-    $trackerFile = Get-ChildItem -Path . -Filter "SPARK_TRACKER_v*.md" | Sort-Object Name -Descending | Select-Object -First 1
+    $trackerFile = Get-ChildItem -Path . -Recurse -Filter "SPARK_TRACKER.md" | Select-Object -First 1
     if (-not $trackerFile) { return }
 
     $todayDate = Get-Date -Format "yyyy-MM-dd"
