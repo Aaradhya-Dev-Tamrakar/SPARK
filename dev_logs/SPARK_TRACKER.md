@@ -1,8 +1,24 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v23)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v24)
 
 *Optimized for day-to-day use. Full history/rationale archive moved to §7 (Appendix) — read once, not needed for weekly tracking.*
 
-**Last updated:** July 23, 2026 (v23 — first training code committed: SisFall raw-to-window parser, verified end-to-end against actual dataset) · **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) · **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) · **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+**Last updated:** August 1, 2026 (v24 — classical-ML notebook added at `training/notebooks/SPARK_SisFall_ML_Pipeline.ipynb`, RF+XGBoost on engineered SisFall features, complementary to the existing CNN) · **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) · **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) · **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v24 change log (August 1, 2026 — notebook deliverable added, no BOM/design/scope-lock change):**
+
+**(1) `SPARK_SisFall_ML_Pipeline.ipynb` added, now at `training/notebooks/`.** Landed via three raw commits directly on `main` (`7d7ce0f`, `17256e2`, `44d0e79`/`010eb1c`) rather than through `sync.ps1` — first at repo root, then `training/`, then its current path `training/notebooks/` — a same-session path correction, not three separate content changes; notebook content is byte-identical across all three locations (verified this session via cell-by-cell diff against the original build). Flagged here since it's a second `sync.ps1`-bypass on this exact file this session (the first was self-corrected before pushing) and per Rule 2 the script is the only permitted commit path — future edits to this file should route through it.
+
+A 6-stage pipeline (dataset prep → preprocessing → EDA → modeling → evaluation → predictions), originating as a separate assignment requirement, deliberately scoped to complement rather than duplicate `train_cnn.py`:
+
+- **Stage 1 reuses `prepare_sisfall.py` unmodified** via subprocess call against a user-supplied SisFall path — no raw-parsing logic re-implemented.
+- **Stages 2–6 are new**: engineered per-channel statistical features (mean/std/min/max/range/RMS + SMA + peak resultant acceleration) computed from the raw 200×6 windows, feeding a **Random Forest + XGBoost** classical-ML track (both `GridSearchCV`-tuned, `GroupKFold` by subject) — a second algorithm family distinct from the CNN, satisfying the assignment's "at least 2 algorithms" requirement without redundantly re-deriving the CNN architecture the proposal already locks in.
+- Same binary FALL(F*)-vs-NON_FALL(D*) collapse and same Sensitivity/Specificity/F1/AUC-ROC metric set as `train_cnn.py`, for direct comparability against its ≥90%/≥90% targets. Subject-grouped splitting (no leakage) applied consistently, matching `train_cnn.py`'s own approach.
+- Framed in the notebook itself as an assignment deliverable + interpretability/sanity-check baseline (tree-based feature importances as a precursor to the SHAP work already planned for the gateway, per this tracker's curriculum-alignment table) — explicitly **not** a replacement for the CNN, which remains SPARK's actual on-device Layer-2 classifier.
+- Per Rule 4 (repo-conventions), the notebook was built and validated (`nbformat.validate`) but never executed by Claude at any point this session.
+
+**Nothing in §2 (Locked Design), §3 (Team/WBS), §4 (Timeline), §5 (Data/Training target spec), or §6 (Pending Benchmark) changed** — this is an additive assignment/exploration artifact, not a change to SPARK's locked architecture, BOM, or CNN spec.
+
+---
 
 **v23 change log (July 23, 2026 — same session as v22, dataset work only; no BOM/design/scope-lock change):**
 
@@ -97,6 +113,7 @@ Two Kaggle notebooks surfaced during this same search (`sisfall-wearable-fall-de
 **v4 change log:** Action #2 (CP2102) decided — dropped from BOM. Total: 31,594 → 31,194 (with RPi) / 12,895 → 12,495 (without RPi).
 
 **v2 change log:** Cross-checked against `SPARK_MASTER_v1_20260630.md` (the pre-BOM-correction, v7-LaTeX snapshot). No new facts to pull forward — that file is fully superseded on every point of conflict:
+
 - v1's BOM (~NPR 4,770, RPi treated as free in-inventory) is the *pre-correction* estimate; current BOM (§2.6) already reflects `main.md`'s real, larger figures and already flags the RPi price as needing correction (Action #1) — v1's number isn't a fix, it's the stale baseline this doc moved past.
 - v1 has no record of the CP2102/INA219 drop candidates, Type-C connector flag, or C3 SuperMini swap — all of that analysis postdates v1 and stays as-is.
 - v1's LaTeX package reference is v7; current package is v10 — no action needed, just confirms v7 is obsolete.
@@ -107,7 +124,7 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 ## 0. Status At A Glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Design status** | 🟢 Architecture, novelty claims, WBS all confirmed — 🟡 **though Claims 1 and 3's wording may need narrowing, see Action #26.** 🟢 Gateway host is laptop, **RPi dropped entirely** — not kept as backup (Action #15 reframed, see below). 🟡 **Wearable MCU vendor changed again:** ESP32-S3 confirmed, but Himalayan (v12's source) went out of stock same day — **RoboNepal is the current confirmed vendor, NPR 1,979/unit, +NPR 358 BOM delta** (Action #14 re-resolved, no longer net-zero). Architecture/pipeline stages unaffected. 🟡 Two open gaps: spare-board firmware-bring-up-risk buffer doesn't exist (Action #16); board physical footprint unconfirmed vs. §7's assumption, low-priority (Action #17). 🟡 Purchase/inventory status (units ordered, MPU6050 in hand) discussed but not confirmed — Action #18. |
 | **Proposal package** | 🟢 `SPARK_Proposal_20260701_v35.zip` — **signed hardcopy, submitted-of-record** (resubmitted July 6, 2026 after deadline shift from July 2; v33→v35 diff was wording edits only). A separate `v36.zip` exists with the Gantt chart fix, but was not submitted. **Not yet updated for the S3 swap or the RPi drop** — proposal text still names DevKit V1 and RPi 4B; that's fine since it was already submitted, but both changes need writing into any post-defence revision or the thesis proper. |
 | **Submission status** | 🟢 **Submitted** — July 2 (v33) then resubmitted July 6 (v35). Defence: **July 9, 2026 — occurred as scheduled, panel optimistic, no specific pivot-related questions reported.** Action #25 resolved v20. Next step: negotiate new component costs with department following the RPi drop — new **Action #31**. |
@@ -125,7 +142,7 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 *Ranks open, actionable items by dependency/lead-time, not by which header-group they sit under in §1 — 30 action items now logged in total (#1–30), up from 24 when this line was first written (v16); resolved items and Future-Work-only items (7, §1 Ch.6 table) sit outside this ranking by design, not by omission. §1's structure below is otherwise unchanged.*
 
 | Tier | Focus | Items | Why this tier |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **1 — RESOLVED July 10 (v20)** | Was "today, before/at defence" as of v16 (July 9): rehearse the ESP32-S3/laptop-only pivot verbally, since v35 (signed, submitted-of-record) still names DevKit V1 and RPi 4B; recompile-check the Table ref if time permits. **Defence occurred as scheduled — panel optimistic, no specific pivot-related questions reported.** Whether the rehearsal itself happened is still not independently confirmed, but the risk it existed to cover didn't surface as an issue. | #25 (resolved) / #10 | None — resolved. See new #31 below for the follow-on item this outcome opened. |
 | **2 — this week, gates WP 2.0** | Confirm/place the ESP32-S3 order and MPU6050 lab-source; add the 3rd spare unit *while already ordering* rather than as a later emergency reorder; log the USB-C cable price once bought | #16, #18, #19 | Real procurement lead time; bundling the spare now is cheaper than reopening the order later |
 | **3 — start now despite "Sept" label** | Define the self-collected dataset protocol; resolve MPU6050 firmware reuse-vs-rewrite with Rupesh in the same pass; narrow novelty Claims 1/3's wording before a panel member finds the same prior art this session's search did | #23, #24, #26 | Volunteer recruiting/scheduling has real lead time a September start date doesn't account for; R-03's mitigation depends on #23 existing, not just being planned; #26 carries real urgency unlike the Ch.6-only items it was previously grouped with |
@@ -145,68 +162,68 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 ### 🟢 Resolved — Defence outcome (surfaced July 10 v17, resolved July 10 v20)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 25 | Confirm what actually happened at the July 9 defence — did it occur as scheduled, was the ESP32-S3/laptop pivot explained if a panel member asked, any feedback given | Aaradhya | **Resolved July 10 (v20).** Defence occurred as scheduled July 9. Outcome: panel was optimistic about the project. No specific questions reported about the ESP32-S3/laptop pivot despite the gap between v35's paper submission and the actual as-built design. Whether the verbal rehearsal itself happened is not independently confirmed, but the risk it was meant to cover didn't surface as an issue. Follow-on item opened as new **Action #31**. |
 
 ### 🟡 New — Post-defence department negotiation (opened July 10, v20)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 31 | Negotiate new component costs with the department following the RPi drop — RPi's ~NPR 18,699 came out of the BOM entirely, but the department-funding conversation about what replaces that ask hasn't happened yet | Aaradhya | **Open, newly surfaced July 10 (v20).** Direct consequence of the defence outcome (Action #25) — panel was optimistic, next practical step is squaring the BOM change with whoever funds departmental component purchases. Not yet tiered (see §0.5 v20 note) — urgency/lead-time unclear until a conversation with the department is actually scheduled. |
 
 ### 🟡 Pre-defence check (was 🔴 blocking submission — submission has since happened, both times, without this being confirmed resolved)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 10 | `Table~\ref{tab:component_cost}` renders as `Table ??` in Overleaf preview | Aaradhya | Label exists at correct location in source; likely stale-aux artifact from single-pass compile. **Not confirmed resolved before either submission (July 2 or July 6) — no source verifies this either way.** Since submission already happened, this is no longer a blocker in the original sense; worth a quick Overleaf recompile check regardless — **July 9 has passed, so "before the defence" is now moot,** but the check itself is still cheap and still worth doing before any future revision or resubmission. |
 
 ### 🟡 New — Gateway host: RPi dropped entirely, laptop reliability now the only safety net
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 15 | Confirm procedural mitigation for demo-day laptop reliability: disable sleep/auto-lock, keep plugged in, use a dedicated machine (not one doing double duty for dashboard screen-share/notebooks) | Aaradhya + Sankalpa | **Partially addressed July 9 (v15) — compute confirmed as a non-issue, power/uptime gap unchanged.** RPi 4B (4× Cortex-A72 @ 1.5GHz, 4GB) vs. this laptop (Core Ultra 7 155H, 16C/22T, turbo 4.8GHz confirmed via Intel's spec page, 16GB) — laptop wins on every compute axis by a wide margin, and gateway load is ingest-only (inference stays on-device at the ESP32-S3), so compute was never the actual risk here. Mosquitto also load-tested to 1000 sequential simulated clients on this laptop, zero failures, flat latency — confirms broker headroom for the real 2-node load. **Scope limit, not overclaimed:** that test ran client+broker on one machine, so it proves TCP/broker throughput only, not WiFi client-association capacity — see new Action #20 for the gap that leaves open. **What's still unresolved:** the actual risk was always power/uptime (sleep/auto-lock, plugged in, dedicated machine), not compute — unchanged, still not confirmed as the actual plan. Revisit before WP 4.0 (Streamlit/alerts, Sonia's WP), no earlier dependency. |
 
 ### 🟡 New — spare-board coverage gap from ESP32-S3 quantity drop (2 units, no spare)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 16 | Firmware-bring-up-risk buffer — no spare ESP32-S3 board on hand if one fails during WP 2.0 bring-up | Rupesh + Aaradhya | **Open, new as of this update.** Action #12 originally added a 3rd DevKit V1 unit specifically as a breakdown-contingency spare; dropping to 2 units (no spare, per Aaradhya's direction) removes that buffer. Not urgent — no dependency until WP 2.0 firmware bring-up starts — but shouldn't be silently dropped along with the pricing question it got bundled with. Options: order a 3rd unit later if budget allows, or accept the risk and rely on RMA/vendor turnaround if a unit fails. |
 
 ### 🟡 New — RoboNepal board physical footprint (low priority, deferred)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 17 | Confirm RoboNepal ESP32-S3-CAM board L×W (with headers) against §7's "close to standard 30-pin DevKitC-1 footprint" enclosure assumption — the CAM connector adds board length the plain N16R8 doesn't have | Sankalpa | **Open, correctly low priority — same tier as Action #6.** Sankalpa confirmed enclosure design hasn't started, so there's no lock-in event to race against. Resolve by seller message or caliper check once a unit is physically in hand; no need to chase it before then. Everything else about the board (chip, memory, USB-C, BOOT/RST, price, stock) is already confirmed. |
 
 ### 🟡 New — Purchase/inventory status discussed but not confirmed
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 18 | Confirm actual purchase status: (a) has the ESP32-S3 unit been ordered from RoboNepal yet; (b) is MPU6050 already in hand or does it need sourcing | Aaradhya | **Sourcing decisions confirmed July 9 (v14), receipt still open.** (a) ESP32-S3: 1 unit self-funded by Aaradhya, RoboNepal NPR 1,979 — see Action #14. (b) MPU6050: **not a purchase** — Aaradhya will try to source one from the major project lab (department resource) instead of buying, specifically for the quantization test rig. Doesn't touch the official 3-unit MPU6050 BOM line (Action #12). Neither unit's actual in-hand status is independently confirmable from here — "ordered/sourcing" is not the same as "received," so this stays open rather than closing on the strength of intent. |
 
 ### 🟡 New — USB-C cable, second self-funded item, unpriced
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 19 | USB-C cable for connecting/flashing the ESP32-S3 board — needed for the quantization test setup, distinct from Action #4's TP4056 charging-connector line (NPR 267/unit, a socket on the wearable node, not a loose cable) | Aaradhya | **Open, self-funded, price TBD.** A quick check didn't turn up one clean listing/price to lock in — Daraz results were mostly category pages or an out-of-stock USB-A→C item, not the USB-C↔C cable actually needed. Same treatment as Action #14's self-funded unit: log the real price once purchased rather than estimating it, then fold into §2.6's total-vs-departmental-ask split. |
 
 ### 🟡 New — Mobile hotspot max-client cap (R-04's actual demo device), unmeasured
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 20 | Confirm the actual demo-day mobile hotspot's WiFi client-association limit — a real, vendor-set 802.11-layer cap, distinct from anything Action #15's broker/compute testing touched | Aaradhya | **Open, newly surfaced July 9 (v15).** Action #15's 1000-client Mosquitto test ran on one machine and only exercised TCP/broker throughput — it cannot and does not say anything about how many independent WiFi radios a real hotspot will let associate, since that's a separate 802.11 management-frame mechanism the test never touched. Not yet checked against the actual device. Low urgency at n=2 nodes (any hotspot handles 2 trivially) but cheap to close: phone hotspots expose this directly in OS settings (Android: Settings→Hotspot; iPhone: fixed by OS, no user-visible setting) — two taps once the actual demo-day device is known. |
 
 ### 🟡 New — Risk-matrix cross-reference gaps (found by comparing this tracker against itself, no new facts)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 21 | R-05's battery-life mitigation cites "~80mA" — §2.5's own target table already flags this exact figure as unverified against the ESP32-S3's real draw (added at the time of the MCU swap, since S3 has more silicon than classic ESP32) | Aaradhya | **Open, newly surfaced July 9 (v16).** R-01, R-02, R-04, and R-06 all received July 9 risk-matrix updates reflecting the S3/gateway changes; R-05 didn't, even though §2.5 two sections over already flags the exact number R-05 rests on. Not a new measurement — a cross-reference gap between two parts of the same document. Resolve by re-measuring draw once S3 hardware is in hand (same trigger as §2.5's own flag), then update R-05's probability rating if the number moves. |
 | 22 | R-04's mitigation ("Demo uses dedicated mobile hotspot, not campus WiFi; tested in advance") carries no date, vendor, or method — the only line in the six-row Risk Matrix (§2.7) without one | Aaradhya | **Open, newly surfaced July 9 (v16).** Not a claim that the test didn't happen — every other risk in §2.7 is sourced to a specific day/number/vendor (R-02 to the S3 swap, R-05 to INA219 telemetry, R-06 to Action #15's laptop comparison); this is the one exception. Low cost to close: log when/how it was tested, or re-test and log it fresh, whichever is faster. |
 
 ### 🟡 New — Two legacy items promoted to active tracking (previously appendix-only, unpromoted since first logged)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 23 | Self-collected dataset protocol — define fall types, ADL types, subject count, recording procedure (§5 gives *targets*: 500 fall events + 2000 ADL windows — not a protocol for how to actually collect them) | Aaradhya | **Open, in progress (updated July 23, v22).** Originally promoted from the §7 legacy list July 9 (v16) — was legacy item #7 (FallGuard-era, status "unverified" since first logged). **As of v22: Aaradhya has discussed protocol-related changes directly with the HOD; confirmation from HOD still pending.** No specifics on the discussed changes were given this session — not invented here. Still the case that **R-03's own mitigation ("self-collected dataset bridges domain gap") structurally depends on this protocol existing** — until HOD confirmation lands and the protocol itself is finalized, R-03 stays mitigated on paper only. |
 | 24 | MPU6050 firmware — confirm whether Rupesh's existing minor-project firmware is portable to the fall-detection node or needs a rewrite | Rupesh | **Open, promoted from the §7 legacy list July 9 (v16).** Was legacy item #4 (FallGuard-era, status "unverified," never carried into §1). Flagged this session alongside Action #23 since both sit upstream of WP 2.0 firmware bring-up and directly affect Rupesh's time estimate for that WP. |
 
@@ -215,13 +232,13 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 ### 🟡 New — Literature-gap check against novelty claims (Action #26, partial — legacy item #1 promoted July 10, v18)
 
 | # | Item | Owner | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 26 | Live IEEE Xplore gap verification — check §2.3's five novelty claims against 2023–2026 literature | Aaradhya | **Open, partially executed July 10 (v18).** Was legacy item #1 (FallGuard-era, "unverified — no record of this being run"), promoted after a general web search (not the formal IEEE Xplore/Scopus query this item actually asks for) found closer prior art than expected for **Claim 1** (two-layer gated architectures) and **Claim 3** (per-event SHAP explainability) — both techniques individually have 2024–2025 published examples. No hits found for Claims 2, 4, 5. **Recommend narrowing Claims 1/3 to the specific combination not found in this pass — true MCU-class on-device inference with SHAP at a local, non-cloud gateway** — but this is a recommendation, not a decision; Aaradhya reviews and decides whether/how to reword the actual proposal or thesis text. Stays open until the formal database query (what this item originally asked for) actually runs. |
 
 ### ✅ Resolved July 1 (was 🔴 blocking)
 
 | # | Item | Owner | Resolution |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | RPi 4B (4GB) BOM price | Aaradhya | Confirmed NPR 18,699 (RoboNepal, robonepal.com, in stock). BOM line updated from 22,500 → 18,699. **Note (July 9, superseded by full RPi drop):** this price is now historical only — RPi 4B was briefly reframed as listed-backup hardware, then dropped from the BOM entirely (Action #15 reframed; §2.2, §2.6). Not in the build at any tier. |
 | 2 | CP2102 USB-UART module (NPR 400) | Aaradhya | **Dropped**, executed in-source (Ch.3 subsection removed, BOM row removed, footnote updated). ESP32 DevKit V1's onboard USB-serial covers flashing. **Note (July 9, S3 swap):** on ESP32-S3 the reasoning shifts slightly — S3 has no separate USB-serial *bridge chip* the way DevKit V1 does, but it has native USB OTG built into the silicon that covers the same flashing/programming role directly. Conclusion (no CP2102 needed) still holds; the underlying reason is different chip, same outcome. |
 | 4 | Micro-USB → Type-C standardization | Aaradhya | **Executed in-source.** All BOM/Ch.3/Ch.5 text now says USB-C exclusively (TP4056 input narrowed from "USB-C or Micro-USB" to "USB-C"). Figure asset `micro_usb_cable.png` replaced with a verified USB-C cable photo (two prior candidate images rejected — one was USB-A→Micro-B, wrong connector). Price corrected to NPR 267/unit (Daraz, was 300 estimate) via `daraz.com.np` listing. **Note (July 9, S3 swap):** ESP32-S3 ships with dual USB-C natively, so this standardization now applies to the MCU board itself too, not just the TP4056 charger input — a small consistency win, not an action item. |
@@ -233,7 +250,7 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 ### 🟡 Before WP 2.0/3.0 kickoff (Sept 2026) — not urgent, but don't let these drift
 
 | # | Item | Owner | Recommendation | Why it can wait |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 3 | INA219 battery telemetry — now ×3, not ×2 | Aaradhya | Superseded by Action #12 (added as breakdown spare, not the drop-to-1 originally recommended here). Original "keep 1, drop 1" logic no longer applies since a 3rd unit was added as a contingency spare, not a redundant pair. Revisit only if budget pressure returns. | Doesn't block anything until WP 3.0 hardware bring-up |
 | 5 | RPi 4B RAM: 4GB vs 2GB | Sankalpa | **Moot as of July 9 — RPi dropped entirely (not just deprioritized to backup), so this question no longer applies to any tier of the build.** Kept here for record only: had RPi remained in play, 4GB was the recommended default over 2GB for demo-day safety margin (concurrent services: Mosquitto+FastAPI+PostgreSQL+Streamlit+Telegram+SHAP). | No longer applicable; RPi not in the BOM |
 | 6 | ESP32-S3 → C3 SuperMini swap (was DevKit V1 → C3) | Rupesh/Sankalpa | **Deferred — still the correct call, baseline confirmed July 9.** Wearable MCU is ESP32-S3, 2 units @ NPR 1,979 confirmed (RoboNepal, Action #14) — not C3. S3 was chosen specifically for more headroom, so this remains a "stay put unless the benchmark says otherwise" item, not an active swap-in-progress. Order a C3 unit early so it's on hand; run the latency benchmark (see §6 below, framed as S3 vs C3) once hardware arrives and WP 2.0 firmware work is underway — needs resolving before WP 3.0 enclosure sizing locks around a board footprint, not before. Note: with the spare dropped (Action #12/#16), there's no longer a spare ESP32-S3 unit that could double as C3 comparison stock — a C3 unit would need to be separately ordered if this benchmark is to run. | No dependency exists yet; hardware not even in hand |
@@ -241,7 +258,7 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 ### ⬜ Future Work only (Chapter 6, not required for proposal or demo)
 
 | # | Item | Where it belongs |
-|---|---|---|
+| --- | --- | --- |
 | 7 | Mosquitto MQTT — no auth/TLS | Gateway, WP 4.0. One-line Future Work mention sufficient for proposal stage. |
 | 8 | No WiFi reconnect/watchdog in ESP32 firmware | Firmware, WP 2.0. Add reconnect-on-drop logic during firmware bring-up — no recovery path currently exists if AP connection drops. |
 | 9 | No OTA firmware update path | Firmware, WP 2.0. Physical USB reflash only for now; fine for demo, worth a Future Work bullet for a field-deployed wearable. |
@@ -251,6 +268,7 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 | 30 | Production-scale gateway architecture — a shared-use laptop is not a dedicated always-on box; a real multi-user deployment beyond this thesis's n=2-node demo needs a proper dedicated server or cloud instance | Ch.6, honest limitation. Action #15's procedural fixes (sleep/auto-lock/dedicated machine) solve the demo case, not the production case. Worth stating explicitly rather than leaving implicit. |
 
 ### ✅ Resolved / no action needed
+
 - Certificate page — correctly removed for proposal stage (not required until final thesis)
 - Supervisor/HOD names — confirmed correct (Er. Dipen Manandhar / Er. Suramya Sharma Dahal)
 - `figure1.png` orphaned asset — harmless, delete in a cleanup pass whenever convenient
@@ -265,20 +283,24 @@ No changes to Sections 1–6 below as a result of this check; added here for the
 *Condensed. Full rationale for each choice lives in §7 if you need to defend a decision later.*
 
 ### 2.1 What SPARK is
+
 Two-layer on-device fall detection wearable + explainable gateway pipeline for eldercare, built entirely from locally-sourced components (zero imports, zero custom PCB — hard department constraint).
 
 ### 2.2 Architecture (one line per stage)
-```
+
+```text
 MPU6050 (100Hz IMU) → complementary filter → Layer 1 threshold gate (<5ms)
   → Layer 2 TFLite Micro 1D CNN, INT8 (<100ms, P(FALL)>0.85) → MQTT publish
   → Laptop (gateway host): Mosquitto → FastAPI → PostgreSQL + SHAP attribution (<200ms)
   → Streamlit dashboard + Telegram alert (<2s total) + PDF incident report
 ```
+
 **Wearable MCU: ESP32-S3** (WROOM-1-N16R8-CAM variant — 16MB flash, 8MB PSRAM, dual-core LX7), 2 units, **NPR 1,979/unit confirmed (RoboNepal)** — upgraded from ESP32 DevKit V1 as of July 9, 2026; vendor corrected same day after Himalayan (v12's source) went out of stock (see v8/v12/v13 change logs above). Every stage in the diagram above is unchanged; this is a swap of *which chip* runs Layer 1/Layer 2/MQTT-publish, not a change to the stages themselves.
 
 **Gateway host: laptop, only host** (was RPi 4B) — swapped as of July 9, 2026; RPi 4B was briefly reframed as listed backup, then dropped from the build entirely the same day (see v12 change log above). Gateway pipeline stack (Mosquitto → FastAPI → PostgreSQL + SHAP) is unchanged; this is a swap of *which machine* runs the gateway, not a change to the pipeline itself.
 
 ### 2.3 Five novelty claims (gap defense)
+
 1. Two-layer gated TFLite Micro 1D CNN, fully on-device, no cloud
 2. Nepal-context wearable IMU dataset (first of its kind)
 3. Per-event SHAP explainability at gateway (no existing system does this)
@@ -288,12 +310,14 @@ MPU6050 (100Hz IMU) → complementary filter → Layer 1 threshold gate (<5ms)
 **Flag, not yet acted on (Action #26, v18):** a general web search (not the formal IEEE Xplore/Scopus query this still needs) found 2024–2025 published examples of both gated multi-stage architectures (Claim 1) and SHAP applied to fall detection (Claim 3) individually. What wasn't found: that specific combination — true MCU-class on-device inference with SHAP computed at a local, non-cloud gateway. Recommend narrowing Claims 1/3 to that combination; Aaradhya to decide on actual wording. Claims 2/4/5 turned up no hits in this pass.
 
 ### 2.4 Scope lock
+
 **In scope (✅ locked):** IMU acquisition (A), two-layer detection (B), alert pipeline (C), clinical dashboard (D).
 **Permanently out of scope (Ch.6 Future Work):** BLE/GATT protocol, multi-node monitoring, GPS localization, 4G fallback, clinical trial/hospital pilot.
 
 ### 2.5 Performance targets
+
 | Metric | Target |
-|---|---|
+| --- | --- |
 | CNN sensitivity / specificity | ≥90% / ≥90% |
 | False positive rate (ADL, Standard profile) | <10% |
 | End-to-end fall → Telegram alert | <2s |
@@ -302,6 +326,7 @@ MPU6050 (100Hz IMU) → complementary filter → Layer 1 threshold gate (<5ms)
 | Battery life | ≥25h @ 2000mAh, ~80mA (unverified against S3's actual power draw — S3 has more silicon than classic ESP32, so this figure needs re-checking once hardware is in hand, not assumed to carry over unchanged) |
 
 ### 2.6 Current BOM total
+
 **~NPR 15,004 — single figure, as of July 9 (v13).** No RPi line (dropped entirely, Action #15), no with-RPi/without-RPi split. Two changes happened after submission: one nets to zero, the other adds NPR 358.
 
 **RPi removed:** NPR 18,699 (Action #1, previously confirmed) comes out of the total outright — it was briefly framed as a listed-backup line, then dropped from the build entirely the same day. Laptop gateway host adds NPR 0 (team-owned hardware, not purchased for the project).
@@ -315,10 +340,11 @@ So the BOM total moves from the pre-swap, pre-RPi-drop baseline of ~NPR 14,646 t
 Actions #1, #2, #4, #11, #12, #14 all resolved. Open gaps: Action #16 (no bring-up-risk buffer for the S3 nodes), Action #17 (RoboNepal board's physical footprint unconfirmed vs. §7's enclosure assumption, low priority), Action #18 (receipt of self-funded/lab-sourced items not yet confirmed), Action #19 (USB-C cable price not yet logged).
 
 ### 2.7 Risk Matrix
+
 *Carried forward from FallGuard master v3 (§5.3) — not previously in this tracker. No risk below references a since-dropped component (e.g. CP2102), so all six are still applicable as written. **R-02 updated July 9** to reflect the ESP32-S3 swap. **R-05, R-06 updated July 9** to reflect the RPi 4B → laptop gateway swap, then updated again same day when RPi was dropped entirely (not kept as backup).*
 
 | Risk ID | Description | Impact | Probability | Mitigation |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | R-01 | False positive rate too high — Layer 1 triggers on non-fall motions | High | Medium | Layer 2 CNN gating is the primary mitigation; sensitivity profile tuning (Strategy pattern, §7 Appendix) as secondary |
 | R-02 | Runtime memory pressure on the wearable MCU — TFLite Micro interpreter arena contending with WiFi/MQTT for RAM during concurrent inference (originally framed as "flash too small"; flash was never actually tight — CNN target ~80–120KB against 4MB was always trivial headroom. The real pressure is SRAM at runtime, which is what "DevKit V1 too less for a demo" was likely picking up on) | Medium | Low → **Lower, post-S3** | **Primary mitigation upgraded July 9:** ESP32-S3's 8MB PSRAM lets the interpreter arena run outside the WiFi/MQTT-contended SRAM entirely — this is a more direct fix than the original fallback. Original fallback (threshold-only mode still demonstrates the detection concept) retained as a secondary safety net regardless of MCU choice. |
 | R-03 | UCI/SisFall datasets insufficient for Nepal-context generalization | Medium | Medium | Self-collected dataset (500+ events) bridges domain gap; published as secondary contribution. **Note (July 10, v19):** this mitigation is paper-only until the collection protocol itself exists — see Action #23, whose own text already says as much; R-03's row just never carried the flag R-04/R-05 got when the same gap was found in them (Actions #22, #21). |
@@ -327,10 +353,11 @@ Actions #1, #2, #4, #11, #12, #14 all resolved. Open gaps: Action #16 (no bring-
 | R-06 | Streamlit dashboard complexity exceeds Sonia's timeline; **sub-risk: laptop-as-gateway means gateway uptime depends on a general-purpose machine, not a dedicated always-on box** — sleep/lid-close, other apps competing for resources, or the same laptop being needed for something else during the demo window | Low | **Resolved on the sub-risk (July 23, v22)** | FastAPI REST endpoint is the fallback display — curl output or Postman is acceptable for thesis; dashboard is a supporting deliverable. **For the gateway-uptime sub-risk:** no RPi backup box exists (dropped entirely, not just deprioritized) — mitigation is procedural: disable sleep/auto-lock, keep the laptop plugged in, use a dedicated machine rather than one doing double duty during the demo window. **Note (July 9, v15):** compute capacity confirmed as a non-factor in this sub-risk (laptop vs. RPi comparison) — the remaining exposure was purely procedural/power, not performance. **Note (July 23, v22): Action #15 confirmed executed** — sleep/auto-lock disabled, laptop plugged in, used as dedicated machine. Both halves of this sub-risk (compute, procedural) now closed. |
 
 ### 2.8 PostgreSQL Schema — `fall_events` Table
+
 *Carried forward from FallGuard master v3 (§3.6) — field-level detail that §2.2's architecture line ("PostgreSQL") never spelled out.*
 
 | Column | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `event_id` | UUID | Unique event identifier |
 | `user_id` | VARCHAR | Wearer identifier |
 | `timestamp` | TIMESTAMPTZ | ISO 8601, UTC |
@@ -349,7 +376,7 @@ Actions #1, #2, #4, #11, #12, #14 all resolved. Open gaps: Action #16 (no bring-
 ## 3. Team & Work Packages
 
 | Name | Roll | WP | Sept 2026 Benchmark |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Aaradhya Dev Tamrakar | 79001 | 1.0 — AI & Backend | FastAPI skeleton running; CNN baseline training notebook live |
 | Rupesh Kadel | 79034 | 2.0 — Firmware & IMU | MPU6050 streaming @ 100Hz via WiFi; Layer 1 firing on simulated fall |
 | Sankalpa Lamsal | 79039 | 3.0 — Hardware & Enclosure | Node powered from 18650, stable; enclosure concept sketched |
@@ -360,7 +387,7 @@ Actions #1, #2, #4, #11, #12, #14 all resolved. Open gaps: Action #16 (no bring-
 ## 4. Timeline (Sep 2026 → Mar 2027)
 
 | Month | Gate Deliverable |
-|---|---|
+| --- | --- |
 | Sep 2026 | 2 nodes assembled + gateway running + basic dashboard live |
 | Oct 2026 | TFLite Micro on nodes + end-to-end <200ms confirmed |
 | Nov 2026 | Full alert pipeline + enclosures + ADL false-positive battery test |
@@ -374,7 +401,7 @@ Actions #1, #2, #4, #11, #12, #14 all resolved. Open gaps: Action #16 (no bring-
 ## 5. Data & Training
 
 | Source | Use | Scale |
-|---|---|---|
+| --- | --- | --- |
 | UCI MHEALTH | Primary CNN training | 10 subjects, resampled to 100Hz |
 | SisFall | Augmentation (15 fall types, 19 ADL types) | 38 subjects, resampled to 100Hz |
 | Self-collected KEC | Domain adaptation, Nepal-context, publishable | Target: 500 fall events + 2000 ADL windows |
@@ -405,6 +432,7 @@ Worth documenting the result in Ch.5 methodology or an appendix regardless of ou
 **Carried forward from outside this tracker, not verified this session:** multi-session work on the SPARK mid-term-defence presentation (PowerPoint) has been ongoing elsewhere — hardware-pivot text corrections (ESP32-S3 replacing RPi 4B), raster-image text patching, footer date updates, and BOM/cost-table edits on slides 24–25. Listed here for continuity only; current status of any of it is unconfirmed as of v21.
 
 **Open, not yet answered:**
+
 - Scope of "reformatting" vs. "rebuilding" — cosmetic pass vs. structural rework, and which slides either covers
 - Whether this supersedes the slide 24–25 BOM/cost-table edits above, or runs alongside them
 - Target date — **the mid-term defence itself (July 13, 2026) is not tracked anywhere else in this document** (see §0 bottom line), and is 2 days out as of this entry
@@ -423,17 +451,20 @@ Worth documenting the result in Ch.5 methodology or an appendix regardless of ou
 - **FallGuard**: confirmed by supervisor June 29, 2026; renamed because "Guard" implies passive protection (misrepresents active kinetic analysis) and a real 2025 commercial camera-based product shares the name.
 - Renaming tried Nepali/Sanskrit (Sanket Edge, Avastha, GatiSignal) then English options (VectorShift, Tilt, Lull, EdgeFall, Brace, Keel) before landing on **SPARK** — captures the "spike → computation → digital flare" nature without the cliché Guard/Shield/Sentinel lexicon.
 - Full title kept long (two-clause) rather than shortened, so the literature-gap argument's explicit novelty claims (two-layer architecture, Nepal-context dataset) survive a skimming reviewer.
+1
+
 </details>
 
 <details>
 <summary>Why SPARK over alternative directions</summary>
 
 | Alternative | Killed by |
-|---|---|
+| --- | --- |
 | PrakopNet | RYLR890 868MHz import-only; no-import rule |
 | NetSight | ADS1115 overseas-only; PCB fab out of scope |
 | Direction C (ESP-NOW counter-UAV mesh) | Weaker novelty vs. SPARK's two-layer + SHAP + Nepal dataset |
 | **SPARK** | 100% hardware in-hand/local same-day, zero imports, zero PCB, supervisor confirmed |
+
 </details>
 
 <details>
@@ -444,16 +475,18 @@ Worth documenting the result in Ch.5 methodology or an appendix regardless of ou
 - Pooling: 200→50→12 time steps, robust to ±50ms timing jitter across different people's falls
 - Feature depth grows 6→32→64 channels as time axis shrinks — by Dense layer, exact timing is discarded, only "did this pattern occur" remains, which is why it generalizes across fall speeds
 - INT8 quantization: 4× faster inference, fits ≤120KB flash
+
 </details>
 
 <details>
 <summary>Software design patterns (OOSE)</summary>
 
 | Pattern | Application |
-|---|---|
+| --- | --- |
 | Factory | `FallDetector` ABC → `ThresholdDetector` (L1) + `CNNDetector` (L2) |
 | Observer | FastAPI gateway → Streamlit + Telegram + PostgreSQL + PDF (all observers) |
 | Strategy | `FallDetectionStrategy` → High/Standard/Sport, no firmware reflash |
+
 </details>
 
 <details>
@@ -464,6 +497,7 @@ Worth documenting the result in Ch.5 methodology or an appendix regardless of ou
 3. False positive test (sit-to-stand) — Layer 1 may pre-fire, Layer 2 correctly rejects — demonstrates two-layer value over threshold-only systems
 4. Sensitivity profile switch (Standard→HighSensitivity) via dashboard, repeat gentle fall — demonstrates Strategy pattern
 5. Auto PDF report generated live from the demo event
+
 </details>
 
 <details>
@@ -496,6 +530,7 @@ Bugs fixed during build: WiFi connector mis-routed through occupied space; z-ord
 - **PrakopNet** — solar LoRa mesh multi-hazard EWS with federated edge AI. Archived June 29, 2026 (import-blocked).
 - **NetSight** — precision-ag soil/weather sensor node. Archived June 29, 2026 (PCB/overseas part).
 - **Idea C (Counter-UAV)** — distributed TinyML drone detection. Archived earlier in ideation.
+
 </details>
 
 <details>
@@ -504,7 +539,7 @@ Bugs fixed during build: WiFi connector mis-routed through occupied space; z-ord
 `SPARK_MASTER_v1_20260630.md` was the operative doc immediately after the FallGuard→SPARK rename, built around the v7 LaTeX package. Superseded by the v8–v10 revisions reflected throughout this tracker. Notable deltas, in case anyone finds a v1 copy circulating:
 
 | v1 (June 30) | Current (this doc) |
-|---|---|
+| --- | --- |
 | BOM total ~NPR 4,770, RPi listed as NPR 0 (in team inventory) | BOM ~NPR 35,395 with RPi (§2.6) — reflects `main.md`'s real proposal figures; RPi line itself flagged as overpriced (Action #1) |
 | Single 5-column landscape BOM+specs table | Split into portrait 4-col BOM + 2-col specs (§2.6, resolved in v8) |
 | No CP2102/INA219 drop analysis | Both flagged as drop candidates, Actions #2–3 |
@@ -540,7 +575,7 @@ Falls are the leading cause of injury-related mortality among adults over 65 glo
 **BEI Curriculum Alignment:**
 
 | Subject | Application in SPARK |
-|---|---|
+| --- | --- |
 | Embedded Systems (CT 655) | ESP32 firmware, MPU6050 ISR, TFLite Micro deployment, I2C/UART drivers |
 | Artificial Intelligence | 1D CNN architecture, INT8 quantization, F1/AUC evaluation, training pipeline |
 | DSAP | Sliding window algorithm, complementary filter, FFT feature extraction |
@@ -553,7 +588,7 @@ Falls are the leading cause of injury-related mortality among adults over 65 glo
 **Fusemachines & DataCamp Alignment:**
 
 | Skill Source | Week / Course | Direct Application in SPARK |
-|---|---|---|
+| --- | --- | --- |
 | Fusemachines | Week 4 — Scikit-learn ML Pipeline | StandardScaler baked into firmware (scaler params from training) |
 | Fusemachines | Week 5 — XGBoost/RF + SHAP | SHAP feature importance on fall classifier input features (thesis Chapter 4) |
 | Fusemachines | Week 6 — Probabilistic Models | Bayesian threshold calibration for Layer 1 sensitivity |
@@ -572,7 +607,7 @@ Names carried over verbatim from the FallGuard-era source doc — component/arch
 The FallGuard-era master kept its own open-items list (10 items). One is confirmed resolved; **three (#1, #4, #7) were subsequently promoted into active tracking as Actions #26, #24, #23 respectively — see the backlink on each row below.** The remaining six have no corresponding record anywhere in this tracker's action lists (§1) — meaning they were never explicitly marked done, dropped, or superseded. Listed here for visibility, **not** merged into §1's active list (aside from the three now cross-referenced), since — unlike §1's items — none of these have had their current status confirmed this session.
 
 | # | Item (as originally logged) | Owner | Status here |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Live IEEE Xplore gap verification — two-layer gated TFLite Micro fall detection (2023–2026) | Aaradhya | **→ Promoted to Action #26 (v18).** A general web search (not yet the formal database query this item asks for) found closer prior art than expected for novelty Claims 1/3 — see §1 for status, still open. |
 | 2 | Team alignment meeting — confirm all four members agree to FallGuard (now SPARK) pivot | Aaradhya | Unverified — presumably moot given proposal was signed/submitted by the full team, but not explicitly confirmed |
 | 3 | Supervisor assignment — confirm via KEC 8th semester group formation | Aaradhya | ✅ **Resolved** — Er. Dipen Manandhar confirmed (this tracker, §"Resolved / no action needed") |
@@ -589,4 +624,4 @@ The FallGuard-era master kept its own open-items list (10 items). One is confirm
 
 ---
 
-*Supersedes `SPARK_TRACKER_v22_20260723.md` (full acronym expansion confirmed; Action #15 resolved; Action #23 status updated — HOD discussion held, confirmation pending; GitHub repo created, closing legacy item #6; v37 report reconciliation logged; no BOM/design/scope-lock change), `SPARK_TRACKER_v21_20260711.md` (new §6.5 opened for presentation reformatting/rebuild, placeholder only; footer supersedes-list gap fixed, v19/v20 appended; no BOM/design/scope change), `SPARK_TRACKER_v20_20260710.md` (Action #25 resolved: defence occurred as scheduled July 9, panel optimistic, no specific pivot-related questions reported; new Action #31 opened for post-RPi-drop department cost negotiation; §0.5 Tier 1 moved lapsed→resolved; no BOM/design/purchase change), `SPARK_TRACKER_v19_20260710.md` (self-consistency audit: five stale cross-references found and fixed — H1 header, Future Work count, "24 action items" in two spots, three unbacklinked legacy-table promotions, R-03's missing risk-matrix note — plus three upgrades, #26 re-tiered/#27↔#28 cross-linked/#25's forward-reference corrected; no design/BOM/purchase change), `SPARK_TRACKER_v18_20260710.md` (literature-gap check + laptop-enabled components/future-work pass: Actions #26–30 added, no design/BOM/purchase change), `SPARK_TRACKER_v17_20260710.md` (post-defence date-check: defence outcome unconfirmed, §0.5 Tier 1 marked lapsed, Action #25 added, no design/BOM/purchase change), `SPARK_TRACKER_v16_20260709.md` (priority-tiered gap synthesis: Actions #21–24 added, §0.5 priority tiers added across all 24 open items, no design/BOM/purchase change), `v15_20260709.md` (Action #15 partially addressed — gateway compute confirmed as a non-issue against actual RPi 4B and laptop hardware; new Action #20 opened for the mobile-hotspot max-client cap this surfaced), `v14_20260709.md` (Action #15 partially addressed — gateway compute/broker headroom confirmed against actual RPi 4B and laptop hardware; new Action #20 opened for the mobile-hotspot max-client cap this surfaced, since the broker test's same-machine setup couldn't measure it), `v13_20260709.md` (self-funding disclosure confirmed and written into Action #14; USB-C cable added as a second self-funded, unpriced item, Action #19; MPU6050 sourcing clarified as a lab-borrow plan, not a purchase), `v12` (Action #14 vendor/price correction: Himalayan's NPR 1,800/unit went out of stock same day, RoboNepal confirmed at NPR 1,979/unit instead), `v9` through `v11` (undocumented intermediate states — RPi-as-backup and RPi-fully-dropped, S3-placeholder and S3-confirmed-pricing — reconciled in v12), `SPARK_TRACKER_v8_20260709.md`, `SPARK_TRACKER_v7_20260709.md`, `SPARK_TRACKER_v6_20260708.md`, `SPARK_TRACKER_v5_20260701.md`, `SPARK_TRACKER_v4_20260701.md`, `SPARK_CONSOLIDATED_20260701.md`, `SPARK_MASTER_v1_20260630.md`, and `FallGuard_MASTER_v3_20260629.md` as the working tracker. All originals retained as historical record if needed; this version is optimized for weekly team use — action items first, locked design as quick reference, full history collapsed into the appendix. Proposal source itself is at `SPARK_Proposal_20260701_v35.zip` (signed hardcopy, submitted-of-record, resubmitted July 6, 2026, **still names ESP32 DevKit V1 and RPi 4B as the gateway — both changes postdate submission and aren't reflected in the signed document**) — `v36.zip` is a separate, unsubmitted digital revision with the Gantt chart fix v35 lacks. `Table~\ref{tab:component_cost}` compile status was never confirmed resolved before either submission; check on Overleaf before the July 9 defence if useful, though it's no longer submission-blocking. **Wearable MCU is ESP32-S3, 2 units, NPR 1,979/unit confirmed (RoboNepal)** (§2.2, §2.6) — Action #14 re-resolved, **+NPR 358 BOM delta** (no longer net-zero); **1 unit self-funded by Aaradhya**, departmental ask reduced accordingly. **Gateway host is laptop, only host** (§2.2) — RPi 4B dropped from the BOM entirely, not kept as backup; demo-day laptop-reliability mitigation open per Action #15. **Open gaps:** ESP32-S3 spare-board buffer removed with the quantity drop to 2 units (Action #16); RoboNepal board's physical footprint unconfirmed vs. §7's enclosure assumption, low priority (Action #17); receipt of self-funded/lab-sourced items not yet confirmed (Action #18); USB-C cable self-funded but unpriced (Action #19); mobile hotspot's max-client cap unmeasured, low priority at n=2 (Action #20). **Gateway compute confirmed as a non-issue** (laptop vs. RPi 4B comparison, Action #15) — remaining gateway-uptime exposure is procedural/power only. **Total project cost (§2.6) is ~NPR 15,004 regardless of funding source; the departmental ask is lower, reflecting the self-funded items.** **As of v16:** two risk-matrix rows (R-04, R-05) were found citing claims not sourced/cross-updated to this tracker's own standard (Actions #22, #21); two FallGuard-era legacy items — dataset protocol and MPU6050 firmware reuse — were promoted out of the §7 appendix into active tracking (Actions #23, #24); and a new §0.5 ranks all 24 open items into 5 priority tiers by actual dependency/lead-time. No design, BOM, or purchase fact changed this session. **As of v17:** the defence date named throughout this tracker has passed (July 9 → today is July 10) with no outcome recorded anywhere in it — Action #25 opened, §0.5 Tier 1 marked lapsed rather than deleted. No design, BOM, or purchase fact changed this session either. **As of v18:** first version since v8 to add genuinely new external research rather than a consistency pass — a general web search (not a formal IEEE Xplore/Scopus query) found closer prior art than expected for novelty Claims 1 and 3 (Action #26, narrowing recommended, not yet decided); the laptop gateway's confirmed on-die NPU (11 TOPS INT8) and iGPU (18 TOPS INT8) open gateway-side components RPi 4B structurally never had (Actions #27–28); two items promoted to Ch.6 Future Work as a result (Actions #29–30). No BOM, purchase, or scope-lock fact changed this session. **As of v19:** self-consistency audit — five stale cross-references (H1 header, Future Work count, "24 action items" in two spots, three unbacklinked legacy-table promotions, R-03's missing risk-matrix note) found and fixed, three upgrades applied (#26 re-tiered, #27↔#28 cross-linked, #25's forward-reference corrected). No design, BOM, or purchase fact changed this session. **As of v20:** Action #25 resolved — defence occurred as scheduled July 9, panel optimistic; new Action #31 opened for department cost negotiation; §0.5 Tier 1 moved lapsed→resolved. **As of v21:** new §6.5 opened for presentation reformatting/rebuild (placeholder only); footer supersedes-list gap fixed. **As of v22:** SPARK's full acronym ("Signal Pattern Analysis & Real-time Kinetics") confirmed and recorded for the first time since the June 30 FallGuard→SPARK rename; Action #15 fully resolved (procedural half confirmed executed, joining the already-resolved compute half); Action #23 advanced but not closed (HOD discussion held, confirmation pending); legacy item #6 resolved (GitHub repo created at `github.com/Aaradhya-Dev-Tamrakar/SPARK`, scaffold only, no firmware/training code yet); and the "v37" proposal-report label clarified as an unsubmitted working reconciliation of v35 (as actually submitted) with v36's revealed Gantt-chart fix — not a new linear version superseding either. No design, BOM, or purchase fact changed this session. **As of v23:** first training code committed — `training/data_prep/prepare_sisfall.py`, verified end-to-end against the actual 4506-file SisFall archive (38426 windows produced, 38/38 subjects, 34/34 activity codes, 5 confirmed-duplicate files correctly rejected); two unsuitable Kaggle notebooks evaluated and rejected (schema mismatch, opaque pre-windowing, or silent binary-only truncation); a same-session commit-message process deviation from the documented `sync.ps1` workflow is logged here and corrected. No design, BOM, or purchase fact changed this session; §5's target-dataset text is not yet cross-linked to this new pipeline.***
+*Supersedes `SPARK_TRACKER_v23_20260723.md` (classical-ML notebook added at `training/notebooks/SPARK_SisFall_ML_Pipeline.ipynb` — RF+XGBoost on engineered SisFall features via GridSearchCV/GroupKFold, reuses `prepare_sisfall.py` for Stage 1, complementary to `train_cnn.py`; landed via three raw commits bypassing `sync.ps1`, path corrected same session, content unchanged throughout; no BOM/design/scope-lock change), `SPARK_TRACKER_v22_20260723.md` (full acronym expansion confirmed; Action #15 resolved; Action #23 status updated — HOD discussion held, confirmation pending; GitHub repo created, closing legacy item #6; v37 report reconciliation logged; no BOM/design/scope-lock change), `SPARK_TRACKER_v21_20260711.md` (new §6.5 opened for presentation reformatting/rebuild, placeholder only; footer supersedes-list gap fixed, v19/v20 appended; no BOM/design/scope change), `SPARK_TRACKER_v20_20260710.md` (Action #25 resolved: defence occurred as scheduled July 9, panel optimistic, no specific pivot-related questions reported; new Action #31 opened for post-RPi-drop department cost negotiation; §0.5 Tier 1 moved lapsed→resolved; no BOM/design/purchase change), `SPARK_TRACKER_v19_20260710.md` (self-consistency audit: five stale cross-references found and fixed — H1 header, Future Work count, "24 action items" in two spots, three unbacklinked legacy-table promotions, R-03's missing risk-matrix note — plus three upgrades, #26 re-tiered/#27↔#28 cross-linked/#25's forward-reference corrected; no design/BOM/purchase change), `SPARK_TRACKER_v18_20260710.md` (literature-gap check + laptop-enabled components/future-work pass: Actions #26–30 added, no design/BOM/purchase change), `SPARK_TRACKER_v17_20260710.md` (post-defence date-check: defence outcome unconfirmed, §0.5 Tier 1 marked lapsed, Action #25 added, no design/BOM/purchase change), `SPARK_TRACKER_v16_20260709.md` (priority-tiered gap synthesis: Actions #21–24 added, §0.5 priority tiers added across all 24 open items, no design/BOM/purchase change), `v15_20260709.md` (Action #15 partially addressed — gateway compute confirmed as a non-issue against actual RPi 4B and laptop hardware; new Action #20 opened for the mobile-hotspot max-client cap this surfaced), `v14_20260709.md` (Action #15 partially addressed — gateway compute/broker headroom confirmed against actual RPi 4B and laptop hardware; new Action #20 opened for the mobile-hotspot max-client cap this surfaced, since the broker test's same-machine setup couldn't measure it), `v13_20260709.md` (self-funding disclosure confirmed and written into Action #14; USB-C cable added as a second self-funded, unpriced item, Action #19; MPU6050 sourcing clarified as a lab-borrow plan, not a purchase), `v12` (Action #14 vendor/price correction: Himalayan's NPR 1,800/unit went out of stock same day, RoboNepal confirmed at NPR 1,979/unit instead), `v9` through `v11` (undocumented intermediate states — RPi-as-backup and RPi-fully-dropped, S3-placeholder and S3-confirmed-pricing — reconciled in v12), `SPARK_TRACKER_v8_20260709.md`, `SPARK_TRACKER_v7_20260709.md`, `SPARK_TRACKER_v6_20260708.md`, `SPARK_TRACKER_v5_20260701.md`, `SPARK_TRACKER_v4_20260701.md`, `SPARK_CONSOLIDATED_20260701.md`, `SPARK_MASTER_v1_20260630.md`, and `FallGuard_MASTER_v3_20260629.md` as the working tracker. All originals retained as historical record if needed; this version is optimized for weekly team use — action items first, locked design as quick reference, full history collapsed into the appendix. Proposal source itself is at `SPARK_Proposal_20260701_v35.zip` (signed hardcopy, submitted-of-record, resubmitted July 6, 2026, **still names ESP32 DevKit V1 and RPi 4B as the gateway — both changes postdate submission and aren't reflected in the signed document**) — `v36.zip` is a separate, unsubmitted digital revision with the Gantt chart fix v35 lacks. `Table~\ref{tab:component_cost}` compile status was never confirmed resolved before either submission; check on Overleaf before the July 9 defence if useful, though it's no longer submission-blocking. **Wearable MCU is ESP32-S3, 2 units, NPR 1,979/unit confirmed (RoboNepal)** (§2.2, §2.6) — Action #14 re-resolved, **+NPR 358 BOM delta** (no longer net-zero); **1 unit self-funded by Aaradhya**, departmental ask reduced accordingly. **Gateway host is laptop, only host** (§2.2) — RPi 4B dropped from the BOM entirely, not kept as backup; demo-day laptop-reliability mitigation open per Action #15. **Open gaps:** ESP32-S3 spare-board buffer removed with the quantity drop to 2 units (Action #16); RoboNepal board's physical footprint unconfirmed vs. §7's enclosure assumption, low priority (Action #17); receipt of self-funded/lab-sourced items not yet confirmed (Action #18); USB-C cable self-funded but unpriced (Action #19); mobile hotspot's max-client cap unmeasured, low priority at n=2 (Action #20). **Gateway compute confirmed as a non-issue** (laptop vs. RPi 4B comparison, Action #15) — remaining gateway-uptime exposure is procedural/power only. **Total project cost (§2.6) is ~NPR 15,004 regardless of funding source; the departmental ask is lower, reflecting the self-funded items.** **As of v16:** two risk-matrix rows (R-04, R-05) were found citing claims not sourced/cross-updated to this tracker's own standard (Actions #22, #21); two FallGuard-era legacy items — dataset protocol and MPU6050 firmware reuse — were promoted out of the §7 appendix into active tracking (Actions #23, #24); and a new §0.5 ranks all 24 open items into 5 priority tiers by actual dependency/lead-time. No design, BOM, or purchase fact changed this session. **As of v17:** the defence date named throughout this tracker has passed (July 9 → today is July 10) with no outcome recorded anywhere in it — Action #25 opened, §0.5 Tier 1 marked lapsed rather than deleted. No design, BOM, or purchase fact changed this session either. **As of v18:** first version since v8 to add genuinely new external research rather than a consistency pass — a general web search (not a formal IEEE Xplore/Scopus query) found closer prior art than expected for novelty Claims 1 and 3 (Action #26, narrowing recommended, not yet decided); the laptop gateway's confirmed on-die NPU (11 TOPS INT8) and iGPU (18 TOPS INT8) open gateway-side components RPi 4B structurally never had (Actions #27–28); two items promoted to Ch.6 Future Work as a result (Actions #29–30). No BOM, purchase, or scope-lock fact changed this session. **As of v19:** self-consistency audit — five stale cross-references (H1 header, Future Work count, "24 action items" in two spots, three unbacklinked legacy-table promotions, R-03's missing risk-matrix note) found and fixed, three upgrades applied (#26 re-tiered, #27↔#28 cross-linked, #25's forward-reference corrected). No design, BOM, or purchase fact changed this session. **As of v20:** Action #25 resolved — defence occurred as scheduled July 9, panel optimistic; new Action #31 opened for department cost negotiation; §0.5 Tier 1 moved lapsed→resolved. **As of v21:** new §6.5 opened for presentation reformatting/rebuild (placeholder only); footer supersedes-list gap fixed. **As of v22:** SPARK's full acronym ("Signal Pattern Analysis & Real-time Kinetics") confirmed and recorded for the first time since the June 30 FallGuard→SPARK rename; Action #15 fully resolved (procedural half confirmed executed, joining the already-resolved compute half); Action #23 advanced but not closed (HOD discussion held, confirmation pending); legacy item #6 resolved (GitHub repo created at `github.com/Aaradhya-Dev-Tamrakar/SPARK`, scaffold only, no firmware/training code yet); and the "v37" proposal-report label clarified as an unsubmitted working reconciliation of v35 (as actually submitted) with v36's revealed Gantt-chart fix — not a new linear version superseding either. No design, BOM, or purchase fact changed this session. **As of v23:** first training code committed — `training/data_prep/prepare_sisfall.py`, verified end-to-end against the actual 4506-file SisFall archive (38426 windows produced, 38/38 subjects, 34/34 activity codes, 5 confirmed-duplicate files correctly rejected); two unsuitable Kaggle notebooks evaluated and rejected (schema mismatch, opaque pre-windowing, or silent binary-only truncation); a same-session commit-message process deviation from the documented `sync.ps1` workflow is logged here and corrected. No design, BOM, or purchase fact changed this session; §5's target-dataset text is not yet cross-linked to this new pipeline. **As of v24:** `SPARK_SisFall_ML_Pipeline.ipynb` added — 6-stage classical-ML pipeline (RF + XGBoost on engineered statistical features, GridSearchCV-tuned, GroupKFold by subject), reuses `prepare_sisfall.py` unmodified for Stage 1, does not duplicate or alter `train_cnn.py`'s CNN. Landed via three raw commits directly to `main`, bypassing `sync.ps1` a second time this session; final path `training/notebooks/`, content verified byte-identical to the original build throughout all three locations. Never executed by Claude at any point. No design, BOM, or purchase fact changed this session.***
