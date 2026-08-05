@@ -1,0 +1,16 @@
+# Defaults for `idf.py set-target esp32s3`.
+# Real sdkconfig is gitignored (build-machine-specific); this file seeds it.
+
+CONFIG_IDF_TARGET="esp32s3"
+
+# PSRAM required for TFLite Micro tensor arena on the WROOM-1-CAM board (8MB PSRAM per §2.2 BOM).
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+
+# I2C0 reserved for MPU6050 (see drivers/mpu6050.h) -- no bus config here yet,
+# actual pin/clock numbers blocked pending board-in-hand (Action #18).
+
+# BLE stack -- NimBLE, matches comms stub's transport target. Enabled but unconfigured
+# pending wire-format confirmation (Action: comms output format, blocked this session).
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
