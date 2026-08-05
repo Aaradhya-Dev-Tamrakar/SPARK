@@ -3,16 +3,17 @@
 main.py
 
 Gateway skeleton entrypoint. Wires receiver -> SHAP stub -> PDF stub
--> JSON storage into one pipeline, using NullReceiver + a manually
-injected dummy event since no real wire format or live BLE hardware
-exists yet this session (see gateway/receiver/wire_format.py,
-gateway/receiver/receiver.py).
+-> JSON storage into one pipeline. Wire format is now locked
+(docs/WIRE_FORMAT_v1.md) and parse_event() is real, but live BLE
+hardware/pairing is still blocked (see gateway/receiver/receiver.py)
+-- this still runs via NullReceiver, but now demonstrates the real
+parse path by building a raw JSON payload and running it through
+parse_event(), rather than bypassing the wire entirely.
 
 This is the sec:6.2 integration-benchmark shape ("Gateway receives,
 logs, and reports correctly") exercised end-to-end on dummy data only
--- not a claim that the real benchmark is met, which requires real
-hardware, a real wire format, and a trained model (all explicitly
-blocked/gated this session).
+-- not a claim that the real benchmark is met, which still requires
+real hardware and a trained model (SHAP stub, gated behind WP 2.0).
 
 Usage:
     python -m gateway.main
@@ -20,12 +21,13 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import logging
+import time
 import uuid
-from datetime import datetime, timezone
 
 from gateway.receiver.receiver import NullReceiver
-from gateway.receiver.wire_format import EventPayload
+from gateway.receiver.wire_format import EventPayload, parse_event
 from gateway.report.pdf_report import ReportData, generate_report
 from gateway.shap_pipeline.shap_stub import get_explainer
 from gateway.storage.json_store import JsonEventStore
@@ -34,12 +36,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s: %(message)
 logger = logging.getLogger("spark.gateway.main")
 
 
-def _build_dummy_event() -> EventPayload:
-    return EventPayload(
-        event_id=str(uuid.uuid4()),
-        timestamp=datetime.now(timezone.utc).isoformat(),
-        confidence=0.94,
-        peak_features={
+def _build_dummy_raw_payload() -> bytes:
+    """
+    Builds a raw JSON payload matching docs/WIRE_FORMAT_v1.md exactly,
+    as if it had arrived over BLE/serial -- used to exercise the real
+    parse_event() path rather than constructing an EventPayload
+    directly (which would skip the parsing this task unblocked).
+    """
+    payload = {
+        "event_id": str(uuid.uuid4()),
+        "device_id": "DUMMY-DEVICE",
+        "firmware_version": "0.0.0-dummy",
+        "timestamp_ms": int(time.time() * 1000),
+        "confidence": 0.94,
+        "peak_features": {
             "a_x": 0.4,
             "a_y": 0.6,
             "a_z": 3.1,
@@ -47,8 +57,8 @@ def _build_dummy_event() -> EventPayload:
             "w_y": 0.5,
             "w_z": 0.6,
         },
-        device_id="DUMMY-DEVICE",
-    )
+    }
+    return json.dumps(payload).encode("utf-8")
 
 
 def handle_event(event: EventPayload, store: JsonEventStore) -> None:
@@ -59,12 +69,12 @@ def handle_event(event: EventPayload, store: JsonEventStore) -> None:
 
     report_data = ReportData(
         event_id=event.event_id,
-        timestamp_iso=event.timestamp,
+        timestamp_iso=str(event.timestamp_ms),  # ms epoch, display formatting TBD (Sonia)
         severity_score=event.confidence,  # placeholder mapping, scale TBD
         cnn_confidence=event.confidence,
         shap_top_feature=shap_result.top_feature,
         shap_values=shap_result.values,
-        device_id=event.device_id or "UNSET",
+        device_id=event.device_id,
     )
     report_path = f"data/gateway_events/{event.event_id}.pdf"
     generate_report(report_data, report_path)
@@ -79,8 +89,11 @@ def main() -> None:
     receiver.connect()
     receiver.listen()  # no-op, logs only -- see NullReceiver
 
-    dummy = _build_dummy_event()
-    receiver.inject_dummy_event(dummy)
+    # Exercises the real parse_event() path: raw JSON bytes -> EventPayload,
+    # as if received over BLE/serial (transport itself still blocked).
+    raw = _build_dummy_raw_payload()
+    dummy_event = parse_event(raw)
+    receiver.inject_dummy_event(dummy_event)
 
     receiver.close()
 

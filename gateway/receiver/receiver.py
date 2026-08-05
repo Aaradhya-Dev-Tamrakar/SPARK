@@ -9,12 +9,17 @@ and reports correctly").
 
 SCOPE OF THIS FILE: connection lifecycle and a transport-agnostic
 callback interface only. Actual frame parsing is delegated to
-gateway/receiver/wire_format.py, which is intentionally unimplemented
-pending firmware-side wire-format confirmation (Action tied to this
-session's scope note -- WAIT on exact format). This file must not be
-extended to guess at BLE service/characteristic UUIDs or serial framing.
+gateway/receiver/wire_format.py, which now implements parse_event()
+against docs/WIRE_FORMAT_v1.md (LOCKED). This file must not inline
+its own parsing -- always route through wire_format.parse_event().
 
-Explicitly NOT in scope here (repo-wide blocked list, this session):
+Wire format being locked does NOT unblock live BLE pairing --
+BLEReceiver/SerialReceiver .connect()/.listen()/.close() remain
+unimplemented stubs (see their class docstrings below). Only
+_dispatch_raw()'s call into parse_event() is real; nothing here
+speaks to actual hardware yet.
+
+Explicitly NOT in scope here (repo-wide blocked list):
   - Live BLE pairing/discovery against real hardware.
   - Real multi-client hotspot behavior (tracker Action #20).
 
@@ -51,7 +56,7 @@ class Receiver(abc.ABC):
     Concrete transports (BLE, serial) implement connect()/listen()/
     close(). None of them may implement frame parsing themselves --
     they must call wire_format.parse_event() so there is exactly one
-    place the (currently unconfirmed) wire format is interpreted.
+    place the wire format (docs/WIRE_FORMAT_v1.md) is interpreted.
     """
 
     def __init__(self, on_event: EventCallback):
@@ -79,9 +84,17 @@ class Receiver(abc.ABC):
         return self._connected
 
     def _dispatch_raw(self, raw: bytes) -> None:
-        """Shared helper: parse via wire_format, then dispatch."""
-        event = parse_event(raw)  # raises WireFormatNotConfirmed today
-        logger.info("Received event %s", getattr(event, "event_id", "?"))
+        """
+        Shared helper: parse via wire_format, then dispatch.
+
+        raw must already be a complete, reassembled JSON payload --
+        BLE packet chunking/reassembly (if the transport needs it;
+        v1's payload size makes this unlikely, see WIRE_FORMAT_v1.md
+        Size note) is the concrete transport's responsibility, done
+        before calling this.
+        """
+        event = parse_event(raw)  # raises WireFormatError on malformed payload
+        logger.info("Received event %s", event.event_id)
         self._on_event(event)
 
 
@@ -115,9 +128,12 @@ class BLEReceiver(Receiver):
     """
     BLE transport stub (primary transport per tracker sec:2.1).
 
-    UNIMPLEMENTED. BLOCKED on:
-      1. Firmware-side wire format confirmation (see wire_format.py).
-      2. Live BLE pairing (repo-wide blocked item, this session).
+    UNIMPLEMENTED. Wire format is locked (docs/WIRE_FORMAT_v1.md,
+    wire_format.parse_event() is real) -- what's still BLOCKED is live
+    BLE pairing/discovery against real hardware (repo-wide blocked
+    item), plus this session doesn't pick GATT UUIDs or MTU/chunking
+    strategy (WIRE_FORMAT_v1.md leaves those open, not needed for v1's
+    payload size).
 
     Candidate library (not yet chosen/vetted): `bleak` (cross-platform,
     works on the Acer Swift Go 16 laptop gateway per tracker sec:2.2).
@@ -131,7 +147,8 @@ class BLEReceiver(Receiver):
     def connect(self) -> None:
         raise NotImplementedError(
             "BLEReceiver.connect(): blocked on live BLE pairing "
-            "(out of scope this session) and wire-format confirmation."
+            "(out of scope this session). Wire format itself is "
+            "locked -- see docs/WIRE_FORMAT_v1.md."
         )
 
     def listen(self) -> None:
@@ -146,11 +163,14 @@ class SerialReceiver(Receiver):
     Serial transport stub. Not a tracker-committed transport (tracker
     sec:2.1 names BLE only) -- kept as an optional dev/debug stub for
     laptop-tethered testing, matching the proposal's now-superseded
-    "USB Serial (development/debug fallback)" note. Confirm with team
-    before relying on this; may be dropped if BLE-only is confirmed
-    sufficient.
+    "USB Serial (development/debug fallback)" note -- WIRE_FORMAT_v1.md
+    confirms this is still the intended dev/debug path: same JSON
+    schema as BLE, no BLE framing. Confirm with team before relying on
+    this; may be dropped if BLE-only is confirmed sufficient.
 
-    UNIMPLEMENTED. Blocked on wire-format confirmation.
+    UNIMPLEMENTED. Wire format is locked; serial port I/O itself
+    (pyserial or similar) isn't wired up yet -- that's this stub's
+    remaining gap, not the payload format.
     """
 
     def __init__(self, on_event: EventCallback, port: Optional[str] = None, baud: int = 115200):
@@ -160,7 +180,8 @@ class SerialReceiver(Receiver):
 
     def connect(self) -> None:
         raise NotImplementedError(
-            "SerialReceiver.connect(): blocked on wire-format confirmation."
+            "SerialReceiver.connect(): serial port I/O not yet wired up. "
+            "Wire format itself is locked -- see docs/WIRE_FORMAT_v1.md."
         )
 
     def listen(self) -> None:
