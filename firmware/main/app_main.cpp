@@ -38,14 +38,28 @@ extern "C" void app_main(void) {
 
     const spark::layer1::GateDecision decision = gate.Evaluate(accel_sample);
     if (decision == spark::layer1::GateDecision::kTriggerCnn) {
+        // `input` is the same 200x6 window fed to both TfliteModel::Invoke
+        // and ComputePeakFeatures -- one buffer, per WIRE_FORMAT_v1.md's
+        // "computed firmware-side from the same window" note. Real window
+        // buffering (accumulating 200 samples before this point) is not
+        // implemented yet -- blocked on the same 200Hz sample-loop timing
+        // as the rest of this file (I2C bus timing exclusion); `input` is
+        // zero-initialized here as a structural placeholder.
         spark::tflite_stub::InferenceInput input{};
         spark::tflite_stub::InferenceOutput output;
         model.Invoke(input, &output);
 
+        const spark::comms::PeakFeatures peaks =
+            spark::comms::ComputePeakFeatures(input);
+
         spark::comms::FallEvent event{
+            .event_id = "",             // TODO: UUID or seq counter -- generation strategy TBD
+            .device_id = "",            // TODO: MAC or provisioned ID -- not yet sourced
+            .firmware_version = "0.1.0-skeleton",
             .timestamp_ms = accel_sample.timestamp_ms,
             .gate_decision = decision,
             .inference = output,
+            .peak_features = peaks,
         };
         transport.SendFallEvent(event);
     }

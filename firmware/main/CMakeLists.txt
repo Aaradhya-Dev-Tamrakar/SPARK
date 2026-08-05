@@ -5,6 +5,7 @@ idf_component_register(
         "layer1/gate.cpp"
         "tflite/inference.cpp"
         "comms/output.cpp"
+        "comms/peak_features.cpp"
     INCLUDE_DIRS
         "."
     REQUIRES
