@@ -14,14 +14,16 @@ Two-layer gated wearable fall detection system, targeting healthy independent el
 
 ## Status
 
-Proposal submitted (v35, signed hardcopy) and defended July 9, 2026 — panel optimistic. Dataset collection protocol under discussion with HOD, not yet finalized. No firmware or training code committed yet.
+Proposal submitted (v35, signed hardcopy) and defended July 9, 2026 — panel optimistic. Dataset collection protocol under discussion with HOD, not yet finalized (tracker Action #23). RPi 4B dropped from the design; gateway runs on a laptop (Acer Swift Go 16), no Mosquitto/FastAPI/PostgreSQL stack. Firmware and gateway skeletons committed with wire format locked (`docs/WIRE_FORMAT_v1.md`) — Layer 1 threshold gate, TFLite Micro call interface, and JSON event encode/parse implemented and host-tested; BLE/serial peripheral wiring still stubbed. First training code (`prepare_sisfall.py`) and two SisFall notebooks also committed. See `dev_logs/SPARK_TRACKER.md` (current: v26) for full status.
 
 ## Structure
 
-- `firmware/` — ESP32-S3 wearable node (TFLite Micro, Layer 1 threshold + Layer 2 CNN)
-- `training/` — model training, quantization, TFLite conversion
-- `gateway/` — Mosquitto → FastAPI → PostgreSQL ingest stack, SHAP attribution
+- `firmware/` — ESP32-S3 wearable node: Layer 1 hardware-gated thresholding, TFLite Micro inference stub, MPU6050 driver, JSON event encoding per `docs/WIRE_FORMAT_v1.md`
+- `training/` — model training, quantization, TFLite conversion (`prepare_sisfall.py`, SisFall notebooks, `train_cnn.py`)
+- `gateway/` — laptop-side BLE/serial receiver, wire-format parsing, SHAP attribution stub, clinical PDF report template, local JSON storage
 - `data/` — dataset (not committed — see `.gitignore`)
+- `docs/` — proposal, presentation, `WIRE_FORMAT_v1.md` (locked firmware↔gateway schema)
+- `dev_logs/` — `SPARK_TRACKER.md`, the project's single source of truth for status/decisions/actions
 
 ## Demo target
 
