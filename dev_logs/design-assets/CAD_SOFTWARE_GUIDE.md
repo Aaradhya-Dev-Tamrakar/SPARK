@@ -105,4 +105,4 @@ Flagged here for later — not modeling-software concerns, but relevant to the s
 ---
 
 ## Status
-**Not yet started.** No Fusion 360 file exists in this repo. Next step: team signup (Personal Use license), Stage 1–2 tutorials, then model DI-01's two-zone geometry.
+**In progress.** No Fusion 360 file exists in this repo yet. Current step: practice part exercise (see `CAD_PRACTICE_PART_WALKTHROUGH.md`) — box → shell → fillet → STL export, rehearsing the four core commands before modeling DI-01's real two-zone geometry.
