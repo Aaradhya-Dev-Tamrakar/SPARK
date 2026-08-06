@@ -55,20 +55,43 @@ Target: functional competence for **one enclosure part**, not general CAD master
 
 ## 4. Where Claude fits into this workflow
 
-Claude does **not** replace Fusion 360 and cannot open, edit, or export `.f3d`/`.step`/`.stl` files directly — there's no CAD engine behind this chat. What Claude *can* do:
+**Two modes: chat-only (no connector) and live via the Fusion MCP connector (Claude Desktop only).**
+
+### 4a. Chat-only (claude.ai / no connector) — always available
+
+Claude cannot open, edit, or export `.f3d`/`.step`/`.stl` files in this mode. What it can do:
 
 | Use Claude for | Don't use Claude for |
 |---|---|
 | Explaining what a Fusion command does before you click it ("what does Shell actually do") | Generating the enclosure file itself |
 | Converting your dimensional spec (two-zone layout, wall thickness, seam %) into an ordered step-by-step modeling plan you follow inside Fusion | Verifying real-world fit/tolerance — that only a physical test print can confirm |
-| Debugging *why* a specific step isn't working ("I extruded but the shell command is greyed out" → usually means the body isn't a single closed solid yet) | Anything requiring you to screen-share or upload the live `.f3d` file — Claude can't inspect it |
-| Turning your design decisions into repo documentation (`DESIGN_IDEAS.md`, tracker entries) — already doing this for DI-01 | Structural/thermal simulation of the real TPU part — Fusion has basic simulation tools built in for this, use those directly |
-| Drafting print settings guidance (TPU-specific slicer settings: temp, speed, retraction) once geometry is finalized | Making the actual go/no-go call on your printer's compatibility — check your specific machine's TPU support first |
+| Debugging *why* a specific step isn't working ("I extruded but the shell command is greyed out" → usually means the body isn't a single closed solid yet) | Structural/thermal simulation of the real TPU part — Fusion has basic simulation tools built in for this, use those directly |
+| Turning your design decisions into repo documentation (`DESIGN_IDEAS.md`, tracker entries) — already doing this for DI-01 | Making the actual go/no-go call on your printer's compatibility — check your specific machine's TPU support first |
 | Reviewing a description of your model ("here's my current dimensions/features list") and flagging inconsistencies against the locked spec (Action #8, DI-01) | — |
 
-**How much to lean on it:** treat Claude as a tutor/rubber-duck for the modeling steps and a documentation partner for the repo — not as the design tool itself. The actual 3D modeling work happens in Fusion 360, by hand, by you.
+### 4b. Live via Fusion MCP connector (Claude Desktop) — since April 28, 2026
 
-**When to bring a Fusion question to Claude:** any time you're stuck on *why* a command isn't behaving as expected, or need the CAD steps translated from the two-zone spec (§ above) into an ordered build sequence. Paste the specific error/behavior — Claude reasons about it from Fusion's documented behavior, same as searching a forum, but faster and contextualized to your enclosure spec already logged in this repo.
+Autodesk and Anthropic shipped an official MCP connector: Claude Desktop can connect directly to a running Fusion session and create/modify/query geometry from natural language — not just advice, actual live model edits (demonstrated: "round all the edges of this box" → Fusion applies fillets to all 24 edges automatically).
+
+**Setup (~1 minute, confirmed steps):**
+1. In Fusion: **Preferences → General → API** (Preferences for Scripting and Programming panel) → enable **Fusion MCP Server** checkbox → note the port (default `27182`).
+2. In **Claude Desktop** (not claude.ai web): **Customize → Connectors tab → + → search "Fusion"** → click **+ → Install** on Autodesk Fusion.
+3. Toggle the connector **Enabled**, click **Configure**, confirm the port matches Fusion's.
+4. Fusion must stay open with a project active — the connector acts on your live session, not a saved file.
+
+**What it's actually good at (per Autodesk's own guidance):**
+- Bulk edits/renames — renaming components, swapping materials, bumping every fillet under a radius to a new value.
+- Parametric parts from a spec — describe a bracket, mounting plate, or **simple enclosure** and Claude scripts it; works best with well-defined geometry (extrusions, holes, fillets, shells, patterns) — this matches the enclosure's toolset from §3.
+- Export pipelines — batch-export components as STL/STEP/F3D with consistent naming.
+- API discovery — pulls current Fusion Help docs for programmatic questions, useful even if you finish the step yourself in the UI.
+
+**Caveats specific to your case:**
+- Requires **Claude Desktop**, not the claude.ai browser/mobile chat this repo work has been happening in — separate app, separate setup.
+- Community feedback is mixed on non-trivial custom geometry ("a little clunky," per one Autodesk forum user) — reliable for the bulk/parametric/export tasks above, less proven for one-off organic shapes like the bracer silhouette itself.
+- Claude reads the live session via screenshots/state, not omniscient X-ray access — for TPU-specific concerns (wall thickness, print tolerance) you still need to state material/process explicitly in the prompt, same as any other request.
+- Still verify output the same way as everything else in this repo: don't trust a connector-driven edit blind — check dimensions against DI-01/Action #8 spec before committing.
+
+**How much to lean on it:** for the *first* pass of your two-zone geometry (sketch → extrude → shell → fillet), do it manually in Fusion per §3 so you actually learn the tool. Once the base geometry exists, the connector is well-suited for the repetitive part — bulk fillet/shell tweaks, renaming bodies to match Zone 1/Zone 2 naming, batch STL export for iterative print tests.
 
 ---
 
