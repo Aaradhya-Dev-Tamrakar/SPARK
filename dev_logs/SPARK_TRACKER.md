@@ -1,12 +1,30 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v26)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v27)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 1, 2026 (v26 — all tables converted to ordered/bulleted lists per user preference) ·
+**Last updated:** August 6, 2026 (v27 — firmware/gateway skeletons + wire format lock committed) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v27 change log (August 6, 2026 — parallel-track skeleton code landed, wire format locked, BOM reviewed):**
+
+**(1) `firmware-skeleton` and `gateway-skeleton` branches merged to `main`** (commits `7f41839`, `6ed2cb6`, `fc30674`, `44dbf08`, `0db8b98`), split per `SPARK_PreProcurement_Orchestration.md`'s empty-scaffold boundary (nothing under `firmware/`/`gateway/` needed a physical board — only flashing/on-device testing does).
+
+- **Firmware (Rupesh's WP1/WP2 scope):** ESP32-S3 ESP-IDF project scaffold, MPU6050 driver stub (rewrite path chosen per Action #24 default — reuse-vs-rewrite itself still open, this is scaffold only), Layer 1 gate (`|a| > 2.5g`, `Δt < 300ms`, §2.5 spec) as pure host-testable functions — 21/21 unit tests pass with no hardware, TFLite Micro model-load/inference call interface against a placeholder `.tflite`, peak-feature extraction, JSON event encode.
+- **Gateway (Aaradhya's WP2 scope minus training):** BLE/serial receiver skeleton, SHAP integration stub (interface only — real values blocked on a trained model, separate WP2 gate), clinical PDF report template (layout/fields built, dummy data), JSON local storage stub.
+- **Wire format resolved and locked** (`docs/WIRE_FORMAT_v1.md`): BLE transport, JSON payload, `confidence` = firmware's `class_probs[1]` only (`class_probs[0]` dropped, redundant under softmax), `raw_window` deferred to v2 (real SHAP explainer input, not needed by the v1 stub), `peak_features` = per-axis peak magnitude over the gate-triggered window. Payload ~250–350 bytes, no chunking needed for v1. Both sides implement against this doc; blocking comments referencing "wire format not confirmed" removed.
+- **Still explicitly stubbed, not done:** live BLE pairing, real multi-client hotspot behavior (Action #20), I2C bus timing/calibration, real board flashing, battery draw measurement, actual patient PDF content.
+- README updated to match (RPi/Mosquitto stack language fully removed, `dev_logs/` pointer added).
+
+**(2) `SPARK_BOM_Procurement.xlsx` reviewed against §2.6 — no changes needed.** Line items, quantities, vendor (RoboNepal), and unit prices match §2.6 exactly; `E13=SUM(E2:E11)` sums correctly to **NPR 3,958** (only the ESP32-S3 line is priced — MPU6050/battery/USB-C/enclosure/laptop/BLE are all NPR 0 or unpriced placeholders, per Actions #16/#18/#19). File's own footer (I15) already flags the gap against the tracker's long-carried **"~NPR 15,004"** total.
+
+**Flagging, not fixing:** that NPR 15,004 figure is itself untraceable — §2.6 has never published a full itemized breakdown that sums to it (v13's confirmation was a total, not a per-line reconciliation), so it's tracker-level debt, not a BOM-file bug. Left as-is in both places rather than force a number neither source can substantiate. Action #16's spare-ESP32-S3 unit is **not yet added** as a BOM row — still 1 line, 2 units (1 self-funded + 1 dept ask), matching current confirmed-order state; adding the spare row is real future work once #16 is actually actioned, not done here.
+
+**Nothing in §2 (Locked Design), §5 (Data/Training spec), or §6 (Pending Benchmark) changed.** §3 (WBS) ownership lines (Rupesh→firmware, Aaradhya→gateway/SHAP) are unchanged — this session executed against existing WBS, didn't reassign it.
+
+---
 
 **v26 change log (August 1, 2026 — all markdown tables converted to ordered/bulleted lists):**
 
@@ -839,3 +857,4 @@ v25, v24, v23, v22, v21, v20, v19, v18, v17, v16, v15, v14, v13, v12, v9–v11, 
 - **v24:** Classical-ML notebook (`SPARK_SisFall_ML_Pipeline.ipynb`), 6-stage pipeline
 - **v25:** Tutorial notebook (`SPARK_SisFall_ML_Pipeline_Tutorial.ipynb`), 6-stage walkthrough, prior bugfix to v24
 - **v26:** All tables converted to ordered/bulleted lists per user preference
+- **v27:** `firmware-skeleton`/`gateway-skeleton` merged, wire format locked (`WIRE_FORMAT_v1.md`), BOM reviewed (no changes needed, NPR 15,004 gap flagged not fixed)
