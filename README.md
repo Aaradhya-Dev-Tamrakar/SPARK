@@ -14,7 +14,7 @@ Two-layer gated wearable fall detection system, targeting healthy independent el
 
 ## Status
 
-Proposal submitted (v35, signed hardcopy) and defended July 9, 2026 — panel optimistic. Dataset collection protocol under discussion with HOD, not yet finalized (tracker Action #23). RPi 4B dropped from the design; gateway runs on a laptop (Acer Swift Go 16), no Mosquitto/FastAPI/PostgreSQL stack. Firmware and gateway skeletons committed with wire format locked (`docs/WIRE_FORMAT_v1.md`) — Layer 1 threshold gate, TFLite Micro call interface, and JSON event encode/parse implemented and host-tested; BLE/serial peripheral wiring still stubbed. First training code (`prepare_sisfall.py`) and two SisFall notebooks also committed. See `dev_logs/SPARK_TRACKER.md` (current: v26) for full status.
+Proposal submitted (v35, signed hardcopy) and defended July 9, 2026 — panel optimistic. Dataset collection protocol under discussion with HOD, not yet finalized (tracker Action #23). RPi 4B dropped from the design; gateway runs on a laptop (Acer Swift Go 16), no Mosquitto/FastAPI/PostgreSQL stack. Firmware and gateway skeletons committed with wire format locked (`docs/WIRE_FORMAT_v1.md`) — Layer 1 threshold gate, TFLite Micro call interface, and JSON event encode/parse implemented and host-tested; BLE/serial peripheral wiring still stubbed. First training code (`prepare_sisfall.py`) and two SisFall notebooks also committed. Enclosure: wrist-worn, 3D-printed PLA, electronics top-of-wrist/dorsal (Action #34); battery, BLE modality, and bring-up hardware locked in BOM. See `dev_logs/SPARK_TRACKER.md` (current: v29) for full status.
 
 ## Structure
 
