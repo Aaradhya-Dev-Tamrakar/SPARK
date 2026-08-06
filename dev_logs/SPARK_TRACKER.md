@@ -1,12 +1,17 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v28)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v29)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 6, 2026 (v28 — battery/enclosure/BLE decisions locked; bring-up hardware added #32/#33) ·
+**Last updated:** August 6, 2026 (v29 — enclosure electronics placement locked, top-of-wrist) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v29 change log (August 6, 2026 — enclosure electronics placement locked):**
+
+- **Electronics placement: top-of-wrist (dorsal side), locked (Action #34, new).** Fixes MPU6050 mounting orientation reference for Layer 1 threshold calibration (Action #7). No BOM/cost impact.
+- **Stale "locked v27" labels in §2.2 corrected to v28** (battery, enclosure form-factor lines — same gap v28's own changelog claimed was fixed in §2.6 but was never applied to §2.2).
 
 **v28 change log (August 6, 2026 — three open BOM decisions locked + bring-up hardware added):**
 
@@ -177,7 +182,7 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
 
-   - 🟢 33 action items logged total (#1–33)
+   - 🟢 34 action items logged total (#1–34)
    - Tiers rank open, actionable items by dependency/lead-time
    - Resolved items and Future-Work-only items (7, above) sit outside tier system by design
    - Tier 1 resolved v20 (defence outcome confirmed)
@@ -225,9 +230,15 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**33 action items logged total. Ordered by item number (not priority tier); newest additions (#32, #33) placed at top per convention, remaining items retain original recency ordering.**
+**34 action items logged total. Ordered by item number (not priority tier); newest addition (#34) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#32 — Source battery charge/protection circuit (NEW v28)**
+1. **#34 — Electronics placement locked: top-of-wrist (NEW v29)**
+
+   - **Item:** Enclosure electronics housing confirmed at top-of-wrist (dorsal side), not underside/palm-side. Fixes MPU6050 orientation reference for Layer 1 threshold calibration (Action #7) and rules out volar-side mounting.
+   - **Owner:** Aaradhya
+   - **Status:** Locked v29. §2.2 updated. No BOM/cost impact — placement only, not a material or form-factor change.
+
+2. **#32 — Source battery charge/protection circuit (NEW v28)**
 
    - **Item:** MPU6050→ESP32-S3 needs a physical wired link (breadboard-level, bring-up phase) and a raw 1000 mAh Li-ion/LiPo cell needs charge/overcharge/over-discharge protection (TP4056-class module) unless the sourced battery is already a protected pack. Neither was present in the ESP32-S3-era BOM (§2.6 had only 7 rows).
    - **Owner:** Aaradhya
@@ -467,13 +478,14 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 3. **Power:**
 
-   - Lithium battery: 1000 mAh Li-ion/LiPo (locked v27, per R-05's endurance assumption; sourcing still TBD)
+   - Lithium battery: 1000 mAh Li-ion/LiPo (locked v28, per R-05's endurance assumption; sourcing still TBD)
    - USB-C charging connector (included on ESP32-S3 devboard)
    - USB-C cable (self-funded by Aaradhya, v13, unpriced, Action #19)
 
 4. **Enclosure:**
 
-   - Form factor: Wrist-worn (locked v27, Action #8)
+   - Form factor: Wrist-worn (locked v28, Action #8)
+   - Electronics placement: Top-of-wrist / dorsal side (locked v29, Action #34) — consistent MPU6050 orientation, clear of wrist flexion crease
    - Material: 3D-printed PLA (KEC Makerspace, v13)
    - Footprint: RoboNepal board is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
@@ -643,9 +655,9 @@ Landed via three raw commits (see above note) — future edits must route throug
 5. **R-05: Battery drain from continuous 200 Hz polling**
 
    - **Impact:** High (device unusable if drains in <1 hour)
-   - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; 1000 mAh Li-ion/LiPo locked v27 → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
+   - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; 1000 mAh Li-ion/LiPo locked v28 → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
    - **Mitigation:** Queue-based CNN triggering (only run CNN when Layer 1 threshold exceeded), sleep modes between windows
-   - **Status:** Battery spec locked v27 (1000 mAh Li-ion/LiPo, sourcing still TBD). Mitigation figure itself still needs Action #21 update to confirm against ESP32-S3 draw (not RPi). Open.
+   - **Status:** Battery spec locked v28 (1000 mAh Li-ion/LiPo, sourcing still TBD). Mitigation figure itself still needs Action #21 update to confirm against ESP32-S3 draw (not RPi). Open.
 
 ---
 
