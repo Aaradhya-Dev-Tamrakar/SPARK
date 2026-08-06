@@ -1,12 +1,19 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v27)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v28)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 6, 2026 (v27 — firmware/gateway skeletons + wire format lock committed) ·
+**Last updated:** August 6, 2026 (v28 — battery/enclosure/BLE decisions locked) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v28 change log (August 6, 2026 — three open BOM decisions locked):**
+
+- **Battery: 1000 mAh Li-ion/LiPo, locked.** Uses R-05's existing endurance assumption (~5 mA @ 200 Hz → 8–10 hr) as the spec rather than a new estimate. Sourcing still TBD (unpriced).
+- **Enclosure form factor: wrist-worn, locked (Action #8 resolved).** Fabrication method (3D-printed PLA) was already resolved v13; wear location was the last open piece and directly gates Layer 1 threshold calibration (Action #7, §2.5).
+- **BLE modality: dongle required, locked.** Gateway is phone-app-involved (not laptop-only), so built-in-BLE-only is ruled out; a BLE dongle is now the confirmed line, not an either/or.
+- **Not done this session:** BOM xlsx still shows pre-decision text (battery "not yet specified," enclosure "form factor TBD," BLE "modality decision pending") — the uploaded `SPARK_BOM_Procurement.xlsx` (renamed from `_1.xlsx` in commit `126c907`) predates these three locks. Tracker (this file) is now ahead of the xlsx; xlsx needs the matching edit next session.
 
 **v27 change log (August 6, 2026 — parallel-track skeleton code landed, wire format locked, BOM reviewed):**
 
@@ -347,11 +354,11 @@ Landed via three raw commits (see above note) — future edits must route throug
     - **Owner:** Sankalpa
     - **Status:** **Not applicable (v12).** RPi 4B dropped from the BOM entirely; no PSU needed.
 
-23. **#8 — Enclosure form factor decision (Tier 5) [LEGACY — still open]**
+23. **#8 — Enclosure form factor decision (Tier 5) [RESOLVED v27 — wrist-worn]**
 
     - **Item:** Wrist-worn vs. chest-worn vs. belt-clip (affects Layer 1 threshold calibration).
     - **Owner:** Sankalpa + Rupesh
-    - **Status:** Unverified. Enclosure fabrication method resolved (3D-printed PLA, Action #11), but wear location still TBD. Depends on fall-simulation results from WP 1.0/2.0.
+    - **Status:** **Resolved v27 — wrist-worn.** Fabrication method (3D-printed PLA, Action #11) and wear location now both locked. Empirical Layer 1 threshold tuning (Action #7) can proceed against a fixed wrist-mount geometry once WP 1.0/2.0 fall-sim data exists.
 
 24. **#7 — Sensitivity threshold calibration (Tier 5) [LEGACY — still open]**
 
@@ -443,13 +450,13 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 3. **Power:**
 
-   - Lithium battery (to be sourced, not yet locked)
+   - Lithium battery: 1000 mAh Li-ion/LiPo (locked v27, per R-05's endurance assumption; sourcing still TBD)
    - USB-C charging connector (included on ESP32-S3 devboard)
    - USB-C cable (self-funded by Aaradhya, v13, unpriced, Action #19)
 
 4. **Enclosure:**
 
-   - Form factor: TBD (Action #8)
+   - Form factor: Wrist-worn (locked v27, Action #8)
    - Material: 3D-printed PLA (KEC Makerspace, v13)
    - Footprint: RoboNepal board is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
@@ -551,9 +558,9 @@ Landed via three raw commits (see above note) — future edits must route throug
 
    - 2 × ESP32-S3, RoboNepal: 2 × NPR 1,979 = NPR 3,958
    - 1 × MPU6050 (lab-borrowed): NPR 0
-   - 1 × Lithium battery (unpriced, sourcing TBD): NPR 0 (placeholder)
+   - 1 × Lithium battery, 1000 mAh Li-ion/LiPo (locked v27, unpriced, sourcing TBD): NPR 0 (placeholder)
    - 1 × USB-C cable (self-funded): Unpriced (Action #19)
-   - Enclosure (3D-printed PLA): Material cost negligible; labor within KEC Makerspace
+   - Enclosure, wrist-worn (locked v27), 3D-printed PLA: Material cost negligible; labor within KEC Makerspace
 
 2. **Gateway (laptop):**
 
@@ -561,7 +568,7 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 3. **Miscellaneous:**
 
-   - Micro-USB → BLE dongle or built-in BLE (if using phone app, TBD): Unpriced
+   - BLE dongle (locked v27 — phone app confirmed, dongle required over built-in BLE): Unpriced
    - Development/test boards: Covered by above
 
 **Total project cost:** ~NPR 15,004
@@ -613,9 +620,9 @@ Landed via three raw commits (see above note) — future edits must route throug
 5. **R-05: Battery drain from continuous 200 Hz polling**
 
    - **Impact:** High (device unusable if drains in <1 hour)
-   - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; assuming 1000 mAh battery → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
+   - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; 1000 mAh Li-ion/LiPo locked v27 → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
    - **Mitigation:** Queue-based CNN triggering (only run CNN when Layer 1 threshold exceeded), sleep modes between windows
-   - **Status:** Mitigation figure stale (Action #21 to update with ESP32-S3 draw). Open.
+   - **Status:** Battery spec locked v27 (1000 mAh Li-ion/LiPo, sourcing still TBD). Mitigation figure itself still needs Action #21 update to confirm against ESP32-S3 draw (not RPi). Open.
 
 ---
 
