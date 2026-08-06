@@ -9,7 +9,7 @@ Exploratory design concepts, external render outputs, and aesthetic direction no
 
 - **Status:** Exploratory concept. Not adopted into BOM/CAD.
 - **Date logged:** 2026-08-06
-- **Asset:** `dev_logs/design_assets/enclosure_concept_v1_two_zone_bracer.png`
+- **Asset:** `dev_logs/design-assets/enclosure_concept_v1_two_zone_bracer.png`
 - **Source:** AI image concept render (external tool, prompt-engineered manually; not generated in-repo).
 
 **Concept summary:**

@@ -915,4 +915,4 @@ v25, v24, v23, v22, v21, v20, v19, v18, v17, v16, v15, v14, v13, v12, v9–v11, 
 - **v28:** Bring-up hardware added (Actions #32/#33: charge/protection circuit, breadboard+jumper wires, resistor/capacitor assortment)
 - **v29:** Enclosure electronics placement locked top-of-wrist/dorsal (Action #34)
 - **v30:** Closure mechanism locked (Velcro, extends Action #34); arm sleeve base layer added to BOM; repo hygiene fix (stray lock file)
-- **v31 (this entry):** `dev_logs/DESIGN_IDEAS.md` created — exploratory bracer-silhouette enclosure concept (DI-01) logged with two-zone internal layout (IMU/wrist zone + ESP32/battery/charge-circuit/forearm zone). Aesthetic/form exploration only, not adopted into locked design (§2) or BOM; cross-referenced against Action #8.
+- **v31 (this entry):** `dev_logs/design-assets/DESIGN_IDEAS.md` created — exploratory bracer-silhouette enclosure concept (DI-01) logged with two-zone internal layout (IMU/wrist zone + ESP32/battery/charge-circuit/forearm zone). Aesthetic/form exploration only, not adopted into locked design (§2) or BOM; cross-referenced against Action #8.
