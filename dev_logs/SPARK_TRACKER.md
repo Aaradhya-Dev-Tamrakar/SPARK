@@ -1,12 +1,19 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v29)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v30)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 6, 2026 (v29 — enclosure electronics placement locked, top-of-wrist) ·
+**Last updated:** August 6, 2026 (v30 — enclosure closure mechanism locked, Velcro; arm sleeve base layer added to BOM) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v30 change log (August 6, 2026 — closure mechanism locked + arm sleeve base layer):**
+
+- **Closure mechanism: hook-and-loop Velcro, locked.** Extends Action #34 (top-of-wrist placement) rather than opening a new action — same enclosure decision thread. Rationale: target population is healthy independent elderly (proposal's stated use case); Velcro requires no fine motor control/grip strength to fasten (vs. belt-buckle), supports one-handed daily self-application, and tolerates day-to-day wrist swelling variance. Skin-contact concern is moot — arm sleeve base layer (below) sits between Velcro and skin.
+- **Arm sleeve (base layer) added to BOM, NPR 136 (Action #34).** Compression arm sleeve worn under the wrist enclosure, per the enclosure concept-image spec. Sourced: Daraz, "BLUE BELL Let's Slim" 1-pair arm sleeve, thumb-hole, stretchable, light blue — Rs. 136 (list Rs. 200, -32%), +Rs. 100 standard delivery, Kathmandu Metro, guaranteed 10–11 Aug. Note: this is a distinct SKU/purpose from the dead RPi-era "chest_strap"/"velcro_strap" legacy assets (v28 flagged those as dead) — this is the base garment layer, not a mounting strap.
+- **§2.2/§2.6 updated; BOM xlsx synced** — new row inserted into Wearable Node section (row 9), all downstream formulas and merge ranges rebuilt manually (row-insert formula-drift failure mode from prior session avoided).
+- **Repo hygiene regression fixed:** `c1a2392` ("remove stray Excel lock file") only added the `.gitignore` pattern — `docs/~$SPARK_BOM_Procurement.xlsx` was never actually `git rm`'d and remained tracked. Removed this commit.
 
 **v29 change log (August 6, 2026 — enclosure electronics placement locked):**
 
@@ -232,11 +239,13 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 **34 action items logged total. Ordered by item number (not priority tier); newest addition (#34) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#34 — Electronics placement locked: top-of-wrist (NEW v29)**
+1. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
 
    - **Item:** Enclosure electronics housing confirmed at top-of-wrist (dorsal side), not underside/palm-side. Fixes MPU6050 orientation reference for Layer 1 threshold calibration (Action #7) and rules out volar-side mounting.
+   - **v30 addition — closure mechanism:** Hook-and-loop Velcro (not belt-buckle). Elderly-dexterity rationale: target population (healthy independent elderly, per proposal scope) needs one-handed, no-fine-motor-control fastening; Velcro tolerates daily wrist-swelling variance and doesn't require threading/pulling tension like a buckle. Skin protection is handled by the arm sleeve base layer (new BOM row, Action #34), not by the closure choice.
+   - **v30 addition — arm sleeve base layer:** Compression arm sleeve (thumb-hole, stretchable) worn under the enclosure. Added to BOM at NPR 136 (Daraz, "BLUE BELL Let's Slim").
    - **Owner:** Aaradhya
-   - **Status:** Locked v29. §2.2 updated. No BOM/cost impact — placement only, not a material or form-factor change.
+   - **Status:** Locked v29 (placement) + v30 (closure, base layer). §2.2/§2.6 updated. BOM cost impact: +NPR 136 (v30, arm sleeve only — placement/closure choice itself has no cost).
 
 2. **#32 — Source battery charge/protection circuit (NEW v28)**
 
@@ -486,10 +495,12 @@ Landed via three raw commits (see above note) — future edits must route throug
 
    - Form factor: Wrist-worn (locked v28, Action #8)
    - Electronics placement: Top-of-wrist / dorsal side (locked v29, Action #34) — consistent MPU6050 orientation, clear of wrist flexion crease
+   - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening
+   - Base layer: Compression arm sleeve, thumb-hole (locked v30, Action #34) — worn under enclosure, doubles as skin protection under Velcro
    - Material: 3D-printed PLA (KEC Makerspace, v13)
    - Footprint: RoboNepal board is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
-**Total BOM (§2.6):** ~NPR 15,004 (v13: +NPR 358 delta from v12 due to Himalayan → RoboNepal price difference)
+**Total BOM (§2.6):** ~NPR 16,480 (v30: +NPR 136 arm sleeve over v28's NPR 16,344; v13 baseline was NPR 15,004)
 
 ### §2.3 — Novelty Claims (5 total)
 
@@ -590,7 +601,8 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 1 × Lithium battery, 1000 mAh Li-ion/LiPo (locked v28, unpriced, sourcing TBD): NPR 0 (placeholder)
    - 1 × USB-C cable (self-funded): Unpriced (Action #19)
    - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
-   - Enclosure, wrist-worn (locked v28), 3D-printed PLA: Material cost negligible; labor within KEC Makerspace
+   - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, NEW v30): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
+   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed PLA: Material cost negligible; labor within KEC Makerspace
 
 2. **Gateway (laptop):**
 
@@ -606,7 +618,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
-**Total project cost:** ~NPR 16,344 (was NPR 15,004; +NPR 1,340 for Actions #32/#33 bring-up hardware, baseline pricing, unconfirmed against current vendors)
+**Total project cost:** ~NPR 16,480 (was NPR 15,004; +NPR 1,340 for Actions #32/#33 bring-up hardware v28, +NPR 136 for Action #34 arm sleeve v30; baseline pricing, largely unconfirmed against current vendors — arm sleeve price is confirmed live Daraz listing)
 
 **Funding breakdown:**
 
