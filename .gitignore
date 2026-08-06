@@ -29,3 +29,6 @@ data/*
 Thumbs.db
 .vscode/
 .idea/
+~$*.docx
+~$*.xlsx
+~$*.pptx
