@@ -101,10 +101,9 @@ The following steps describe the workflow of the SPARK fall detection system:
     \item Initialize all hardware components:
     \begin{itemize}
         \item MPU6050 IMU (6-axis accelerometer + gyroscope)
-        \item ESP32 Microcontroller (520\,KB SRAM, 4\,MB Flash)
-        \item WiFi module for MQTT communication
-        \item Raspberry Pi 4B Gateway
-        \item Mosquitto MQTT broker
+        \item ESP32-S3 microcontroller
+        \item Bluetooth Low Energy (BLE) radio
+        \item Laptop gateway (sole BLE receiver and sole SHAP/PDF compute)
     \end{itemize}
 
     \item Calibrate the sensor:
@@ -116,47 +115,38 @@ The following steps describe the workflow of the SPARK fall detection system:
 
     \item Continuous sensor sampling loop:
     \begin{itemize}
-        \item Sample MPU6050 at 100\,Hz over I\textsuperscript{2}C.
-        \item Apply complementary filter ($\alpha = 0.98$) to fuse accelerometer and gyroscope data and reject noise.
-        \item Push filtered sample into a circular sliding window buffer (200 samples).
+        \item Sample MPU6050 at 200\,Hz over I\textsuperscript{2}C via direct register access.
+        \item Push the raw sample into a circular sliding window buffer, continuously overwritten.
     \end{itemize}
 
     \item Fall detection loop:
     \begin{enumerate}
-        \item Check if sliding window buffer is full (200 samples collected).
-        \item Apply Layer~1 threshold check on windowed acceleration/gyroscope data.
-        \item If threshold is not exceeded: discard window, return to Step~4.
-        \item If threshold is exceeded: pass window to Layer~2 (1D CNN classifier).
+        \item Compute resultant acceleration magnitude $|a|$ on every ISR tick.
+        \item Apply Layer~1 threshold check: $|a| > 2.5$\,g sustained for $>$300\,ms latches \texttt{PRE\_FALL}.
+        \item If threshold is not exceeded: discard, return to Step~4.
+        \item If threshold is exceeded: copy the latched window, normalize, pass to Layer~2 (1D CNN classifier).
         \item CNN outputs $P(\text{fall})$ and $P(\text{ADL})$ via softmax.
-        \item If $P(\text{fall}) > 0.85$: mark event as FALL DETECTED.
+        \item If $P(\text{fall}) > 0.85$: mark event as \texttt{CONFIRMED\_FALL}.
         \item Else: mark as ADL (Activity of Daily Living) and return to Step~4.
         \item Log detection result with timestamp on-device.
     \end{enumerate}
 
     \item Event publishing and transmission:
     \begin{itemize}
-        \item Package fall event as JSON payload (timestamp, confidence score, sensor snapshot).
-        \item Publish payload via MQTT to topic \texttt{spark/events} over WiFi.
-        \item Mosquitto broker on Raspberry Pi receives the payload ($\sim$50--100\,ms latency).
+        \item Serialize the \texttt{CONFIRMED\_FALL} event as JSON per the locked wire format (Section~\ref{sec:ble_transmission}).
+        \item Transmit over BLE directly to the laptop gateway --- no broker or intermediate network hop.
     \end{itemize}
 
     \item Gateway event processing:
     \begin{itemize}
-        \item FastAPI/Uvicorn service ingests the incoming MQTT event.
-        \item Store event record in PostgreSQL event log.
-        \item Run SHAP attribution on the 6 input features ($<$200\,ms) to identify which features drove the CNN's decision.
-    \end{itemize}
-
-    \item Alert and visualization dispatch (parallel):
-    \begin{itemize}
-        \item Push event and SHAP explanation to Streamlit dashboard for live visualization.
-        \item Send Telegram alert to caregiver/care facility ($<$2\,s).
+        \item The gateway's BLE receiver ingests the incoming event, running locally on the laptop.
+        \item Run SHAP attribution on the six peak IMU features to identify which channels drove the CNN's decision.
     \end{itemize}
 
     \item Incident report generation:
     \begin{itemize}
-        \item Compile PDF report containing: timestamp, severity, CNN confidence score, SHAP chart, and signature block.
-        \item Store report and link it to the corresponding event log entry.
+        \item Compile PDF report containing: timestamp, CNN confidence score, SHAP attribution chart, and signature block.
+        \item Save the report locally on the gateway, readable by the phone display client over the local network.
     \end{itemize}
 
     \item Return to Step~4 and continue continuous monitoring.
@@ -167,15 +157,15 @@ The following steps describe the workflow of the SPARK fall detection system:
 
 
 
-\subsection{WiFi-MQTT Event Transmission}
-\label{sec:mqtt_transmission}
+\subsection{BLE Event Transmission}
+\label{sec:ble_transmission}
 
-On \texttt{CONFIRMED\_FALL}, the ESP32 serializes the event as a JSON payload using ArduinoJSON and publishes it to the MQTT topic \texttt{spark/events} on the local Mosquitto broker. The JSON structure includes: \texttt{event\_id} (UUID), \texttt{timestamp} (ISO~8601 UTC), \texttt{layer1\_flag}, \texttt{layer2\_confidence}, \texttt{ax\_peak}, \texttt{ay\_peak}, \texttt{az\_peak}, and \texttt{severity\_score} (1--5, derived from $|a|$ magnitude). Total transmission latency from \texttt{CONFIRMED\_FALL} flag to MQTT publish is under 50\,ms over a local WiFi network.
+On \texttt{CONFIRMED\_FALL}, the ESP32-S3 serializes the event as a JSON payload per the locked wire format (\texttt{event\_id}, \texttt{device\_id}, \texttt{firmware\_version}, \texttt{timestamp\_ms}, \texttt{confidence}, and six \texttt{peak\_features}) and transmits it over its integrated Bluetooth~5 (LE) radio directly to the laptop gateway. The payload is well under a single BLE packet at typical negotiated MTU, requiring no chunking and no broker or intermediate network hop.
 
 \subsection{Sensitivity Strategy Pattern}
 \label{sec:strategy}
 
-Three sensitivity profiles are implemented as configurable parameter sets loaded from a JSON config file at gateway startup and communicated back to the ESP32 via MQTT on profile change:
+Three sensitivity profiles are implemented as configurable parameter sets, adjustable without a firmware reflash:
 
 \begin{itemize}
 	\item \textbf{HighSensitivity} (elderly, bed-ridden): Layer~1 threshold $|a|_{\text{spike}} = 2.0$\,g, rest duration 200\,ms; Layer~2 threshold $P(\text{FALL}) > 0.75$.
@@ -183,24 +173,25 @@ Three sensitivity profiles are implemented as configurable parameter sets loaded
 	\item \textbf{SportMode} (active ADL): $|a|_{\text{spike}} = 3.0$\,g, rest duration 400\,ms; Layer~2 threshold $P(\text{FALL}) > 0.90$.
 \end{itemize}
 
-Switching between profiles requires no firmware reflash --- the gateway updates the config file and publishes the new parameters to the ESP32 via a dedicated MQTT topic.
-
 \section{Machine Learning Pipeline}
 
 \subsection{Dataset Preparation}
 
-Training data is sourced from three datasets:
+Training data is sourced from two datasets:
 
 \begin{itemize}
-	\item \textbf{UCI MHEALTH Dataset} \cite{banos2014mhealthdroid}: 23 physical activities from 10 subjects, 3 body-worn IMUs at 50\,Hz. Resampled to 100\,Hz via linear interpolation. Fall-relevant activity windows extracted.
-	\item \textbf{SisFall Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types from 38 subjects at 200\,Hz. Downsampled to 100\,Hz. All fall types used as positive class; all ADL types used as negative class.
-	\item \textbf{Self-collected KEC Dataset}: Controlled fall simulations (forward trip, lateral fall, backward fall, sitting-to-floor) and ADLs (walking, running, stair climbing, sit-to-stand, bending) recorded with the SPARK node at 100\,Hz. Target: $\geq$500 fall windows + $\geq$2000 ADL windows. This dataset will be published to GitHub as ``KEC Wearable Fall Dataset in Nepal Context.''
+	\item \textbf{SisFall Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types from 38 subjects, 4,506 files at 200\,Hz. All fall types used as positive class; all ADL types used as negative class. Data preparation implemented in \texttt{training/data\_prep/prepare\_sisfall.py} (v23, verified end-to-end).
+	\item \textbf{Self-collected KEC Dataset} (secondary, protocol TBD): Controlled fall simulations and ADLs recorded with the SPARK node at 200\,Hz. Target: $\geq$500 fall windows + $\geq$2000 ADL windows. This dataset will be published to GitHub as ``KEC Wearable Fall Dataset in Nepal Context.''
 \end{itemize}
-All datasets are windowed at 2 seconds with 50\% overlap. Per-channel StandardScaler normalization is applied; scaler parameters (mean, std per channel) are extracted and baked into the firmware as constant arrays.
+All windows are 3 seconds at 200\,Hz (200 samples/window). Per-channel StandardScaler normalization is applied; scaler parameters (mean, std per channel) are extracted and baked into the firmware as constant arrays.
+
+\subsection{Classical ML Baseline}
+
+Prior to CNN training, engineered features (mean, std, min, max, range, RMS, SMA, peak resultant acceleration per channel) are used to train Random Forest and XGBoost baselines via \texttt{GridSearchCV} with \texttt{GroupKFold} subject-grouped splitting, implemented in \texttt{training/notebooks/SPARK\_SisFall\_ML\_Pipeline.ipynb}. This provides an interpretability baseline ahead of the CNN.
 
 \subsection{1D CNN Training}
 
-The 1D CNN is trained in TensorFlow/Keras on the combined UCI MHEALTH + SisFall dataset, then fine-tuned on the self-collected KEC dataset using transfer learning (freeze convolutional layers, retrain Dense layers). Training protocol: Adam optimizer (lr = 1e-3), batch size 64, 50 epochs with early stopping (patience = 10 on validation loss), 80/10/10 train/validation/test split stratified by subject. Class weighting is applied to address the natural imbalance between fall events and ADL windows.
+The 1D CNN (Layer~2) is trained in TensorFlow/Keras on SisFall, then fine-tuned on the self-collected KEC dataset once the collection protocol is finalized. Training protocol: Adam optimizer (lr = 1e-3), batch size 64, 50 epochs with early stopping (patience = 10 on validation loss), 80/10/10 train/validation/test split stratified by subject --- no data leakage between splits. Class weighting is applied to address the natural imbalance between fall events and ADL windows.
 
 Evaluation metrics: Sensitivity (Recall for FALL class), Specificity (Recall for NON\_FALL class), F1-score, and AUC-ROC on the held-out test set. Target: Sensitivity $\geq$ 90\%, Specificity $\geq$ 90\%. Figure~\ref{fig:cnn_arch} illustrates the CNN layer sequence and the progressive compression of the time axis.
 
@@ -217,36 +208,28 @@ Post-training INT8 quantization is applied via the TFLite Converter with a repre
 
 \section{Gateway Software Implementation}
 
-\subsection{Backend and Database}
+\subsection{BLE Receiver}
 
-The FastAPI/Uvicorn backend exposes REST endpoints for event ingestion, profile management, and report generation. A Mosquitto MQTT consumer thread runs within the FastAPI process, subscribing to \texttt{spark/events} and persisting each \texttt{CONFIRMED\_FALL} event to the PostgreSQL \texttt{fall\_events} table (schema defined in Chapter~3, Table~3.1). The SHAP attribution pipeline (Section~\ref{sec:shap}) is invoked as a post-insert task, updating \texttt{shap\_top\_feature} and \texttt{shap\_json} columns before the Telegram alert is dispatched.
+The gateway's BLE receiver runs locally on the laptop (Acer Swift Go~16, sole BLE receiver and sole compute per \S2.1). It receives each \texttt{CONFIRMED\_FALL} JSON payload directly over BLE, parses it against the locked wire format (\texttt{wire\_format.py}), and invokes the SHAP attribution pipeline in-process --- no broker, no REST layer, and no persistent database; events are processed and reported locally, with the completed report saved to disk.
 
 \subsection{SHAP Attribution Pipeline}
 \label{sec:shap}
 
-For each confirmed fall event, the gateway extracts the six peak IMU channel values (three accelerometer axes $a_{x}, a_{y}, a_{z}$ and three gyroscope axes $\omega_{x}, \omega_{y}, \omega_{z}$, each taken at peak magnitude) from the 2-second event window and computes SHAP attributions using the \texttt{shap} library against the trained CNN (loaded as a TFLite interpreter on the gateway). The KernelExplainer or GradientExplainer is used depending on benchmark latency on the RPi 4B. The top contributing feature (e.g., $a_{z,\text{peak}}$, contribution 42\%) is stored in \texttt{shap\_top\_feature} and the full 6-element SHAP vector is stored in \texttt{shap\_json} (JSONB). Both fields are displayed on the Streamlit dashboard per event and included in the auto-generated PDF report.
-
-\subsection{Telegram Alert}
-
-The python-telegram-bot library dispatches a Telegram message to the configured caregiver group within 2 seconds of \texttt{CONFIRMED\_FALL} event ingestion. The message includes: patient identifier, event timestamp (ISO~8601 local time + UTC offset), fall severity score (1--5), Layer~2 CNN confidence (as percentage), and the SHAP top-contributing IMU channel.
-
-\subsection{Streamlit Dashboard}
-
-The dashboard provides: (1) a live accelerometer magnitude plot (last 10 seconds, 100\,Hz WebSocket stream via FastAPI), (2) a fall event log table (most recent 50 events with timestamp, severity, confidence, SHAP top feature, and false-positive dismiss button), (3) a sensitivity profile selector (HighSensitivity / Standard / SportMode), and (4) a ``Generate Report'' button triggering PDF incident report generation for the selected event.
+For each confirmed fall event, the gateway extracts the six peak IMU channel values (three accelerometer axes $a_{x}, a_{y}, a_{z}$ and three gyroscope axes $\omega_{x}, \omega_{y}, \omega_{z}$, received over BLE as \texttt{peak\_features}) and computes SHAP attributions using the \texttt{shap} library against the trained CNN (loaded as a TFLite interpreter on the gateway). The top contributing feature (e.g., $a_{z,\text{peak}}$, contribution 42\%) and the full 6-element SHAP vector are written directly into the auto-generated PDF report --- computed locally on the laptop with no cloud round-trip.
 
 \subsection{PDF Incident Report}
 
-ReportLab generates a one-page PDF clinical incident report per fall event, containing: institution header (KEC), patient identifier, event timestamp, fall severity score, Layer~2 CNN confidence score, SHAP top-contributing feature, full SHAP vector bar chart, and a signature block for care staff acknowledgement. The report format is modelled on the clinical incident reporting structure recommended by WHO \cite{who2007falls} for fall event documentation.
+ReportLab generates a one-page PDF clinical incident report per fall event, containing: institution header (KEC), event timestamp, Layer~2 CNN confidence score, SHAP top-contributing feature, full SHAP vector bar chart, and a signature block for care staff acknowledgement. The report format is modelled on the clinical incident reporting structure recommended by WHO \cite{who2007falls} for fall event documentation. The completed report is saved locally on the gateway and read by the phone display client over the local network --- no push notification or alert channel exists in this design.
 
 \section{Testing and Evaluation Plan}
 
 \subsection{Unit Testing}
 
-Each subsystem is validated independently before integration: (1) MPU6050 ISR correctness verified by comparing 100\,Hz output against known waveforms from a signal generator; (2) Layer~1 threshold logic verified by injecting synthetic $|a|$ sequences with known fall/non-fall labels; (3) Layer~2 TFLite Micro inference verified by comparing ESP32 INT8 outputs against Python FP32 reference on 50 held-out windows; (4) MQTT payload verified by Wireshark capture; (5) Telegram alert latency measured from MQTT publish to message receipt timestamp.
+Each subsystem is validated independently before integration: (1) MPU6050 ISR correctness verified by comparing 200\,Hz output against known waveforms from a signal generator; (2) Layer~1 threshold logic verified by injecting synthetic $|a|$ sequences with known fall/non-fall labels; (3) Layer~2 TFLite Micro inference verified by comparing ESP32-S3 INT8 outputs against Python FP32 reference on 50 held-out windows; (4) BLE payload verified against the locked wire format via \texttt{test\_wire\_format.cpp} and a BLE sniffer capture.
 
 \subsection{End-to-End Latency Measurement}
 
-A GPIO pin on the ESP32 is toggled at Layer~1 \texttt{PRE\_FALL} and at \texttt{CONFIRMED\_FALL} MQTT publish, captured on an oscilloscope to measure on-device pipeline latency. Telegram message receipt timestamp is recorded manually. Target: on-device $\leq$ 200\,ms, Telegram alert $\leq$ 2 seconds from fall event.
+A GPIO pin on the ESP32-S3 is toggled at Layer~1 \texttt{PRE\_FALL} and at \texttt{CONFIRMED\_FALL} BLE transmit, captured on an oscilloscope to measure on-device pipeline latency. Gateway-side report completion time is recorded from BLE receipt to PDF write. Target: on-device $\leq$ 200\,ms.
 
 \subsection{ADL False-Positive Battery}
 

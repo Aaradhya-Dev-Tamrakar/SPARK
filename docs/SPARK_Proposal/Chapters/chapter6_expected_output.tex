@@ -14,25 +14,28 @@ SPARK produces the following tangible deliverables by the March 2027 demonstrati
 \subsection{Hardware Deliverables}
 
 \begin{enumerate}
-    \item \textbf{Functional wearable node} : ESP32 DevKit V1 with MPU6050 6-axis IMU, 18650 LiPo battery, TP4056 charger module, AMS1117-3.3 LDO regulator and INA219 power telemetry sensor, mounted in a wrist or chest enclosure 3D-printed in PLA at KEC Makerspace.
+    \item \textbf{Functional wearable node} : ESP32-S3 with MPU6050 6-axis IMU, 1100\,mAh Li-ion/LiPo battery, TP4056-class charge/protection circuit, mounted top-of-wrist/dorsal in a wrist-worn enclosure 3D-printed in TPU at KEC Makerspace, secured with the enclosure's built-in Velcro closure tab plus a separate Velcro wrist strap, worn over a compression arm sleeve base layer.
 
-    \item \textbf{Gateway unit} : Raspberry Pi 4B (4\,GB, KEC unit or separately procured) running the complete SPARK gateway stack (Mosquitto, FastAPI/Uvicorn, PostgreSQL, Streamlit, python-telegram-bot, ReportLab, SHAP pipeline).
+    \item \textbf{Gateway} : Laptop (Acer Swift Go~16, already owned) as the sole BLE receiver and sole SHAP/PDF compute --- no dedicated single-board computer required.
 
-    \item \textbf{Power characterization report} : INA219 telemetry measurements documenting active current draw, idle current draw, and estimated battery life (target: $\geq 25$ hours from 2000\,mAh cell at Standard sensitivity profile).
+    \item \textbf{Phone display client} : Read-only companion view (user's own phone, no additional hardware) that reads completed reports from the laptop gateway over the local network.
+
+    \item \textbf{Power estimate report} : Documented active current draw range (110--140\,mA, published-figure estimate for BLE + 200\,Hz IMU polling, not yet hardware-measured --- no power telemetry sensor exists in this design) and resulting endurance estimate (7.9--10 hours from the 1100\,mAh cell), with on-hardware profiling planned for thesis Chapter~5 (Implementation).
 \end{enumerate}
 
 \subsection{Software Deliverables}
 
 \begin{enumerate}
-    \item \textbf{ESP32 firmware} (PlatformIO/Arduino C++) :MPU6050 ISR at 100\,Hz, complementary filter, sliding window ring buffer, Layer~1 threshold pre-filter, Layer~2 TFLite Micro INT8 CNN inference, ArduinoJSON MQTT publisher, and MQTT-based sensitivity profile receiver.
+    \item \textbf{ESP32-S3 firmware} (PlatformIO/Arduino C++): MPU6050 ISR at 200\,Hz via direct register access, sliding window ring buffer, Layer~1 threshold pre-filter, Layer~2 TFLite Micro INT8 CNN inference, and BLE JSON event transmission per the locked wire format.
 
     \item \textbf{Trained and quantized 1D CNN model} --- INT8 TFLite model file ($\leq 120$\,KB) achieving Sensitivity $\geq 90\%$ and Specificity $\geq 90\%$ on the held-out test set, integrated as a C header array in the PlatformIO build.
 
-    \item \textbf{Gateway backend} (Python 3.11+): FastAPI/Uvicorn REST API with MQTT consumer, PostgreSQL \texttt{fall\_events} schema with SHAP columns, SHAP attribution pipeline (per-event, $< 200$\,ms latency on RPi 4B), Telegram caregiver alert ($< 2$\,s from fall confirmation), Streamlit clinical dashboard, and ReportLab PDF incident report generator.
+    \item \textbf{Gateway software} (Python): BLE receiver parsing the locked wire format, SHAP attribution pipeline (per-event, no cloud round-trip, no persistent database), and ReportLab PDF incident report generator --- all running locally on the laptop.
+
+    \item \textbf{Phone display client software}: Read-only report viewer that pulls completed reports from the laptop over the local network; no SHAP computation or PDF generation on-device.
 
     \item \textbf{Self-collected KEC Wearable Fall Dataset}: Minimum 500 labelled fall event windows and 2000 ADL windows recorded at KEC campus using the SPARK node, with subject metadata, published to GitHub under an open licence as ``KEC Wearable Fall Dataset in Nepal Context.''
 
     \item \textbf{GitHub repository} : Complete open-source repository containing firmware, gateway software, trained model, dataset, KiCad schematic (breadboard-level), and a reproducible README enabling replication of the full system.
 
 \end{enumerate}
-
