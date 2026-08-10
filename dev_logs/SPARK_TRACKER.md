@@ -1,9 +1,17 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v36)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v37)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 10, 2026 (v36 — R-05 battery-draw math fixed and Velcro/enclosure §2.2 conflict resolved (Action #21); stale BOM xlsx deleted, Order Form now sole canonical procurement doc; enclosure weight and order placement still open, unresolved) ·
+**Last updated:** August 10, 2026 (v37 — repo hygiene: `docs/SPARK_BOM_Procurement.xlsx` actually deleted, git-tracking never matched v36's changelog claim; proposal reformatted for VS Code/LaTeX Workshop compile via `.latexmkrc`; repo decluttered — 17 duplicate PNGs, orphaned `main.md` copy, redundant `.gitkeep` files removed; README synced to current status) ·
+
+**v37 change log (August 10, 2026 — repo hygiene regression fixed, VS Code compile support added, repo decluttered):**
+
+- **Regression fixed: `docs/SPARK_BOM_Procurement.xlsx` deletion never actually happened.** v36's changelog said "Deleted," but the file remained `git`-tracked and present on disk — same class of failure as the v30 lock-file regression. Now actually `git rm`'d; `docs/SPARK_Component_Order_Form.xlsx` is the sole canonical procurement spreadsheet, no stale duplicate remains.
+- **Proposal made VS Code/LaTeX Workshop compile-ready.** `docs/SPARK_Proposal/ThesisReports/.latexmkrc` added (pdflatex-only, no glossary/bibtex hook needed — matches this proposal's `thebibliography`/`makeidx` setup). No `.vscode/settings.json` needed; LaTeX Workshop auto-discovers the `\documentclass` root.
+- **Repo decluttered:** 17 duplicate PNGs at `docs/SPARK_Proposal/` root removed (canonical copies live in `Figures/`, confirmed byte-identical and unreferenced by `\graphicspath`); orphaned `docs/SPARK_Proposal_20260701_v37_md/main.md` duplicate removed; redundant `.gitkeep` removed from `docs/`, `firmware/`, `gateway/`, `training/`, and repo root (all non-empty; `data/.gitkeep` kept, `data/*` stays gitignored).
+- **`.gitignore` updated:** LaTeX build artifacts (`.aux .fdb_latexmk .fls .idx .ilg .ind .lof .log .lot .out .synctex.gz .toc`) ignored repo-wide; `thesis_report.pdf` explicitly whitelisted as the tracked deliverable.
+- **README synced:** status paragraph and `docs/` structure line updated to reflect TPU enclosure, sourced battery/MPU6050/USB-C/Velcro-strap, Order Form as canonical BOM, and VS Code-compilable proposal; version pointer corrected v30 → v37.
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
