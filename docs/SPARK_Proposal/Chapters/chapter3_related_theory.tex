@@ -116,7 +116,7 @@ When \texttt{PRE\_FALL} is raised, Layer~2 is invoked: the gate-triggered window
 
 \subsection{1D CNN Architecture}
 
-The 1D CNN consists of: Conv1D(32 filters, kernel 5) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D(2) $\rightarrow$ Conv1D(64 filters, kernel 3) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D $\rightarrow$ Dense(32, ReLU) $\rightarrow$ Dense(2, Softmax). The model is trained in TensorFlow/Keras on UCI MHEALTH \cite{banos2014mhealthdroid} and SisFall \cite{sucerquia2017sisfall} datasets with self-collected Nepal-context data as a fine-tuning set. INT8 post-training quantization via the TFLite Converter produces a C array for inclusion in the PlatformIO build.
+The 1D CNN consists of: Conv1D(32 filters, kernel 5) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D(2) $\rightarrow$ Conv1D(64 filters, kernel 3) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D $\rightarrow$ Dense(32, ReLU) $\rightarrow$ Dense(2, Softmax). The model is trained in TensorFlow/Keras on the SisFall dataset \cite{sucerquia2017sisfall} as the primary source, with self-collected Nepal-context data (protocol TBD) as a secondary fine-tuning set. INT8 post-training quantization via the TFLite Converter produces a C array for inclusion in the PlatformIO build.
 
 \subsection{SHAP Explainability Pipeline}
 
