@@ -1,12 +1,20 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v30)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v36)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 10, 2026 (v35 — gateway architecture clarified: laptop remains sole BLE gateway + sole pipeline compute; phone added as display-only client, no BLE/compute role; BLE dongle dropped from BOM) ·
+**Last updated:** August 10, 2026 (v36 — R-05 battery-draw math fixed and Velcro/enclosure §2.2 conflict resolved (Action #21); stale BOM xlsx deleted, Order Form now sole canonical procurement doc; enclosure weight and order placement still open, unresolved) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v36 change log (August 10, 2026 — R-05 fixed, Velcro/enclosure conflict resolved, BOM xlsx sync gap found+fixed, task_2026-08-10_001 handoff from user5):**
+
+- **Action #21 resolved — R-05 draw/endurance math fixed.** Old figure ("~5 mA @ 200 Hz → 8–10hr on 1000 mAh") didn't reconcile (1000/5 = 200hr). Replaced with an estimated ~110–140 mA active-draw range that actually reconciles against the sourced 1100 mAh LiPo (v34) at 8–10hr. Explicitly flagged as estimate (no INA219 telemetry exists in this design to measure it — that part is dead/RPi-era). §2.2, §2.7 updated.
+- **§2.2 Velcro/enclosure conflict resolved.** Confirmed as two distinct components: the enclosure's own built-in Velcro closure tab (part of the 3D-printed shell, no separate purchase) and the BOM's separately-purchased "Velcro wrist strap" (RR-papers, NPR 500×2) for additional retention/security. §2.2 and §2.6 wording updated.
+- **`docs/SPARK_BOM_Procurement.xlsx` found frozen at v30 state** (NPR 5,434, missing spare ESP32-S3, Velcro strap, TPU enclosure pricing, all v31–v35 changes) — never synced despite 5 tracker version bumps. Deleted — `docs/SPARK_Component_Order_Form.xlsx` (already at v35 state, NPR 9,737, matches tracker) is now the sole canonical procurement spreadsheet.
+- **Enclosure weight (~NPR 160) — still an unmeasured 40g guess.** No CAD model exists to slice. Not fixable without the model; flagged as-is.
+- **Order placement — still zero confirmed.** Actions #16/#18 remain open; procurement, not tracker editing, resolves these.
 
 **v35 change log (August 10, 2026 — gateway architecture clarified, BLE dongle dropped):**
 
@@ -336,10 +344,10 @@ Landed via three raw commits (see above note) — future edits must route throug
 - **Owner:** Aaradhya
 - **Status:** Open. Flagged v16; no action yet.
 
-1. **#21 — R-05 risk matrix update (Tier 4)**
-   - **Item:** Risk R-05 (battery drain from continuous polling) cites a specific battery-draw figure that is no longer in use post-RPi drop (RPi's quiescent draw was the reference; ESP32-S3's is different). Update the claim to match current design.
+1. **#21 — R-05 risk matrix update (Tier 4) [RESOLVED v36]**
+   - **Item:** Risk R-05 (battery drain from continuous polling) cited a stale/broken draw figure — "~5 mA @ 200 Hz → 8–10hr on 1000 mAh" does not reconcile (1000 mAh ÷ 5 mA = 200 hr, not 8–10 hr). Update the claim to match current design.
    - **Owner:** Aaradhya
-   - **Status:** Open. Flagged v16; no action yet.
+   - **Status:** **Resolved v36.** Replaced the broken 5 mA figure with an estimated ESP32-S3 active-draw range (~110–140 mA, BLE + 200 Hz IMU polling) that actually reconciles against the sourced 1100 mAh LiPo (v34) at the claimed 8–10hr endurance (1100 ÷ 110–140 ≈ 7.9–10 hr). Explicitly flagged as an estimate — no INA219/power-telemetry hardware exists in this design (that module is dead, RPi-era) to measure it directly. Real profiling still needs firmware (Action #24) to exist first.
 
 2. **#20 — Mobile hotspot max-client cap (Tier 5, low priority)**
    - **Item:** Measure the maximum number of simultaneous client connections supported by the mobile hotspot device(s) used for demo-day gateway uptime. Assumption updated v35: n=3 (wearable BLE to laptop + laptop's own hotspot/network link + phone display client pulling from laptop) — was n=2 pre-phone-display-client. Real cap might be lower; if lower, affects single-device hotspot viability.
@@ -489,14 +497,14 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Driver: reuse/rewrite TBD with Rupesh (Action #24)
 
 3. **Power:**
-   - Lithium battery: 1100 mAh Li-ion/LiPo (sourced v34 — Giga Nepal, NPR 550; sourcing resolved. Endurance figure itself still traces to R-05's unverified ~5mA draw assumption — Action #21 open, see §2.7)
+   - Lithium battery: 1100 mAh Li-ion/LiPo (sourced v34 — Giga Nepal, NPR 550; sourcing resolved. Endurance figure fixed v36 — Action #21 resolved, see §2.7)
    - USB-C charging connector (included on ESP32-S3 devboard)
    - USB-C cable (departmental-ordered, v31; **priced v33 — Daraz, qty 3 @ NPR 267 = NPR 801, Action #19 resolved**)
 
 4. **Enclosure:**
    - Form factor: Wrist-worn (locked v28, Action #8)
    - Electronics placement: Top-of-wrist / dorsal side (locked v29, Action #34) — consistent MPU6050 orientation, clear of wrist flexion crease
-   - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening. **Note (v33): a standalone "Velcro wrist strap" BOM line (RR-papers, NPR 500×2) was re-added as a separate purchased item — not yet reconciled against this locked design note, which describes Velcro as the enclosure's own closure mechanism with no separate purchase. Flagging, not resolving: either this design note needs updating to describe a distinct strap component, or the BOM line is redundant. Needs a design decision, not a BOM-only fix.**
+   - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening. **Resolved v36:** confirmed as a distinct, separately-purchased component — the enclosure has its own built-in Velcro closure tab (no separate purchase, part of the 3D-printed shell), and the BOM's "Velcro wrist strap" line (RR-papers, NPR 500×2) is a second, physically separate strap used for additional wearable retention/security, not a duplicate of the closure tab. §2.6 line description updated to reflect this distinction.
    - Base layer: Compression arm sleeve, thumb-hole (locked v30, Action #34, departmental-ordered v31) — worn under enclosure, doubles as skin protection under Velcro
    - Material: 3D-printed TPU (KEC Makerspace, switched v34 — real KEC inventory only stocks TPU, not PLA; PLA lock v13 was never verified against actual makerspace stock)
    - Footprint: Himalayan board (vendor reverted v32) is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
@@ -593,11 +601,11 @@ Landed via three raw commits (see above note) — future edits must route throug
 1. **Wearable node:**
    - 3 × ESP32-S3, Himalayan: 3 × NPR 1,800 = NPR 5,400 (Action #14 vendor reverted v32; Action #16 spare added v31; all departmental-ordered)
    - 1 × MPU6050, Himalayan: NPR 350 (sourced v33, GY-251 module, live listing — Action #18's MPU6050 half resolved)
-   - 1 × Lithium battery, 1100 mAh Li-ion/LiPo: NPR 550 (sourced v34, Giga Nepal — sourcing resolved; Action #21's separate R-05 draw-figure issue still open, see §2.7)
+   - 1 × Lithium battery, 1100 mAh Li-ion/LiPo: NPR 550 (sourced v34, Giga Nepal — sourcing resolved; Action #21's R-05 draw-figure issue fixed v36, see §2.7)
    - 1 × USB-C cable, departmental-ordered: qty 3 × NPR 267 = NPR 801 (sourced v33, Daraz — Action #19 resolved)
    - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
    - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
-   - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33 as a genuine separate item — see §2.2 flag on unreconciled overlap with the enclosure's own Velcro closure note)
+   - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33, **§2.2 conflict resolved v36** — confirmed distinct from the enclosure's own built-in Velcro closure tab; this strap provides additional wearable retention/security, separate purchase)
    - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): ~NPR 160 (estimate, 40g × KEC rate NPR 4/g — rough figure, not a measured slice; supersedes v13's "negligible/in-house" PLA note now that TPU is confirmed gram-priced, not free)
 
 2. **Gateway (laptop):**
@@ -659,9 +667,9 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 5. **R-05: Battery drain from continuous 200 Hz polling**
    - **Impact:** High (device unusable if drains in <1 hour)
-   - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; 1000 mAh Li-ion/LiPo locked v28 → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
+   - **Probability:** Low (ESP32-S3 active draw with BLE + 200 Hz IMU polling estimated ~110–140 mA, not the previous ~5 mA figure — see Action #21 fix below; 1100 mAh sourced LiPo (v34) → ~8–9.5 hour endurance at this range)
    - **Mitigation:** Queue-based CNN triggering (only run CNN when Layer 1 threshold exceeded), sleep modes between windows
-   - **Status:** Battery spec locked v28 (1000 mAh Li-ion/LiPo, sourcing still TBD). Mitigation figure itself still needs Action #21 update to confirm against ESP32-S3 draw (not RPi). Open.
+   - **Status:** Battery sourced v34 (1100 mAh LiPo, Giga Nepal, NPR 550). Draw figure corrected v36 (Action #21 resolved) — no INA219 power telemetry exists in this design to measure it directly (that module is RPi-era/dead, per v28); ~110–140 mA is an estimated range from published ESP32-S3 active Wi-Fi/BLE current draw, not a measured value. Endurance claim now internally consistent (1100 mAh ÷ 110–140 mA ≈ 7.9–10 hr) but still unverified against real hardware — flag as estimate, not measured spec, until Action #24 firmware exists to profile it.
 
 ---
 
