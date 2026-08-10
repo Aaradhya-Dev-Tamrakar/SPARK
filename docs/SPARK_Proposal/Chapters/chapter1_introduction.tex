@@ -6,17 +6,17 @@
 
 \section{Background}
 
-Falls are a leading cause of injury-related mortality and morbidity among adults aged 65 and above worldwide. The WHO Global Report on Falls Prevention in Older Age (2007) identifies falls as the second leading cause of unintentional injury death globally, with approximately 684,000 fatal falls occurring each year \cite{who2007falls}. Non-fatal falls cause serious injuries including hip fractures, traumatic brain injuries, and long-term disability, placing a heavy burden on healthcare systems and caregivers.
+Falls are a leading cause of injury-related mortality and morbidity among adults aged 65~and above worldwide. The WHO Global Report on Falls Prevention in Older Age (2007) identifies falls as the second leading cause of unintentional injury death globally, with approximately 684,000 fatal falls occurring each year\cite{who2007falls}. Non-fatal falls cause serious injuries including hip fractures, traumatic brain injuries, and long-term disability, placing a heavy burden on healthcare systems and caregivers.
 
-Nepal is undergoing a rapid demographic shift. The Central Bureau of Statistics projects that Nepal's population aged 65 and above will double by 2035 \cite{cbs2021nepal}, driven by improving life expectancy and urbanization. Despite this growing demographic pressure, no domestic fall detection product exists in the Nepali market. Commercial solutions such as the Apple Watch and medical alert pendants are cost-prohibitive --- a single Apple Watch SE (2nd generation) retails above NPR~30,000 --- and require proprietary ecosystems unavailable to most Nepali families. A local BLE link between the wearable and a household laptop gateway requires no internet connectivity at all, making SPARK deployable in care settings regardless of WiFi/ISP reliability.
+Nepal is undergoing a rapid demographic shift. The Central Bureau of Statistics projects that Nepal's population aged 65 and above will double by 2035~\cite{cbs2021nepal}, driven by improving life expectancy and urbanization. Despite this growing demographic pressure, no domestic fall detection product exists in the Nepali market. Commercial solutions such as the Apple Watch and medical alert pendants are cost-prohibitive --- a single Apple Watch SE (2nd~generation) retails above NPR~30,000 --- and require proprietary ecosystems unavailable to most Nepali families. A local BLE link between the wearable and a household laptop gateway requires no internet connectivity at all, making SPARK deployable in care settings regardless of WiFi/ISP reliability.
 
 Academic fall detection systems published in the literature typically rely on one of two approaches: threshold-only detection on raw accelerometer data, which produces unacceptably high false-positive rates on activities of daily living such as sit-to-stand transitions and stair climbing; or cloud-dependent machine learning inference, which introduces unacceptable network dependencies for a safety-critical application. Neither approach has been validated on a Nepal-context dataset, nor do any of the published open-source systems provide per-event classifier explainability for care staff.
 
-SPARK addresses these gaps with a two-layer gated edge AI architecture running entirely on an ESP32 microcontroller, a SHAP-based explainability pipeline at the gateway, and a self-collected Nepal-context IMU dataset collected at KEC.
+SPARK addresses these gaps with a two-layer gated edge AI architecture running entirely on an ESP32 microcontroller, a SHAP-based explainability pipeline at the gateway, and a self-collected Nepal-context IMU dataset collected at KEC.\@
 
 \section{Problem Statement}
 
-Falls are the leading cause of injury-related mortality among adults over 65 globally \cite{who2007falls}. Nepal's elderly population is projected to double by 2035 \cite{cbs2021nepal}, yet no affordable domestic fall detection solution exists. Commercial fall detection systems (Apple Watch, Samsung Galaxy Watch, Withings ScanWatch) are cost-prohibitive for Nepal's eldercare context, require proprietary ecosystems, and operate as closed black-box systems --- returning a binary fall verdict with no classifier explanation. Published academic systems use either threshold-only detection (unacceptably high false-positive rate) or cloud-dependent machine learning inference (network dependency unacceptable for safety-critical applications in Nepal's connectivity environment). No published open-hardware system demonstrates: 
+Falls are the leading cause of injury-related mortality among adults over 65~globally\cite{who2007falls}. Nepal's elderly population is projected to double by 2035~\cite{cbs2021nepal}, yet no affordable domestic fall detection solution exists. Commercial fall detection systems (Apple Watch, Samsung Galaxy Watch, Withings ScanWatch) are cost-prohibitive for Nepal's eldercare context, require proprietary ecosystems, and operate as closed black-box systems --- returning a binary fall verdict with no classifier explanation. Published academic systems use either threshold-only detection (unacceptably high false-positive rate) or cloud-dependent machine learning inference (network dependency unacceptable for safety-critical applications in Nepal's connectivity environment). No published open-hardware system demonstrates: 
 \begin{enumerate}
 \item A two-layer gated architecture with on-device TFLite Micro inference.
 \item  SHAP-based per-event explainability surfaced to caregivers.
@@ -36,8 +36,7 @@ Falls are the leading cause of injury-related mortality among adults over 65 glo
 \item To implement SHAP-based explainability techniques to log and render transparent feature attribution per event.
 \end{enumerate}
 
-\section{Scope of the Project}
-\label{sec:scope}
+\section{Scope of the Project}\label{sec:scope}
 
 The scope of our project includes:
 

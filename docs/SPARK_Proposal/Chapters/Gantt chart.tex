@@ -3,59 +3,38 @@ Table~\ref{tab:gantt} maps all major tasks to a 32-week schedule spanning Septem
 
 \begin{table}[H]
     \centering
-    \caption{Project Gantt Chart (Phase 3: September 2026  —  March 2027)}
-    \label{tab:gantt}
+    \caption{Project Gantt Chart (Phase 3: September 2026  —  March 2027)}\label{tab:gantt}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
-        \hline
+    \begin{tabular}{l*{16}{c}}
+        \toprule
         \textbf{Task} &
         \textbf{W1} & \textbf{W2} & \textbf{W3} & \textbf{W4} &
         \textbf{W5} & \textbf{W6} & \textbf{W7} & \textbf{W8} &
         \textbf{W9} & \textbf{W10} & \textbf{W11} & \textbf{W12} &
         \textbf{W13} & \textbf{W14} & \textbf{W15} & \textbf{W16} \\
-        \hline
+        \midrule
         Self-collected dataset collection & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & \\
-        \hline
         CNN training (UCI+SisFall baseline) & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
-        \hline
         CNN fine-tuning (KEC dataset) & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
-        \hline
         INT8 quantization + ESP32 flash & & & & & & & $\bullet$ & $\bullet$ & & & & & & & & \\
-        \hline
         ESP32 firmware (Layer 1 + Layer 2) & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
-        \hline
         Hardware node assembly + enclosure & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
-        \hline
         Laptop gateway BLE receiver & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
-        \hline
         SHAP attribution pipeline & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
-        \hline
         PDF report auto-generation pipeline & & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & \\
-        \hline
         Phone display client & & & & & & & & $\bullet$ & $\bullet$ & & & & & & & \\
-        \hline
         End-to-end integration + dry run & & & & & & & & $\bullet$ & $\bullet$ & & & & & & & \\
-        \hline
         ADL false-positive battery test & & & & & & & & & $\bullet$ & $\bullet$ & & & & & & \\
-        \hline
         Sensitivity profile tuning & & & & & & & & & $\bullet$ & $\bullet$ & & & & & & \\
-        \hline
         KEC dataset published to GitHub & & & & & & & & & & & $\bullet$ & & & & & \\
-        \hline
         Thesis Chapters 1 — 4 draft & & & & & & & & & & & $\bullet$ & $\bullet$ & $\bullet$ & & & \\
-        \hline
         Full system integration test & & & & & & & & & & & & $\bullet$ & $\bullet$ & & & \\
-        \hline
         F1/AUC evaluation on test set & & & & & & & & & & & & $\bullet$ & $\bullet$ & & & \\
-        \hline
         Thesis Chapters 5 — 6 draft & & & & & & & & & & & & & $\bullet$ & $\bullet$ & & \\
-        \hline
         Conference paper draft & & & & & & & & & & & & & & $\bullet$ & $\bullet$ & \\
-        \hline
         Final demo preparation & & & & & & & & & & & & & & & $\bullet$ & $\bullet$ \\
-        \hline
         Thesis submission + defence & & & & & & & & & & & & & & & & $\bullet$ \\
-        \hline
+        \bottomrule
     \end{tabular}%
     }
 \end{table}

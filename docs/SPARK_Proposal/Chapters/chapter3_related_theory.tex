@@ -13,8 +13,7 @@ The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtens
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.32\textwidth]{esp32_devkit.png}
-	\caption{ESP32-S3}
-	\label{fig:esp32_devkit}
+	\caption{ESP32-S3}\label{fig:esp32_devkit}
 \end{figure}
 
 \subsection{MPU6050 6-Axis IMU}
@@ -24,8 +23,7 @@ The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer ($\pm$2/$\pm$4/$\
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.28\textwidth]{mpu6050.png}
-	\caption{MPU6050 6-Axis IMU}
-	\label{fig:mpu6050}
+	\caption{MPU6050 6-Axis IMU}\label{fig:mpu6050}
 \end{figure}
 
 \subsection{Laptop Gateway}
@@ -47,8 +45,7 @@ A single 3.7\,V nominal 1100\,mAh Li-ion/LiPo pouch cell that serves as the main
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{cell_18650.png}
-	\caption{Li-ion/LiPo Cell}
-	\label{fig:pwr_cell}
+	\caption{Li-ion/LiPo Cell}\label{fig:pwr_cell}
 \end{figure}
 
 \subsubsection{Charge/Protection Circuit}
@@ -58,8 +55,7 @@ A single-cell constant-current/constant-voltage (CC/CV) linear charge controller
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{tp4056.png}
-	\caption{Charge/Protection Circuit}
-	\label{fig:pwr_tp4056}
+	\caption{Charge/Protection Circuit}\label{fig:pwr_tp4056}
 \end{figure}
 
 \subsection{Mechanical Mounting and Support Components}
@@ -73,19 +69,17 @@ An adjustable Velcro strap used to secure the wearable enclosure to the wrist (t
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{velcro_strap.png}
-	\caption{Velcro Wrist Strap}
-	\label{fig:velcro_strap}
+	\caption{Velcro Wrist Strap}\label{fig:velcro_strap}
 \end{figure}
 
 \subsubsection{USB-C Cables}
 
-Standard USB-C cables used to power and program the ESP32-S3 boards and to charge the wearable's battery via the onboard charge/protection circuit during bench testing.
+Standard USB-C cables are used to power and program the ESP32-S3 boards and to charge the wearable's battery via the onboard charge/protection circuit during bench testing.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{micro_usb_cable.png}
-	\caption{USB-C Cable}
-	\label{fig:micro_usb_cable}
+	\caption{USB-C Cable}\label{fig:micro_usb_cable}
 \end{figure}
 
 \subsubsection{Passive Components}
@@ -95,15 +89,13 @@ Assorted resistors and capacitors used on the wearable node breadboard for signa
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{resistor.png}
-	\caption{Resistor}
-	\label{fig:resistor}
+	\caption{Resistor}\label{fig:resistor}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=2.6cm,keepaspectratio]{capacitor.png}
-	\caption{Capacitor}
-	\label{fig:capacitor}
+	\caption{Capacitor}\label{fig:capacitor}
 \end{figure}
 
 \section{Software Description}
@@ -116,15 +108,15 @@ When \texttt{PRE\_FALL} is raised, Layer~2 is invoked: the gate-triggered window
 
 \subsection{1D CNN Architecture}
 
-The 1D CNN consists of: Conv1D(32 filters, kernel 5) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D(2) $\rightarrow$ Conv1D(64 filters, kernel 3) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D $\rightarrow$ Dense(32, ReLU) $\rightarrow$ Dense(2, Softmax). The model is trained in TensorFlow/Keras on the SisFall dataset \cite{sucerquia2017sisfall} as the primary source, with self-collected Nepal-context data (protocol TBD) as a secondary fine-tuning set. INT8 post-training quantization via the TFLite Converter produces a C array for inclusion in the PlatformIO build.
+The 1D CNN consists of: Conv1D (32 filters, kernel~5) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D (2) $\rightarrow$ Conv1D (64 filters, kernel~3) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D $\rightarrow$ Dense (32, ReLU) $\rightarrow$ Dense (2, Softmax). The model is trained in TensorFlow/Keras on the SisFall dataset~\cite{sucerquia2017sisfall} as the primary source, with self-collected Nepal-context data (protocol TBD) as a secondary fine-tuning set. INT8 post-training quantization via the TFLite Converter produces a C array for inclusion in the PlatformIO build.
 
 \subsection{SHAP Explainability Pipeline}
 
-SHAP (SHapley Additive exPlanations) \cite{lundberg2017shap} assigns to each input feature $i$ an attribution value $\phi_i$ satisfying local accuracy ($f(x) = \phi_0 + \sum_i \phi_i$), missingness, and consistency axioms. For each \texttt{CONFIRMED\_FALL} event, the laptop gateway computes SHAP values for the six IMU channel features (peak values of $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$ received over BLE) using the \texttt{shap} Python library against the trained CNN output. The top contributing feature (e.g., \texttt{az\_peak} with 42\% of fall confidence) and the full SHAP vector are written directly into the auto-generated PDF incident report --- computed and rendered locally on the laptop, with no cloud round-trip and no persistent database. This provides care staff with an auditable rationale for every alert --- a capability absent from all commercial and published academic fall detection systems.
+SHAP (SHapley Additive exPlanations)\@ \cite{lundberg2017shap} assigns to each input feature $i$ an attribution value $\phi_i$ satisfying local accuracy ($f(x) = \phi_0 + \sum_i \phi_i$), missingness, and consistency axioms. For each \texttt{CONFIRMED\_FALL} event, the laptop gateway computes SHAP values for the six IMU channel features (peak values of $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$ received over BLE) using the \texttt{shap} Python library against the trained CNN output. The top contributing feature (e.g., \texttt{az\_peak} with 42\% of fall confidence) and the full SHAP vector are written directly into the auto-generated PDF incident report --- computed and rendered locally on the laptop, with no cloud round-trip and no persistent database. This provides care staff with an auditable rationale for every alert --- a capability absent from all commercial and published academic fall detection systems.
 
 \subsection{Gateway Software Architecture}
 
-The gateway implements three software design patterns documented in the thesis Chapter~3 (OOSE alignment):
+The gateway implements three software design patterns documented in the thesis Chapter~3\@ (OOSE alignment):
 
 \textbf{Factory Pattern} decouples the detection node abstraction from its concrete implementations. A \texttt{FallDetector} abstract base class handles BLE transmission, event serialization, and power management; \texttt{ThresholdDetector} (Layer~1) and \texttt{CNNDetector} (Layer~2) are concrete subclasses.
 

@@ -2,10 +2,9 @@
 % Chapter 6 : Expected Output
 %======================
 
-\chapter{\scshape Expected Output}
-\label{chap:expected_output}
+\chapter{\scshape Expected Output}\label{chap:expected_output}
 
-This chapter describes the deliverables, performance targets, and project schedule for SPARK. The system is developed in three sequential phases: proposal and planning (June--July 2026), skill development and dataset preparation (July--August 2026), and core build, integration, and evaluation (September 2026 -- March 2027).
+This chapter describes the deliverables, performance targets, and project schedule for SPARK.\@ The system is developed in three sequential phases: proposal and planning (June--July 2026), skill development and dataset preparation (July--August 2026), and core build, integration, and evaluation (September 2026--March 2027).
 
 \section{Deliverables}
 
@@ -14,13 +13,13 @@ SPARK produces the following tangible deliverables by the March 2027 demonstrati
 \subsection{Hardware Deliverables}
 
 \begin{enumerate}
-    \item \textbf{Functional wearable node} : ESP32-S3 with MPU6050 6-axis IMU, 1100\,mAh Li-ion/LiPo battery, TP4056-class charge/protection circuit, mounted top-of-wrist/dorsal in a wrist-worn enclosure 3D-printed in TPU at KEC Makerspace, secured with the enclosure's built-in Velcro closure tab plus a separate Velcro wrist strap, worn over a compression arm sleeve base layer.
+    \item \textbf{Functional wearable node}: ESP32-S3 with MPU6050 6-axis IMU, 1100\,mAh Li-ion/LiPo battery, TP4056-class charge/protection circuit, mounted top-of-wrist/dorsal in a wrist-worn enclosure 3D-printed in TPU at KEC Makerspace, secured with the enclosure's built-in Velcro closure tab plus a separate Velcro wrist strap, worn over a compression arm sleeve base layer.
 
-    \item \textbf{Gateway} : Laptop (Acer Swift Go~16, already owned) as the sole BLE receiver and sole SHAP/PDF compute --- no dedicated single-board computer required.
+    \item \textbf{Gateway}: Laptop (Acer Swift Go~16, already owned) as the sole BLE receiver and sole SHAP/PDF compute --- no dedicated single-board computer required.
 
-    \item \textbf{Phone display client} : Read-only companion view (user's own phone, no additional hardware) that reads completed reports from the laptop gateway over the local network.
+    \item \textbf{Phone display client}: Read-only companion view (user's own phone, no additional hardware) that reads completed reports from the laptop gateway over the local network.
 
-    \item \textbf{Power estimate report} : Documented active current draw range (110--140\,mA, published-figure estimate for BLE + 200\,Hz IMU polling, not yet hardware-measured --- no power telemetry sensor exists in this design) and resulting endurance estimate (7.9--10 hours from the 1100\,mAh cell), with on-hardware profiling planned for thesis Chapter~5 (Implementation).
+    \item \textbf{Power estimate report}: Documented active current draw range (110--140\,mA, published-figure estimate for BLE + 200\,Hz IMU polling, not yet hardware-measured --- no power telemetry sensor exists in this design) and resulting endurance estimate (7.9--10 hours from the 1100\,mAh cell), with on-hardware profiling planned for thesis Chapter~5 (Implementation).
 \end{enumerate}
 
 \subsection{Software Deliverables}
@@ -34,8 +33,8 @@ SPARK produces the following tangible deliverables by the March 2027 demonstrati
 
     \item \textbf{Phone display client software}: Read-only report viewer that pulls completed reports from the laptop over the local network; no SHAP computation or PDF generation on-device.
 
-    \item \textbf{Self-collected KEC Wearable Fall Dataset}: Minimum 500 labelled fall event windows and 2000 ADL windows recorded at KEC campus using the SPARK node, with subject metadata, published to GitHub under an open licence as ``KEC Wearable Fall Dataset in Nepal Context.''
+    \item \textbf{Self-collected KEC Wearable Fall Dataset}: Minimum 500 labelled fall event windows and 2000 ADL windows recorded at KEC campus using the SPARK node, with subject metadata, published to GitHub under an open licence as ``KEC Wearable Fall Dataset in Nepal Context''. 
 
-    \item \textbf{GitHub repository} : Complete open-source repository containing firmware, gateway software, trained model, dataset, KiCad schematic (breadboard-level), and a reproducible README enabling replication of the full system.
+    \item \textbf{GitHub repository}: Complete open-source repository containing firmware, gateway software, trained model, dataset, KiCad schematic (breadboard-level), and a reproducible README enabling replication of the full system.
 
 \end{enumerate}
