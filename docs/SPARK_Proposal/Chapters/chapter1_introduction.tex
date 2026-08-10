@@ -8,7 +8,7 @@
 
 Falls are a leading cause of injury-related mortality and morbidity among adults aged 65 and above worldwide. The WHO Global Report on Falls Prevention in Older Age (2007) identifies falls as the second leading cause of unintentional injury death globally, with approximately 684,000 fatal falls occurring each year \cite{who2007falls}. Non-fatal falls cause serious injuries including hip fractures, traumatic brain injuries, and long-term disability, placing a heavy burden on healthcare systems and caregivers.
 
-Nepal is undergoing a rapid demographic shift. The Central Bureau of Statistics projects that Nepal's population aged 65 and above will double by 2035 \cite{cbs2021nepal}, driven by improving life expectancy and urbanization. Despite this growing demographic pressure, no domestic fall detection product exists in the Nepali market. Commercial solutions such as the Apple Watch and medical alert pendants are cost-prohibitive --- a single Apple Watch SE (2nd generation) retails above NPR~30,000 --- and require proprietary ecosystems unavailable to most Nepali families. Urban WiFi penetration in Kathmandu, however, is increasingly reliable, making a WiFi-based alert pipeline practically deployable in the target care settings.
+Nepal is undergoing a rapid demographic shift. The Central Bureau of Statistics projects that Nepal's population aged 65 and above will double by 2035 \cite{cbs2021nepal}, driven by improving life expectancy and urbanization. Despite this growing demographic pressure, no domestic fall detection product exists in the Nepali market. Commercial solutions such as the Apple Watch and medical alert pendants are cost-prohibitive --- a single Apple Watch SE (2nd generation) retails above NPR~30,000 --- and require proprietary ecosystems unavailable to most Nepali families. A local BLE link between the wearable and a household laptop gateway requires no internet connectivity at all, making SPARK deployable in care settings regardless of WiFi/ISP reliability.
 
 Academic fall detection systems published in the literature typically rely on one of two approaches: threshold-only detection on raw accelerometer data, which produces unacceptably high false-positive rates on activities of daily living such as sit-to-stand transitions and stair climbing; or cloud-dependent machine learning inference, which introduces unacceptable network dependencies for a safety-critical application. Neither approach has been validated on a Nepal-context dataset, nor do any of the published open-source systems provide per-event classifier explainability for care staff.
 
@@ -46,11 +46,11 @@ The scope of our project includes:
 
     \item \textbf{Dual-Layer Gated Inference:} Our system uses a fast mathematical threshold check to wake up an on-device, quantized 1D CNN classifier only when a potential fall signature is detected.
 
-    \item \textbf{Gateway Ingestion \& Storage:} We build a localized backend setup using FastAPI and PostgreSQL to securely save event history and user configuration data.
+    \item \textbf{BLE Event Transmission:} Confirmed fall events are serialized as JSON and transmitted over Bluetooth Low Energy to a laptop gateway, requiring no WiFi or cloud connectivity.
 
     \item \textbf{SHAP Explainability Pipeline:} The system calculates Shapley additive feature values at the gateway to show caregivers exactly which sensor movements triggered the alarm.
 
-    \item \textbf{Instant Caregiver Alerting:} We route confirmed fall events to a Telegram Bot to message caregivers within two seconds of an incident.
+    \item \textbf{Read-Only Phone Display Client:} A companion phone view reads completed reports from the laptop gateway over the local network, letting caregivers check results without the laptop present.
 
     \item \textbf{Automated Clinical Reporting:} The pipeline automatically packages peak movement data and model confidence ratings into formal PDF incident summary files.
 \end{itemize}

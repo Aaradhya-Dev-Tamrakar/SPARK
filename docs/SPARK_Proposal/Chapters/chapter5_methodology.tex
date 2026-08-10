@@ -14,39 +14,30 @@
 \end{figure}
 
 
-SPARK consists of two physical subsystems: a battery-powered wearable node and a gateway unit, connected over a local WiFi network. Figure~\ref{fig:system_flow} illustrates the top-level system architecture.
+SPARK consists of two physical subsystems: a battery-powered wearable node and a laptop gateway, connected over BLE, plus a read-only phone display client on the local network. Figure~\ref{fig:system_flow} illustrates the top-level system architecture.
 
-The wearable node (ESP32 DevKit V1 + MPU6050) acquires raw 6-axis IMU data at 100\,Hz, applies a complementary filter for noise rejection, and runs the two-layer fall detection pipeline entirely on-device. On a confirmed fall, a JSON event payload is published to the gateway over WiFi via MQTT. The Raspberry Pi 4B gateway ingests the event, fires a Telegram caregiver alert, updates the Streamlit dashboard, logs the event with SHAP attribution to PostgreSQL, and auto-generates a PDF clinical incident report. Figure~\ref{fig:system_flow} illustrates the end-to-end data and control flow across all pipeline stages.
+The wearable node (ESP32-S3 + MPU6050) acquires raw 6-axis IMU data at 200\,Hz and runs the two-layer fall detection pipeline entirely on-device. On a confirmed fall, a JSON event payload is transmitted to the laptop gateway over BLE. The laptop ingests the event, computes SHAP attribution, and auto-generates a PDF clinical incident report --- entirely locally, with no cloud round-trip or persistent database. A companion phone display client reads the completed report from the laptop over the local network. Figure~\ref{fig:system_flow} illustrates the end-to-end data and control flow across all pipeline stages.
 
 
-Figure~\ref{fig:system_flow} is organized into four zones connected by two link types  solid arrows for sequential on-device processing, and a dashed WiFi boundary where the wearable node hands off to the gateway. Each block is described below.
+Figure~\ref{fig:system_flow} is organized into three zones connected by two link types  solid arrows for sequential on-device processing, and a dashed BLE boundary where the wearable node hands off to the gateway. Each block is described below.
 
 \textbf{Sensor zone (wearable node, solid fill hatch)}
 \begin{itemize}
-	\item \textbf{MPU6050 IMU} : reads all six raw accelerometer and gyroscope axes over I$^2$C at 100\,Hz (Section~\ref{sec:imu_acquisition}).
-	\item \textbf{Complementary filter} :fuses the raw axes ($\alpha = 0.98$) to reject high-frequency sensor noise before the signal reaches the detection pipeline.
-	\item \textbf{Sliding window} : buffers the filtered stream in a 200-sample circular ring buffer (2 seconds at 100\,Hz), continuously overwritten until a candidate fall window is latched.
+	\item \textbf{MPU6050 IMU} : reads all six raw accelerometer and gyroscope axes over I$^2$C at 200\,Hz (Section~\ref{sec:imu_acquisition}).
+	\item \textbf{Sliding window} : buffers the raw stream in a circular ring buffer, continuously overwritten until a candidate fall window is latched by Layer~1.
 \end{itemize}
 
 \textbf{Edge inference zone (wearable node, grid fill)}
 \begin{itemize}
 	\item \textbf{Two-layer detection} : Layer~1 threshold pre-filter gates Layer~2 TFLite Micro CNN inference, exactly as formalized in Algorithm 5.4.
-	\item \textbf{MQTT publish} : on \texttt{CONFIRMED\_FALL}, serializes the event as JSON and publishes it to the \texttt{spark/events} topic, crossing the WiFi boundary to the gateway.
+	\item \textbf{BLE transmit} : on \texttt{CONFIRMED\_FALL}, serializes the event as JSON per the locked wire format and transmits it over Bluetooth Low Energy, crossing the BLE boundary to the laptop gateway.
 \end{itemize}
 
-\textbf{Gateway zone (Raspberry Pi 4B, dot fill)}
+\textbf{Gateway zone (laptop, dot fill)}
 \begin{itemize}
-	\item \textbf{Mosquitto broker} :the local MQTT broker subscribed to \texttt{spark/events}, receiving the event published by the wearable node.
-	\item \textbf{FastAPI/Uvicorn} :Incorporates the incoming event from the broker and orchestrates the remaining gateway pipeline stages.
-	\item \textbf{PostgreSQL}: persists the event log, including the raw event fields and downstream SHAP output.
-	\item \textbf{SHAP attribution} : computes per-feature attributions on the six peak IMU channels in under 200\,ms, identifying which channel most contributed to the fall classification.
-\end{itemize}
-
-\textbf{Output zone (parallel, dash-dot outline)}
-\begin{itemize}
-	\item \textbf{Telegram} : dispatches a caregiver alert within 2 seconds of event ingestion.
-	\item \textbf{Streamlit Dashboard} : displays the event timestamp, severity score, and Layer~2 CNN confidence in real time.
-	\item \textbf{PDF incident report} : auto-generates a one-page clinical report containing the SHAP attribution chart and a care-staff signature block.
+	\item \textbf{BLE receiver} : the sole receiver of \texttt{CONFIRMED\_FALL} events from the wearable node, running locally on the laptop.
+	\item \textbf{SHAP attribution} : computes per-feature attributions on the six peak IMU channels, identifying which channel most contributed to the fall classification.
+	\item \textbf{PDF incident report} : auto-generates a one-page clinical report containing the SHAP attribution chart and a care-staff signature block, readable by the phone display client over the local network.
 \end{itemize}
 
 
@@ -57,16 +48,15 @@ Figure~\ref{fig:system_flow} is organized into four zones connected by two link 
 The wearable node is assembled on a breadboard for the prototype phase, transitioning to a compact perfboard layout prior to the March 2027 demonstration. The assembly sequence is:
 
 \begin{enumerate}
-	\item Connect the MPU6050 to the ESP32 via I$^2$C: SDA to GPIO~21, SCL to GPIO~22, operating at 400\,kHz.
-	\item Power the MPU6050 from the ESP32 3.3\,V rail.
-	\item Connect the 18650 cell output (3.0--4.2\,V) to the TP4056 module (battery management), then to the AMS1117-3.3 LDO input.
-	\item Connect the INA219 current sensor in series with the 3.3\,V power rail to the ESP32 VIN; connect INA219 I$^2$C lines to GPIO~21/22 (secondary address 0x41).
-	\item House the assembly in a 3D-printed PLA enclosure (KEC Makerspace, Anycubic filament) with a Velcro wrist strap and flush-mounted USB-C charging port.
+	\item Connect the MPU6050 to the ESP32-S3 via I$^2$C: SDA to GPIO~21, SCL to GPIO~22, operating at 400\,kHz.
+	\item Power the MPU6050 from the ESP32-S3 3.3\,V rail (onboard regulation; no separate LDO required).
+	\item Connect the 1100\,mAh Li-ion/LiPo cell output to the TP4056-class charge/protection circuit (required unless the sourced pack is already protected), then to the ESP32-S3 devboard's battery input.
+	\item House the assembly in a 3D-printed TPU enclosure (KEC Makerspace) with a Velcro wrist strap, the enclosure's own built-in Velcro closure tab, and a flush-mounted USB-C charging port.
 \end{enumerate}
 
 \subsection{Power Budget Verification}
 
-The INA219 provides real-time current and voltage telemetry logged to the gateway. Target metrics: active current draw $\leq$~80\,mA at 3.3\,V, providing $\geq$~25 hours of continuous monitoring from a 2000\,mAh cell. This will be measured and documented in the thesis Chapter~5 (Implementation).
+No power-rail telemetry sensor is used in this design. Target metrics: active current draw estimated at 110--140\,mA (BLE + 200\,Hz IMU polling), providing an estimated 8--10 hours of continuous monitoring from the 1100\,mAh cell. This is a published-figure estimate, not yet measured on hardware; on-hardware profiling and documentation is planned for the thesis Chapter~5 (Implementation).
 
 \section{Firmware Implementation (ESP32 PlatformIO)}
 
@@ -80,27 +70,21 @@ The INA219 provides real-time current and voltage telemetry logged to the gatewa
 \subsection{IMU Acquisition and Filtering}
 \label{sec:imu_acquisition}
 
-The MPU6050 is configured via I$^2$C at startup: accelerometer full-scale $\pm$8\,g, gyroscope full-scale $\pm$500$^\circ$/s, DLPF cutoff 20\,Hz. A timer interrupt service routine (ISR) fires at 100\,Hz and reads all six raw axes via direct register access (bypassing the DMP). A complementary filter ($\alpha = 0.98$) fuses accelerometer and gyroscope to produce filtered angular velocity estimates:
-
-\begin{equation}
-	\hat{\omega}_{k} = 0.98 \cdot (\hat{\omega}_{k-1} + \omega_{\text{raw},k} \cdot \Delta t) + 0.02 \cdot \theta_{\text{accel},k}
-\end{equation}
-
-Raw accelerometer values pass through without additional filtering (the DLPF suffices for noise rejection above 20\,Hz).
+The MPU6050 is configured via I$^2$C at startup: accelerometer full-scale $\pm$8\,g, gyroscope full-scale $\pm$500$^\circ$/s. A timer interrupt service routine (ISR) fires at 200\,Hz and reads all six raw axes via direct register access (bypassing the DMP), feeding the resultant-magnitude computation directly with no intermediate sensor-fusion filtering stage.
 
 \subsection{Sliding Window Buffer}
 
-A circular ring buffer stores the most recent 200 samples (2 seconds at 100\,Hz) of all six channels ($a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$) in SRAM. When Layer~1 fires a \texttt{PRE\_FALL} flag, the buffer is copied to a local array, normalized using StandardScaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
+A circular ring buffer stores the most recent samples of all six channels ($a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$) in SRAM, continuously overwritten. When Layer~1 fires a \texttt{PRE\_FALL} flag, the gate-triggered window is copied to a local array, normalized using StandardScaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
 
 \subsection{Layer 1 - Threshold Pre-filter}
 
-The resultant acceleration magnitude and angular velocity magnitude are computed every ISR tick:
+The resultant acceleration magnitude is computed every ISR tick:
 
 \begin{equation}
-	|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}, \qquad |\omega| = \sqrt{\omega_x^2 + \omega_y^2 + \omega_z^2}
+	|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
 \end{equation}
 
-The \texttt{PRE\_FALL} flag is set when: (1) $|a|$ exceeds 2.5\,g for at least 1 sample (free-fall impact proxy), and (2) $|a|$ subsequently remains below 0.5\,g for more than 300\,ms (post-impact rest phase). The threshold values (2.5\,g, 0.5\,g, 300\,ms) will be empirically calibrated against self-collected fall simulations and are adjustable via the Strategy Pattern sensitivity profiles (Section~\ref{sec:strategy}).
+The \texttt{PRE\_FALL} flag is set when $|a|$ exceeds 2.5\,g for more than 300\,ms; the queue is cleared if no new peak acceleration occurs within a 10\,s timeout. These threshold values are currently fixed design parameters, pending empirical calibration against self-collected fall simulations, and are adjustable via the Strategy Pattern sensitivity profiles (Section~\ref{sec:strategy}).
 
 \subsection{Layer 2 - TFLite Micro CNN Inference}
 

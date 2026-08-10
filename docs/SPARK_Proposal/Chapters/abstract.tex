@@ -1,7 +1,7 @@
 \chapter*{\scshape Abstract}
 
-SPARK is an open-hardware wearable fall detection system for Nepal's growing elderly care gap. An ESP32 and MPU6050 IMU node, worn on the wrist or chest, runs a two-layer on-device pipeline  a threshold pre-filter (Layer~1) gating a quantized INT8 TFLite Micro 1D CNN (Layer~2)  with no cloud dependency and under 200\,ms end-to-end latency. Confirmed falls trigger a Raspberry~Pi gateway (FastAPI/PostgreSQL) that alerts caregivers via Telegram within 2 seconds, updates a Streamlit dashboard, and computes SHAP feature attribution per event so classifications are auditable rather than a black-box verdict, alongside auto-generated PDF incident reports.
+SPARK is an open-hardware wearable fall detection system for Nepal's growing elderly care gap. An ESP32-S3 and MPU6050 IMU node, worn on the wrist (top-of-wrist/dorsal placement, Velcro closure), runs a two-layer on-device pipeline  a threshold pre-filter (Layer~1) gating a quantized INT8 TFLite Micro 1D CNN (Layer~2)  with no cloud dependency. Confirmed falls are transmitted over BLE to a laptop gateway, which computes SHAP feature attribution per event so classifications are auditable rather than a black-box verdict, and auto-generates a PDF clinical incident report. A companion phone display client provides caregivers a read-only view of completed reports without requiring the laptop to be physically present.
 
 The project contributes a Nepal-context wearable IMU fall dataset, a configurable sensitivity strategy (High~/ Standard~/ Sport), and an open-source reference design for low-cost elderly fall monitoring across South Asian care settings.
 
-\textbf{Keywords:} Edge AI, elderly care, ESP32, fall detection, IMU, Nepal, SHAP explainability, TFLite Micro, wearable sensor.
+\textbf{Keywords:} BLE, edge AI, elderly care, ESP32-S3, fall detection, IMU, Nepal, SHAP explainability, TFLite Micro, wearable sensor.
