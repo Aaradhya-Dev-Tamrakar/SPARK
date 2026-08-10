@@ -153,7 +153,6 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Key status lines:**
 
 1. **Design status**
-
    - 🟢 Architecture, novelty claims, WBS all confirmed
    - 🟡 Claims 1 and 3's wording may need narrowing (Action #26)
    - 🟢 Gateway host is laptop; RPi dropped entirely, not kept as backup (Action #15 reframed)
@@ -162,14 +161,12 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 🟡 Purchase/inventory status (units ordered, MPU6050 in hand) discussed but not confirmed (Action #18)
 
 2. **Proposal package**
-
    - 🟢 `SPARK_Proposal_20260701_v35.zip` — signed hardcopy, submitted-of-record (resubmitted July 6, 2026 after deadline shift)
    - v33 → v35 diff: wording edits only
    - Separate `v36.zip` exists with Gantt chart fix, but was not submitted
    - **Not yet updated for S3 swap or RPi drop** — proposal text still names DevKit V1 and RPi 4B (acceptable since already submitted, but both changes need writing into post-defence revision or thesis proper)
 
 3. **Submission status**
-
    - 🟢 Submitted: July 2 (v33), resubmitted July 6 (v35)
    - Defence: July 9, 2026 — occurred as scheduled, panel optimistic
    - No specific pivot-related questions reported
@@ -177,18 +174,15 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Next step: negotiate new component costs with department following RPi drop (new Action #31)
 
 4. **Table ref status**
-
    - 🟡 Unresolved — `Table~\ref{tab:component_cost}` compilation on Overleaf never confirmed
    - Not blocking (submission already happened), but worth checking before thesis finalization
 
 5. **Not blocking, but decide soon**
-
    - 9 open items: #16, #17, #18, #19, #20, #21, #22, #23, #24
    - Resolved: #2, #4, #11, #12, #14, #15 (v22), legacy #6 (v22, repo created)
    - Still open: #3, #5, #32, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
-
    - 🟢 34 action items logged total (#1–34)
    - Tiers rank open, actionable items by dependency/lead-time
    - Resolved items and Future-Work-only items (7, above) sit outside tier system by design
@@ -203,32 +197,27 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Ordered list format (was 5×2 table in v25):**
 
 1. **Tier 1 — RESOLVED July 10 (v20)**
-
    - **Focus:** Was "today, before/at defence" as of v16 (July 9) — rehearse the ESP32-S3/laptop-only pivot verbally, since v35 (signed, submitted-of-record) still names DevKit V1 and RPi 4B; recompile-check the Table ref if time permits.
    - **Outcome:** Defence occurred as scheduled — panel optimistic, no specific pivot-related questions reported. Whether the rehearsal itself happened is not independently confirmed, but the risk it existed to cover didn't surface as an issue.
    - **Items:** #25 (resolved) / #10
    - **Why this tier:** None — resolved. See new #31 below for the follow-on item this outcome opened.
 
 2. **Tier 2 — this week, gates WP 2.0**
-
    - **Focus:** Confirm/place the ESP32-S3 order and MPU6050 lab-source; add 3rd spare unit _while already ordering_ rather than as a later emergency reorder; log the USB-C cable price once bought.
    - **Items:** #16, #18, #19
    - **Why this tier:** Real procurement lead time; bundling the spare now is cheaper than reopening the order later.
 
 3. **Tier 3 — start now despite "Sept" label**
-
    - **Focus:** Define the self-collected dataset protocol; resolve MPU6050 firmware reuse-vs-rewrite with Rupesh in the same pass; narrow novelty Claims 1/3's wording before a panel member finds the same prior art this session's search did.
    - **Items:** #23, #24, #26
    - **Why this tier:** Volunteer recruiting/scheduling has real lead time a September start date doesn't account for; R-03's mitigation depends on #23 existing, not just being planned; #26 carries real urgency unlike the Ch.6-only items it was previously grouped with.
 
 4. **Tier 4 — zero cost, no dependency**
-
    - **Focus:** Lock the gateway procedural mitigation in as actual practice, not stated intent; patch the R-05/R-04 risk-matrix notes.
    - **Items:** #15, #21, #22
    - **Why this tier:** Nothing blocks these — they just need a decision or a one-line edit.
 
 5. **Tier 5 — correctly wait, trigger hasn't fired**
-
    - **Focus:** Board footprint vs. enclosure; mobile hotspot client cap; C3 benchmark.
    - **Items:** #17, #20, #6
    - **Why this tier:** Each needs something that doesn't exist yet (physical board in hand, known demo device, C3 unit on hand).
@@ -240,7 +229,6 @@ Landed via three raw commits (see above note) — future edits must route throug
 **34 action items logged total. Ordered by item number (not priority tier); newest addition (#34) placed at top per convention, remaining items retain original recency ordering.**
 
 1. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
-
    - **Item:** Enclosure electronics housing confirmed at top-of-wrist (dorsal side), not underside/palm-side. Fixes MPU6050 orientation reference for Layer 1 threshold calibration (Action #7) and rules out volar-side mounting.
    - **v30 addition — closure mechanism:** Hook-and-loop Velcro (not belt-buckle). Elderly-dexterity rationale: target population (healthy independent elderly, per proposal scope) needs one-handed, no-fine-motor-control fastening; Velcro tolerates daily wrist-swelling variance and doesn't require threading/pulling tension like a buckle. Skin protection is handled by the arm sleeve base layer (new BOM row, Action #34), not by the closure choice.
    - **v30 addition — arm sleeve base layer:** Compression arm sleeve (thumb-hole, stretchable) worn under the enclosure. Added to BOM at NPR 136 (Daraz, "BLUE BELL Let's Slim").
@@ -248,199 +236,169 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **Status:** Locked v29 (placement) + v30 (closure, base layer). §2.2/§2.6 updated. BOM cost impact: +NPR 136 (v30, arm sleeve only — placement/closure choice itself has no cost).
 
 2. **#32 — Source battery charge/protection circuit (NEW v28)**
-
    - **Item:** MPU6050→ESP32-S3 needs a physical wired link (breadboard-level, bring-up phase) and a raw 1000 mAh Li-ion/LiPo cell needs charge/overcharge/over-discharge protection (TP4056-class module) unless the sourced battery is already a protected pack. Neither was present in the ESP32-S3-era BOM (§2.6 had only 7 rows).
    - **Owner:** Aaradhya
    - **Status:** Open. BOM row added v28 (unpriced placeholder, baseline NPR 90/unit from legacy proposal table). Confirm at battery-sourcing time whether the purchased cell is already protected — if so this line may be dropped.
 
-2. **#33 — Bring-up consumables not yet in BOM (NEW v28)**
-
+3. **#33 — Bring-up consumables not yet in BOM (NEW v28)**
    - **Item:** Breadboard + jumper wires and a resistor/capacitor assortment are needed for wearable-node bring-up/prototyping but were never priced against the current ESP32-S3 design (only existed in the dead RPi-era cost table).
    - **Owner:** Aaradhya
    - **Status:** Open. BOM rows added v28 under new "Bring-up/Assembly" section, baseline pricing from legacy table (breadboard+jumper NPR 325/set × 2 = 650; resistor/capacitor NPR 600/lot).
 
-3. **#25 — Confirm defence outcome [RESOLVED v20]**
-
+4. **#25 — Confirm defence outcome [RESOLVED v20]**
    - **Item:** Confirm what actually happened at the July 9 defence — did it occur as scheduled, was the ESP32-S3/laptop pivot explained if a panel member asked, any feedback given
    - **Owner:** Aaradhya
    - **Status:** **Resolved July 10 (v20).** Defence occurred as scheduled July 9. Outcome: panel was optimistic about the project. No specific questions reported about the ESP32-S3/laptop pivot despite the gap between v35's paper submission and the actual as-built design. Whether the verbal rehearsal itself happened is not independently confirmed, but the risk it was meant to cover didn't surface as an issue. Follow-on item opened as new **Action #31**.
 
-4. **#26 — Narrow novelty Claims 1/3 wording (Tier 3, urgent despite v18 labeling)**
-
+5. **#26 — Narrow novelty Claims 1/3 wording (Tier 3, urgent despite v18 labeling)**
    - **Item:** Prior-art search (v18) found 2024–2025 papers on multi-stage CNNs, gated ensembles, and SHAP for fall detection. Current proposal wording needs narrowing to "MCU+local-gateway" specifically, not broader "no existing system" framing, before a panel member finds the same papers.
    - **Owner:** Aaradhya (decision + thesis wording)
    - **Status:** Open. General web search done (v18); formal IEEE Xplore/Scopus query still needed before thesis chapter finalized. Recommendation: narrow Claims 1 and 3 before defence if revising, or before thesis submission (Action #26 stays open).
 
-5. **#27 — Gateway NPU/iGPU capability assessment (Future Work, laptop-specific)**
-
+6. **#27 — Gateway NPU/iGPU capability assessment (Future Work, laptop-specific)**
    - **Item:** Laptop (Acer Swift Go 16, Intel Core Ultra 7 155H) has on-die NPU (11 TOPS INT8) and iGPU (18 TOPS INT8) that RPi 4B structurally never had. Assess feasibility for gateway-side accelerated inference or real-time feature extraction.
    - **Owner:** TBD
    - **Status:** Open (Ch.6). Added v18 as a laptop-enabled opportunity post-RPi drop.
 
-6. **#28 — Camera-based confirmation modality (Future Work, vision-based 2nd opinion)**
-
+7. **#28 — Camera-based confirmation modality (Future Work, vision-based 2nd opinion)**
    - **Item:** Explore vision-based fall confirmation (e.g., optical flow, pose estimation) as a second-opinion check, contingent on #27's NPU/iGPU availability.
    - **Owner:** TBD
    - **Status:** Open (Ch.6). Added v18; cross-linked to #27 (v19) since modality requires compute #27 enables.
 
-7. **#29 — Cloud archival integration (Future Work)**
-
+8. **#29 — Cloud archival integration (Future Work)**
    - **Item:** Optional cloud cold-storage sync for long-term patient records (complements local JSON + PDF).
    - **Owner:** TBD
    - **Status:** Open (Ch.6). Added v18.
 
-8. **#30 — Wearable duty cycle optimization (Future Work)**
-
+9. **#30 — Wearable duty cycle optimization (Future Work)**
    - **Item:** Battery-management firmware to optimize sensor polling / wake intervals based on activity phase (e.g., idle vs. walking vs. fall-recovery).
    - **Owner:** TBD
    - **Status:** Open (Ch.6). Added v18.
 
-9. **#24 — MPU6050 firmware reuse vs. rewrite (Tier 3, promoted from legacy)**
+10. **#24 — MPU6050 firmware reuse vs. rewrite (Tier 3, promoted from legacy)**
 
-   - **Item:** Decide whether to reuse the existing MPU6050 driver from FallGuard (legacy project) or rewrite from scratch. Affects code review, testing, and confidence in the sensor integration.
-   - **Owner:** Rupesh + Aaradhya
-   - **Status:** Open. HOD discussion planned alongside #23 (dataset protocol); not yet confirmed.
+- **Item:** Decide whether to reuse the existing MPU6050 driver from FallGuard (legacy project) or rewrite from scratch. Affects code review, testing, and confidence in the sensor integration.
+- **Owner:** Rupesh + Aaradhya
+- **Status:** Open. HOD discussion planned alongside #23 (dataset protocol); not yet confirmed.
 
-10. **#23 — Dataset protocol finalization (Tier 3, promoted from legacy)**
+1. **#23 — Dataset protocol finalization (Tier 3, promoted from legacy)**
 
-   - **Item:** Define fall types, ADL types, subject count, and recording procedure for the self-collected dataset to complement SisFall.
-   - **Owner:** Aaradhya
-   - **Status:** Open. HOD discussion held (v22); confirmation from department still pending. Volunteer recruiting/scheduling lead time is real despite September gate label.
+- **Item:** Define fall types, ADL types, subject count, and recording procedure for the self-collected dataset to complement SisFall.
+- **Owner:** Aaradhya
+- **Status:** Open. HOD discussion held (v22); confirmation from department still pending. Volunteer recruiting/scheduling lead time is real despite September gate label.
 
-11. **#22 — R-04 risk matrix update (Tier 4)**
+1. **#22 — R-04 risk matrix update (Tier 4)**
 
-   - **Item:** Risk R-04 (external interference in sensor signal) lists a mitigation claim ("isolated data collection environment") that is not sourced to any Action or design decision. Patch the risk row with a cross-reference or reword the claim.
+- **Item:** Risk R-04 (external interference in sensor signal) lists a mitigation claim ("isolated data collection environment") that is not sourced to any Action or design decision. Patch the risk row with a cross-reference or reword the claim.
+- **Owner:** Aaradhya
+- **Status:** Open. Flagged v16; no action yet.
+
+1. **#21 — R-05 risk matrix update (Tier 4)**
+   - **Item:** Risk R-05 (battery drain from continuous polling) cites a specific battery-draw figure that is no longer in use post-RPi drop (RPi's quiescent draw was the reference; ESP32-S3's is different). Update the claim to match current design.
    - **Owner:** Aaradhya
    - **Status:** Open. Flagged v16; no action yet.
 
-12. **#21 — R-05 risk matrix update (Tier 4)**
+2. **#20 — Mobile hotspot max-client cap (Tier 5, low priority)**
+   - **Item:** Measure the maximum number of simultaneous client connections supported by the mobile hotspot device(s) used for demo-day gateway uptime. Current assumption: n=2 (wearable + gateway). Real cap might be lower; if lower, affects single-device hotspot viability.
+   - **Owner:** TBD
+   - **Status:** Open. Flagged v15; low priority since n=2 is well within typical caps (usually 10+).
 
-    - **Item:** Risk R-05 (battery drain from continuous polling) cites a specific battery-draw figure that is no longer in use post-RPi drop (RPi's quiescent draw was the reference; ESP32-S3's is different). Update the claim to match current design.
-    - **Owner:** Aaradhya
-    - **Status:** Open. Flagged v16; no action yet.
+3. **#19 — Log USB-C cable price (Tier 2)**
+   - **Item:** USB-C cable for ESP32-S3 gateway connection is self-funded but price was never recorded. Log the amount once purchased.
+   - **Owner:** Aaradhya
+   - **Status:** Open. Tier 2; gates WP 2.0.
 
-13. **#20 — Mobile hotspot max-client cap (Tier 5, low priority)**
+4. **#18 — Confirm receipt of self-funded/lab-sourced items (Tier 2)**
+   - **Item:** Confirm: (a) 1 × ESP32-S3 self-funded by Aaradhya — has it been ordered/received?; (b) MPU6050 borrowed from lab — is it in hand and ready for integration testing?
+   - **Owner:** Aaradhya
+   - **Status:** Open. Tier 2; gates WP 2.0.
 
-    - **Item:** Measure the maximum number of simultaneous client connections supported by the mobile hotspot device(s) used for demo-day gateway uptime. Current assumption: n=2 (wearable + gateway). Real cap might be lower; if lower, affects single-device hotspot viability.
-    - **Owner:** TBD
-    - **Status:** Open. Flagged v15; low priority since n=2 is well within typical caps (usually 10+).
+5. **#17 — Board physical footprint vs. enclosure (Tier 5)**
+   - **Item:** RoboNepal's ESP32-S3 board is a WROOM-1-**CAM** variant with an onboard camera FPC connector (unused by SPARK). Enclosure design (still not started, v23) needs to account for this footprint. Check compatibility once board is in hand.
+   - **Owner:** Sankalpa + Aaradhya
+   - **Status:** Open. Low priority (Tier 5); enclosure work hasn't started yet (v23).
 
-14. **#19 — Log USB-C cable price (Tier 2)**
+6. **#16 — Confirm/order spare ESP32-S3 board (Tier 2)**
+   - **Item:** Quantity was reduced to 2 units (no RPi backup). Zero spare board exists for firmware bring-up risk. Add 1 unit at next order to reintroduce a buffer.
+   - **Owner:** Rupesh + Aaradhya
+   - **Status:** Open. Tier 2; gates WP 2.0. Action items #16, #18, #19 should be bundled in the same order.
 
-    - **Item:** USB-C cable for ESP32-S3 gateway connection is self-funded but price was never recorded. Log the amount once purchased.
-    - **Owner:** Aaradhya
-    - **Status:** Open. Tier 2; gates WP 2.0.
+7. **#15 — Gateway procedural uptime mitigation (Tier 4) [PARTIALLY RESOLVED v22]**
+   - **Item:** Confirm that laptop gateway uptime is guarded by an actual procedure (e.g., plugged in at demo, hotspot ready, restart scripts staged). Both compute and power halves need documentation.
+   - **Owner:** Aaradhya
+   - **Status:** Compute half resolved (v15 compared laptop vs. RPi 4B, confirmed laptop is sufficient; no longer a technical risk). Procedural half confirmed executed (v22, same-day as defence prep). Formalization still pending — lock the procedure as documented practice, not stated intent. Tier 4.
 
-15. **#18 — Confirm receipt of self-funded/lab-sourced items (Tier 2)**
+8. **#14 — ESP32-S3 vendor/pricing (Tier 2) [RESOLVED v13 with BOM delta]**
+   - **Item:** Himalayan went out of stock same day v12 locked them as "confirmed." RoboNepal (existing SPARK vendor for RPi) carries the same module.
+   - **Owner:** Aaradhya
+   - **Status:** **Resolved v13.** RoboNepal confirmed: NPR 1,979/unit, 5 in stock. Board legitimacy checked (dual USB-C, BOOT/RST buttons, 16MB flash/8MB PSRAM/dual-core LX7 all match spec). **BOM delta:** 2 × NPR 1,979 = NPR 3,958 (was 2 × 1,800 = NPR 3,600) — **+NPR 358, no longer net-zero**. New BOM total: ~NPR 15,004 (was 14,646). Board variant is WROOM-1-CAM (has unused camera FPC) — different footprint than plain N16R8; see Action #17 (low-priority, enclosure not started).
 
-    - **Item:** Confirm: (a) 1 × ESP32-S3 self-funded by Aaradhya — has it been ordered/received?; (b) MPU6050 borrowed from lab — is it in hand and ready for integration testing?
-    - **Owner:** Aaradhya
-    - **Status:** Open. Tier 2; gates WP 2.0.
+9. **#13 — Self-funding disclosure (Tier 2) [RESOLVED v13]**
+   - **Item:** Confirm whether one of the two ESP32-S3 units has been self-funded as a staged plan (1 now for quantization testing, 2nd before Sept 2026 gate).
+   - **Owner:** Aaradhya
+   - **Status:** **Resolved v13.** Self-funded arrangement confirmed: 1 × ESP32-S3 (NPR 1,979) self-funded by Aaradhya for immediate quantization work. Departmental ask reduced from 2 units to 1 unit, saving NPR 1,979. Also added USB-C cable as self-funded unpriced item. No change to absolute BOM (still ~NPR 15,004), but departmental request is now lower.
 
-16. **#17 — Board physical footprint vs. enclosure (Tier 5)**
-
-    - **Item:** RoboNepal's ESP32-S3 board is a WROOM-1-**CAM** variant with an onboard camera FPC connector (unused by SPARK). Enclosure design (still not started, v23) needs to account for this footprint. Check compatibility once board is in hand.
-    - **Owner:** Sankalpa + Aaradhya
-    - **Status:** Open. Low priority (Tier 5); enclosure work hasn't started yet (v23).
-
-17. **#16 — Confirm/order spare ESP32-S3 board (Tier 2)**
-
-    - **Item:** Quantity was reduced to 2 units (no RPi backup). Zero spare board exists for firmware bring-up risk. Add 1 unit at next order to reintroduce a buffer.
-    - **Owner:** Rupesh + Aaradhya
-    - **Status:** Open. Tier 2; gates WP 2.0. Action items #16, #18, #19 should be bundled in the same order.
-
-18. **#15 — Gateway procedural uptime mitigation (Tier 4) [PARTIALLY RESOLVED v22]**
-
-    - **Item:** Confirm that laptop gateway uptime is guarded by an actual procedure (e.g., plugged in at demo, hotspot ready, restart scripts staged). Both compute and power halves need documentation.
-    - **Owner:** Aaradhya
-    - **Status:** Compute half resolved (v15 compared laptop vs. RPi 4B, confirmed laptop is sufficient; no longer a technical risk). Procedural half confirmed executed (v22, same-day as defence prep). Formalization still pending — lock the procedure as documented practice, not stated intent. Tier 4.
-
-19. **#14 — ESP32-S3 vendor/pricing (Tier 2) [RESOLVED v13 with BOM delta]**
-
-    - **Item:** Himalayan went out of stock same day v12 locked them as "confirmed." RoboNepal (existing SPARK vendor for RPi) carries the same module.
-    - **Owner:** Aaradhya
-    - **Status:** **Resolved v13.** RoboNepal confirmed: NPR 1,979/unit, 5 in stock. Board legitimacy checked (dual USB-C, BOOT/RST buttons, 16MB flash/8MB PSRAM/dual-core LX7 all match spec). **BOM delta:** 2 × NPR 1,979 = NPR 3,958 (was 2 × 1,800 = NPR 3,600) — **+NPR 358, no longer net-zero**. New BOM total: ~NPR 15,004 (was 14,646). Board variant is WROOM-1-CAM (has unused camera FPC) — different footprint than plain N16R8; see Action #17 (low-priority, enclosure not started).
-
-20. **#13 — Self-funding disclosure (Tier 2) [RESOLVED v13]**
-
-    - **Item:** Confirm whether one of the two ESP32-S3 units has been self-funded as a staged plan (1 now for quantization testing, 2nd before Sept 2026 gate).
-    - **Owner:** Aaradhya
-    - **Status:** **Resolved v13.** Self-funded arrangement confirmed: 1 × ESP32-S3 (NPR 1,979) self-funded by Aaradhya for immediate quantization work. Departmental ask reduced from 2 units to 1 unit, saving NPR 1,979. Also added USB-C cable as self-funded unpriced item. No change to absolute BOM (still ~NPR 15,004), but departmental request is now lower.
-
-21. **#12 — MPU6050 sourcing (Tier 2) [RESOLVED v13]**
-
+10. **#12 — MPU6050 sourcing (Tier 2) [RESOLVED v13]**
     - **Item:** Is MPU6050 already in the lab, ready to borrow, or does it need ordering?
     - **Owner:** Rupesh + Aaradhya
     - **Status:** **Resolved v13.** Lab-borrow plan confirmed (no purchase needed). Not tracking separately as a line-item cost.
 
-22. **#11 — Enclosure form factor (Tier 2) [RESOLVED v13 — 3D-printed PLA]**
-
+11. **#11 — Enclosure form factor (Tier 2) [RESOLVED v13 — 3D-printed PLA]**
     - **Item:** Decide on form factor (wrist-worn vs. chest-worn vs. belt-clip) and manufacturing method.
     - **Owner:** Sankalpa
     - **Status:** **Resolved v13.** Enclosure method: 3D-printed PLA (in-house on KEC Makerspace equipment). Form factor still TBD; see Action #8 below (legacy, unresolved).
 
-23. **#10 — Weekly gate system for 8th semester (Tier 2)**
-
+12. **#10 — Weekly gate system for 8th semester (Tier 2)**
     - **Item:** Establish a weekly check-in cadence for 8th-semester progress tracking, complementing the monthly gates already in §4 (Timeline).
     - **Owner:** Aaradhya + HOD (Er. Suramya Sharma Dahal)
     - **Status:** Unverified. §4 has monthly gates; whether a _weekly_ cadence was separately set up is not recorded. Assume monthly gates as the current standard until confirmed.
 
-24. **#9 — RPi power supply (Tier 5) [LEGACY — no longer applicable, RPi dropped v12]**
-
+13. **#9 — RPi power supply (Tier 5) [LEGACY — no longer applicable, RPi dropped v12]**
     - **Item:** Confirm team RPi 4B PSU is available or budget NPR 300–500.
     - **Owner:** Sankalpa
     - **Status:** **Not applicable (v12).** RPi 4B dropped from the BOM entirely; no PSU needed.
 
-25. **#8 — Enclosure form factor decision (Tier 5) [RESOLVED v27 — wrist-worn]**
-
+14. **#8 — Enclosure form factor decision (Tier 5) [RESOLVED v27 — wrist-worn]**
     - **Item:** Wrist-worn vs. chest-worn vs. belt-clip (affects Layer 1 threshold calibration).
     - **Owner:** Sankalpa + Rupesh
     - **Status:** **Resolved v27 — wrist-worn.** Fabrication method (3D-printed PLA, Action #11) and wear location now both locked. Empirical Layer 1 threshold tuning (Action #7) can proceed against a fixed wrist-mount geometry once WP 1.0/2.0 fall-sim data exists.
 
-26. **#7 — Sensitivity threshold calibration (Tier 5) [LEGACY — still open]**
-
+15. **#7 — Sensitivity threshold calibration (Tier 5) [LEGACY — still open]**
     - **Item:** Layer 1 |\mathbf{a}| and Δt values need empirical tuning from real fall simulations. Current design specifies fixed thresholds (2.5g / 300ms); whether empirical tuning has happened is not recorded.
     - **Owner:** Rupesh + Aaradhya
     - **Status:** Unverified. §2.2 (architecture) and §7 (appendix, 1D CNN internals) still state design values as fixed; no confirmation of empirical tuning from real fall data. Gates WP 1.0/2.0.
 
-27. **#6 — SPARK GitHub repo + README + team access (Tier 5) [RESOLVED v22 — repo created]**
-
+16. **#6 — SPARK GitHub repo + README + team access (Tier 5) [RESOLVED v22 — repo created]**
     - **Item:** Create a GitHub repo with README, .gitignore, folder scaffold, and team collaborator access (Rupesh, Sankalpa, Sonia).
     - **Owner:** Aaradhya
     - **Status:** **Resolved v22.** Repo created at `github.com/Aaradhya-Dev-Tamrakar/SPARK` — README, .gitignore, sync.ps1, and scaffold folders (firmware/training/gateway/data) in place. Team access (Rupesh, Sankalpa, Sonia as collaborators) not independently confirmed here — same non-assuming standard as the rest of this tracker; repo _existing_ is resolved, collaborator access is a separate, unconfirmed sub-item (minor).
 
-28. **#5 — Self-collected dataset protocol (Tier 3) [PROMOTED to Action #23]**
-
+17. **#5 — Self-collected dataset protocol (Tier 3) [PROMOTED to Action #23]**
     - **Item:** Define fall types, ADL types, subject count, recording procedure.
     - **Owner:** Aaradhya
     - **Status:** **Promoted v16 → Action #23 (Tier 3).** HOD discussion held (v22); confirmation pending.
 
-29. **#4 — Review SPARK's formal novelty claims (Tier 2) [RESOLVED v22 — acronym confirmed]**
-
+18. **#4 — Review SPARK's formal novelty claims (Tier 2) [RESOLVED v22 — acronym confirmed]**
     - **Item:** Confirm the five novelty claims (§2.3 of proposal) are accurately cross-referenced in the tracker and any updates to wording are reflected in both places.
     - **Owner:** Aaradhya
     - **Status:** **Resolved v22.** Full acronym expansion ("Signal Pattern Analysis & Real-time Kinetics") confirmed and recorded for the first time since the June 30 FallGuard→SPARK rename. No conflicts between §2.3 and this tracker. Action #26 (v18) identified prior art needing narrowing; that's a separate decision, not a cross-reference mismatch.
 
-30. **#3 — Quantization & deployment pipeline (Tier 2)**
-
+19. **#3 — Quantization & deployment pipeline (Tier 2)**
     - **Item:** Define the end-to-end flow from training notebooks → quantization → TFLite export → ESP32-S3 deployment. Staging posts: Colab training, Colab quantization, local testing on laptop, device testing on ESP32-S3.
     - **Owner:** Aaradhya + Rupesh
     - **Status:** Open. Partially covered by existing training code (`prepare_sisfall.py`, notebooks); quantization recipe still TBD. Gates WP 2.0 gate (mid-September).
 
-31. **#2 — Enclosure design finalization (Tier 2) [RESOLVED v13 — method only]**
-
+20. **#2 — Enclosure design finalization (Tier 2) [RESOLVED v13 — method only]**
     - **Item:** Decide enclosure manufacturing method (custom PCB vs. 3D print vs. off-the-shelf box).
     - **Owner:** Sankalpa
     - **Status:** **Resolved v13** (method only). Manufacturing: 3D-printed PLA on KEC Makerspace equipment. **Form factor still TBD** (Action #8, legacy, still open).
 
-32. **#1 — MCU selection (Tier 1) [RESOLVED v8 → ESP32-S3 (v12 re-confirmed)]**
-
+21. **#1 — MCU selection (Tier 1) [RESOLVED v8 → ESP32-S3 (v12 re-confirmed)]**
     - **Item:** Choose between ESP32 DevKit V1, ESP32-S3, or ARM Cortex-M for the wearable node.
     - **Owner:** Aaradhya + Rupesh
     - **Status:** **Resolved v8 → ESP32-S3** (supersedes original DevKit V1 choice). **Re-confirmed v12** after vendor disruption (Himalayan → RoboNepal). Board legitimacy checked, 2 units confirmed at NPR 1,979/unit. Spare buffer re-added as Action #16 (open).
 
-33. **#31 — Department negotiation over new component costs (NEW v20, not yet tiered)**
-
+22. **#31 — Department negotiation over new component costs (NEW v20, not yet tiered)**
     - **Item:** RPi 4B was originally ~NPR 18,699 in the departmental request. After dropping it from the BOM (v12), the department-funding ask changed, but no formal renegotiation has occurred. Coordinate with department (Er. Suramya Sharma Dahal, HOD) to finalize the revised funding ask.
     - **Owner:** Aaradhya
     - **Status:** Open. Opened v20 as a follow-on outcome of Action #25 (defence completed). Not yet tiered.
@@ -454,14 +412,12 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Distributed, two-layer architecture:**
 
 1. **Layer 1 (Wearable Node):** Hardware-gated thresholding + edge detection
-
    - Accelerometer (MPU6050) on wrist, samples at 200 Hz
    - 1D CNN (quantized to INT8, ~20 kB TFLite model) trained on SisFall/custom dataset
    - Outputs: FALL/NON_FALL binary classification
    - On-device SHAP placeholder (not executed on device, logged for gateway interpretation)
 
 2. **Layer 2 (Local Gateway):** SHAP explainability + report generation
-
    - Receives JSON streams from wearable over BLE
    - Runs full SHAP analysis (device-side) for feature importance visualization
    - Generates clinical PDF + JSON summary for caregiver/patient
@@ -474,25 +430,21 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Bill of Materials (as of v13, Aug 1, 2026):**
 
 1. **Microcontroller:** 2 × ESP32-S3 (RoboNepal, NPR 1,979/unit confirmed v13)
-
    - Quantization testbed: 1 unit (self-funded by Aaradhya, v13)
    - Deployment wearable: 1 unit (departmental ask)
    - Spare: 0 units (risk, Action #16 to add 1 more)
    - Firmware: Arduino/ESP-IDF, same baseline as FallGuard legacy project
 
 2. **Inertial Measurement Unit:** 1 × MPU6050 (lab-borrowed, v13, no purchase)
-
    - 200 Hz, 3-axis accelerometer
    - Driver: reuse/rewrite TBD with Rupesh (Action #24)
 
 3. **Power:**
-
    - Lithium battery: 1000 mAh Li-ion/LiPo (locked v28, per R-05's endurance assumption; sourcing still TBD)
    - USB-C charging connector (included on ESP32-S3 devboard)
    - USB-C cable (self-funded by Aaradhya, v13, unpriced, Action #19)
 
 4. **Enclosure:**
-
    - Form factor: Wrist-worn (locked v28, Action #8)
    - Electronics placement: Top-of-wrist / dorsal side (locked v29, Action #34) — consistent MPU6050 orientation, clear of wrist flexion crease
    - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening
@@ -505,27 +457,22 @@ Landed via three raw commits (see above note) — future edits must route throug
 ### §2.3 — Novelty Claims (5 total)
 
 1. **Dual-layer architecture with gated decision** (Claims 1)
-
    - Two-stage pipeline: hardware-gated edge detection → CNN-based confirmation
    - Prior art found (v18): multi-stage/gated/ensemble fall-detection systems exist; **narrowing recommended** to MCU+local-gateway specificity (Action #26)
 
 2. **Nepal-context dataset** (Claim 2)
-
    - Self-collected data complementary to SisFall, capturing local activity patterns and fall environments
    - No direct prior art hits found (v18); consistent with claim holding
 
 3. **Per-event SHAP explainability at local gateway** (Claim 3)
-
    - SHAP feature importance computed locally (no cloud dependency), viewable per fall event
    - Prior art found (v18): 2024–2025 papers apply SHAP to fall-detection data; narrowing recommended to MCU+local specificity (Action #26)
 
 4. **Adaptive sensitivity strategy without reflash** (Claim 4)
-
    - Layer 1 thresholds tuned via configuration file + runtime override; no firmware modification needed
    - No direct prior art hits; consistent with claim holding
 
 5. **Auto-generated clinical PDF reports** (Claim 5)
-
    - Patient/caregiver-facing summaries (timeline, key metrics, fall context) generated on gateway
    - No direct prior art hits; consistent with claim holding
 
@@ -595,7 +542,6 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Component list (ordered list format, was 2-column table in v25):**
 
 1. **Wearable node:**
-
    - 2 × ESP32-S3, RoboNepal: 2 × NPR 1,979 = NPR 3,958
    - 1 × MPU6050 (lab-borrowed): NPR 0
    - 1 × Lithium battery, 1000 mAh Li-ion/LiPo (locked v28, unpriced, sourcing TBD): NPR 0 (placeholder)
@@ -605,16 +551,13 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed PLA: Material cost negligible; labor within KEC Makerspace
 
 2. **Gateway (laptop):**
-
    - Acer Swift Go 16 (already owned): NPR 0
 
 3. **Miscellaneous:**
-
    - BLE dongle (locked v28 — phone app confirmed, dongle required over built-in BLE): Unpriced
    - Development/test boards: Covered by above
 
 4. **Bring-up/Assembly (NEW v28, Action #33):**
-
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
@@ -637,35 +580,30 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Ordered list format (was table in v25). R-01, R-02, R-03 unchanged; R-04, R-05 have unsourced mitigations (Actions #22, #21).**
 
 1. **R-01: Fall detection latency (on-device CNN inference)**
-
    - **Impact:** High (must detect within 1 second for EMT dispatch relevance)
    - **Probability:** Low (quantized INT8 CNN on ESP32-S3 is <100 ms per inference; batching windows within the 10 s timeout window mitigates)
    - **Mitigation:** CNN quantization + local gateway immediate processing (no cloud round-trip)
    - **Status:** Mitigated by design. Resolved.
 
 2. **R-02: False positives (non-fall → fall alert)**
-
    - **Impact:** High (caregiver alert fatigue, boy-who-cried-wolf erosion)
    - **Probability:** Medium (SisFall + self-collected data improve generalization; subject-grouped splitting prevents leakage)
    - **Mitigation:** Specificity ≥90% target (Layer 2 CNN + classical-ML sanity checks, v24 baseline), Layer 1 thresholding to pre-filter
    - **Status:** Mitigated by design. Resolved.
 
 3. **R-03: False negatives (fall not detected)**
-
    - **Impact:** Critical (patient left unassisted, could lead to injury complications)
    - **Probability:** Medium (SisFall coverage is broad but self-collected protocol TBD; form factor affects Layer 1 thresholds)
    - **Mitigation:** Sensitivity ≥90% target, Layer 1 hardware gating prevents CNN skips, self-collected dataset reduces dataset bias. **See Action #23 (dataset protocol) — R-03's mitigation depends on this being defined, not just planned.**
    - **Status:** Open pending Action #23.
 
 4. **R-04: External interference in sensor signal**
-
    - **Impact:** Medium (vibrations, magnetic fields could trigger false peaks)
    - **Probability:** Low (MPU6050 has built-in filters; wearable design isolates from large external vibrations)
    - **Mitigation:** Isolated data collection environment during testing
    - **Status:** Mitigation claim unsourced (Action #22 to patch). Open.
 
 5. **R-05: Battery drain from continuous 200 Hz polling**
-
    - **Impact:** High (device unusable if drains in <1 hour)
    - **Probability:** Low (ESP32-S3 power budget ~5 mA @ 200 Hz sampling; 1000 mAh Li-ion/LiPo locked v28 → ~8–10 hour endurance; original reference was RPi 4B draw, now outdated v12)
    - **Mitigation:** Queue-based CNN triggering (only run CNN when Layer 1 threshold exceeded), sleep modes between windows
@@ -678,7 +616,6 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Ordered list format (was table in v25). Primary team + roles + WBS items.**
 
 1. **Aaradhya Dev Tamrakar (Supervisor: Er. Dipen Manandhar)**
-
    - **Role:** Project Lead, ML Training, SHAP Integration, Gateway, Reporting
    - **WBS items:**
      - WP 0: Proposal (completed)
@@ -688,7 +625,6 @@ Landed via three raw commits (see above note) — future edits must route throug
      - WP 4: Demo prep + thesis writing
 
 2. **Rupesh Kadel (ID: 79034)**
-
    - **Role:** Firmware, Wearable Integration, Hardware Validation
    - **WBS items:**
      - WP 1: Layer 1 gated thresholding implementation
@@ -697,7 +633,6 @@ Landed via three raw commits (see above note) — future edits must route throug
      - WP 4: Demo + thesis sections
 
 3. **Sankalpa Lamsal (ID: 79039)**
-
    - **Role:** Enclosure Design, Hardware Assembly, BOM Sourcing
    - **WBS items:**
      - WP 1: Enclosure form factor decision (Action #8)
@@ -706,7 +641,6 @@ Landed via three raw commits (see above note) — future edits must route throug
      - WP 4: Demo logistics
 
 4. **Sonia Thapa (ID: 79043)**
-
    - **Role:** Data Collection, Clinical Requirement Gathering, Report Design
    - **WBS items:**
      - WP 1: Fall type/ADL type taxonomy definition (Action #23 dataset protocol)
@@ -721,34 +655,29 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Monthly gates (ordered list, was table in v25). WP = Work Package.**
 
 1. **WP 0 — Proposal (COMPLETED)**
-
    - Deadline: July 9, 2026 (defence)
    - Status: ✅ Submitted (v33 July 2, v35 July 6), defence occurred July 9 as scheduled, panel optimistic
    - Handoff: Aaradhya designs, Rupesh firmware specs
 
 2. **WP 1 — Setup & Literature Review (July–August 2026)**
-
    - Deadline: August 31, 2026
    - Scope: GitHub repo scaffold (✅ v22), dataset protocol (HOD discussion held v22, confirmation pending), layer 1 thresholding design (locked §2.5), hardware procurement (Action #16/#18/#19 — Tier 2)
    - Gate: Confirm dataset protocol (Action #23), finalize BOM, order boards
    - Handoff: Training code (via WP 2)
 
 3. **WP 2 — Training & Quantization (September–October 2026)**
-
    - Deadline: October 31, 2026
    - Scope: Prepare SisFall (✅ v23), classical-ML baseline (✅ v24–v25), CNN training, INT8 quantization (Rupesh), SHAP gateway code (Aaradhya), clinical PDF template (Sonia)
    - Gate: Achieve Sensitivity ≥90% & Specificity ≥90% on test set
    - Handoff: Quantized models to firmware (Rupesh)
 
 4. **WP 3 — Integration & Field Testing (November–December 2026)**
-
    - Deadline: December 31, 2026
    - Scope: Firmware integration (Rupesh), enclosure assembly (Sankalpa), self-collected data (Sonia + volunteers), full-system testing, demo-day dry-runs
    - Gate: Pass integration test on real hardware, conduct minimum 10 simulated falls with ≥90% detection rate
    - Handoff: Thesis chapters
 
 5. **WP 4 — Thesis & Demo Prep (January–March 2027)**
-
    - Deadline: January 2027 (expected graduation), March 2027 (demo/thesis boards)
    - Scope: Thesis writing (all), demo preparation, final hardware/software polish, presentation rehearsal
    - Gate: Thesis submitted by January 2027; demo runs without intervention
@@ -760,14 +689,12 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Scope locked; protocol confirmation pending (Action #23).**
 
 1. **Primary dataset: SisFall (public benchmark)**
-
    - 38 subjects, 34 activity codes, 4,506 files
    - 200 Hz, 3-axis accelerometer + 3-axis gyroscope
    - Activities: 12 fall types (backwards, forwards, etc.) + 22 ADL types (walking, sitting, etc.)
    - Status: Loaded and windowed via `prepare_sisfall.py` (v23 verified end-to-end)
 
 2. **Secondary dataset: Self-collected (Nepal-context)**
-
    - Subjects: TBD (Action #23 — volunteer count in protocol)
    - Fall types: TBD (Action #23)
    - ADL types: TBD (Action #23)
@@ -775,13 +702,11 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Status: Dataset protocol unresolved; recruiting/scheduling begins once protocol locked
 
 3. **Training-test split:**
-
    - Subject-grouped cross-validation (GroupKFold): no data leakage between subjects
    - Train/val/test: 60%/20%/20% by subject groups
    - Metrics: Sensitivity (recall for fall class), Specificity (recall for non-fall class), F1-score, AUC-ROC
 
 4. **Target performance:**
-
    - Sensitivity ≥90% (minimize false negatives, critical for elderly safety)
    - Specificity ≥90% (minimize false positives, improve usability)
    - Latency: CNN inference <100 ms on ESP32-S3 (quantized INT8)
@@ -855,39 +780,30 @@ _Read once for context. Not needed for weekly tracking. Collapsed in this versio
 **Ordered list (was table in v25):**
 
 1. **Legacy #1 — MCU selection (PROMOTED → Action #1, resolved v8)**
-
    - Status: Resolved. ESP32-S3 chosen; vendor disruption managed via Action #14.
 
 2. **Legacy #2 — Enclosure manufacturing method (PROMOTED → Action #2, resolved v13)**
-
    - Status: Resolved (method only). 3D-printed PLA via KEC Makerspace. Form factor TBD → Action #8.
 
 3. **Legacy #3 — Proposal formulation & submission (PROMOTED → Action #4, resolved v22)**
-
    - Status: Resolved. Proposal v35 submitted and defended; minor wording edits throughout.
 
 4. **Legacy #4 — Dataset sourcing: SisFall or custom? (PROMOTED → Action #24, open)**
-
    - Status: Open. Using both: SisFall (primary) + self-collected (secondary, protocol TBD → Action #23).
 
 5. **Legacy #5 — GitHub repo & collaboration setup (PROMOTED → Action #6, resolved v22)**
-
    - Status: Resolved. Repo created; team access pending confirmation (minor).
 
 6. **Legacy #6 — Self-collected dataset protocol (PROMOTED → Action #7, now Action #23, open)**
-
    - Status: Open (Tier 3). HOD discussion held (v22); confirmation pending. **Volunteer recruiting/scheduling lead time is real despite September gate label.**
 
 7. **Legacy #7 — Wearable enclosure form factor (PROMOTED → Action #8, open)**
-
    - Status: Open (Tier 5). Depends on fall-simulation results from WP 1.0/2.0.
 
 8. **Legacy #8 — Layer 1 sensitivity calibration (PROMOTED → Action #9, now Action #7 in §1, open)**
-
    - Status: Open (Tier 5). Empirical tuning pending real fall data (WP 1.0/2.0).
 
 9. **Legacy #9 — RPi 4B power supply budgeting (NOT applicable v12, no longer tracked)**
-
    - Status: Superseded. RPi dropped entirely; no PSU needed.
 
 ---
