@@ -1,0 +1,67 @@
+
+\section*{Gantt chart}
+Table~\ref{tab:gantt} maps all major tasks to a 32-week schedule spanning September 2026 through March 2027 (Phase 3 only). Weeks 1--8 correspond to September--October 2026; weeks 9--16 to November--December 2026; weeks 17--24 to January--February 2027; weeks 25--32 to March 2027. Filled cells ($\bullet$) indicate scheduled activity.
+
+\begin{table}[H]
+    \centering
+    \caption{Project Gantt Chart (Phase 3: September 2026 -- March 2027)}
+    \label{tab:gantt}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{Task} &
+        \textbf{W1} & \textbf{W2} & \textbf{W3} & \textbf{W4} &
+        \textbf{W5} & \textbf{W6} & \textbf{W7} & \textbf{W8} &
+        \textbf{W9} & \textbf{W10} & \textbf{W11} & \textbf{W12} &
+        \textbf{W13} & \textbf{W14} & \textbf{W15} & \textbf{W16} \\
+        \hline
+        Self-collected dataset collection & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & \\
+        \hline
+        CNN training (UCI+SisFall baseline) & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
+        \hline
+        CNN fine-tuning (KEC dataset) & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
+        \hline
+        INT8 quantization + ESP32 flash & & & & & & & $\bullet$ & $\bullet$ & & & & & & & & \\
+        \hline
+        ESP32 firmware (Layer 1 + Layer 2) & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
+        \hline
+        Hardware node assembly + enclosure & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
+        \hline
+        FastAPI + PostgreSQL backend & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & & & & & \\
+        \hline
+        SHAP attribution pipeline & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & & \\
+        \hline
+        Telegram alert bot & & & & & $\bullet$ & $\bullet$ & & & & & & & & & & \\
+        \hline
+        Streamlit dashboard & & & & & & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ & & & & & & & \\
+        \hline
+        End-to-end integration + dry run & & & & & & & & $\bullet$ & $\bullet$ & & & & & & & \\
+        \hline
+        ADL false-positive battery test & & & & & & & & & $\bullet$ & $\bullet$ & & & & & & \\
+        \hline
+        Sensitivity profile tuning & & & & & & & & & $\bullet$ & $\bullet$ & & & & & & \\
+        \hline
+        PDF report auto-generation & & & & & & & & & & $\bullet$ & $\bullet$ & & & & & \\
+        \hline
+        KEC dataset published to GitHub & & & & & & & & & & & $\bullet$ & & & & & \\
+        \hline
+        Thesis Chapters 1--4 draft & & & & & & & & & & & $\bullet$ & $\bullet$ & $\bullet$ & & & \\
+        \hline
+        Full system integration test & & & & & & & & & & & & $\bullet$ & $\bullet$ & & & \\
+        \hline
+        F1/AUC evaluation on test set & & & & & & & & & & & & $\bullet$ & $\bullet$ & & & \\
+        \hline
+        Thesis Chapters 5--6 draft & & & & & & & & & & & & & $\bullet$ & $\bullet$ & & \\
+        \hline
+        Conference paper draft & & & & & & & & & & & & & & $\bullet$ & $\bullet$ & \\
+        \hline
+        Final demo preparation & & & & & & & & & & & & & & & $\bullet$ & $\bullet$ \\
+        \hline
+        Thesis submission + defence & & & & & & & & & & & & & & & & $\bullet$ \\
+        \hline
+    \end{tabular}%
+    }
+\end{table}
+
+\textit{Note: W1--W4 = September 2026; W5--W8 = October 2026; W9--W12 = November--December 2026; W13--W16 = January--March 2027.}
+

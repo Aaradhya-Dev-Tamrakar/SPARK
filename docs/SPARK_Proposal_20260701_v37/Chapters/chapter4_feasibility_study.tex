@@ -1,0 +1,81 @@
+%======================
+% Chapter 4 : Feasibility Study
+%======================
+
+\chapter{\scshape Feasibility Study}
+
+\section{Technical Feasibility}
+
+SPARK is technically feasible because every component of the system has been individually demonstrated in the published literature, and the complete hardware stack is either in-hand or procurable locally in Kathmandu within one day.
+
+\textbf{On-device CNN inference on ESP32.}
+TensorFlow Lite Micro has been demonstrated on Cortex-M4 class hardware with flash footprints below 250\,KB \cite{david2021tensorflow}. The ESP32 Xtensa LX6 dual-core processor (240\,MHz, 520\,KB SRAM, 4\,MB flash) provides a larger compute envelope than the Cortex-M4 targets evaluated by David et al. INT8 post-training quantization reduces the SPARK 1D CNN to approximately 80--120\,KB of flash, leaving sufficient headroom for the Arduino SDK, WiFi stack, and ring-buffer firmware. The complementary filter, sliding window buffer, and Layer~1 threshold logic together add fewer than 4\,KB of RAM and run at 100\,Hz well within the ISR budget.
+
+\textbf{Two-layer gated detection architecture.}
+Layer~1 threshold logic is a scalar comparison on the resultant acceleration magnitude $|a|$ and the post-impact rest duration $\Delta t$. Both computations complete in under 1\,ms on the ESP32 at 100\,Hz. Layer~2 CNN inference, when gated by Layer~1, runs only on candidate fall windows (typical rate: fewer than 5 per hour of normal ADL), keeping average power overhead negligible.
+
+\textbf{WiFi-MQTT pipeline.}
+The ESP32 integrated 802.11\,b/g/n transceiver with the PubSubClient MQTT library has been demonstrated delivering JSON payloads to a Mosquitto broker on a local network within 50--100\,ms under typical indoor conditions. The Raspberry Pi 4B gateway running Mosquitto, FastAPI/Uvicorn, PostgreSQL~14, and Streamlit targets the 4\,GB RAM variant for headroom during simultaneous SHAP computation and PostgreSQL operation; a laptop (minimum 4\,GB RAM, dual-core CPU, Python~3.9+) can substitute as the gateway during development without code changes.
+
+\textbf{SHAP gateway pipeline.}
+The \texttt{shap} Python library's KernelExplainer or GradientExplainer computes feature attributions for a 6-feature CNN output on the RPi 4B in under 200\,ms per event --- well below the 2-second Telegram alert deadline. Per-event SHAP computation is triggered only on confirmed fall events, not continuously, so gateway CPU load is minimal.
+
+\textbf{Self-collected dataset.}
+Controlled fall simulation on a crash mat is a standard data-collection protocol used by Sucerquia et al.\ \cite{sucerquia2017sisfall} (38 subjects) and Kumar et al.\ \cite{kumar2022fall}. Four team members plus volunteers recording on-campus fall simulations at KEC can achieve the 500-fall-event / 2000-ADL-window target within four weeks. No ethical approval is required for healthy adult volunteers performing low-risk controlled falls in a supervised laboratory setting.
+
+\textbf{No unsolved technical dependencies.}
+All software libraries (TFLite Micro, FastAPI, PostgreSQL, Streamlit, python-telegram-bot, ReportLab, SHAP) are open source and actively maintained. No custom PCB fabrication, no import of restricted components, and no cloud service subscriptions are required.
+
+\section{Economic Feasibility}
+
+SPARK requires no imported components; all hardware is procurable from Himalayan Solution, Breadfruit Electronics, or Daraz (Kathmandu). The primary gateway target is a Raspberry Pi 4B (4\,GB); KEC has one such unit available, though allocation is not guaranteed. As a contingency, a dedicated RPi\,4B (4\,GB) purchase is included in the BOM. Table~\ref{tab:component_cost} summarises the estimated procurement cost for two wearable nodes (primary and spare) plus a third contingency ESP32 board and development consumables. Detailed component specifications are listed in Table~\ref{tab:component_cost}.
+
+% ── Table 4.1: Bill of Materials (portrait, no spec column) ──────────────────
+\begin{table}[ht!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\rowcolors{2}{gray!15}{white}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.6cm}|c|c|c|>{\raggedright\arraybackslash}p{2.8cm}|}
+\hline
+\textbf{Component} & \textbf{Qty} & \textbf{Unit (NPR)} & \textbf{Total (NPR)} & \textbf{Reference} \\
+\hline
+ESP32 DevKit V1 & 3 & 1{,}200 & 3{,}600 & Himalayan Solutions \\
+\hline
+MPU6050 IMU module & 3 & 500 & 1{,}500 & Himalayan Solutions \\
+\hline
+18650 Li-ion cell (protected) & 3 & 250 & 750 & SLT Pvt.Ltd \\
+\hline
+TP4056 charger module & 3 & 90 & 270 & SLT Pvt.Ltd \\
+\hline
+AMS1117-3.3 LDO & 5 & 105 & 525 & Giga Nepal \\
+\hline
+INA219 module & 3 & 800 & 2{,}400 & Daraz \\
+\hline
+Breadboard + jumper wires & 2 sets & 325 & 650 & SLT Pvt.Ltd \\
+\hline
+Velcro wrist/chest strap & 2 & 500 & 1{,}000 & RR-papers \\
+\hline
+Enclosure (3D-printed PLA, KEC Makerspace) & 500\,g & 2/g & 1{,}000 & KEC Makerspace \\
+\hline
+MicroSD 32\,GB & 1 & 1{,}000 & 1{,}000 & SLT Pvt.Ltd \\
+\hline
+RPi 4B power supply & 1 & 550 & 550 & SLT Pvt.Ltd \\
+\hline
+Raspberry Pi 4B (4\,GB) & 1 & 18{,}699 & 18{,}699 & RoboNepal \\
+\hline
+USB-C cables & 3 & 267 & 801 & Daraz \\
+\hline
+Resistors / capacitors assortment & 1 lot & 600 & 600 & Himalayan Solutions \\
+\hline
+\rowcolor{gray!30}
+\multicolumn{3}{r|}{\textbf{Total (without RPi 4B 4\,GB)}} & \textbf{14{,}646} & \\
+\hline
+\rowcolor{gray!30}
+\multicolumn{3}{r|}{\textbf{Total (with RPi 4B 4\,GB)}} & \textbf{33{,}345} & \\
+\hline
+\end{tabular}
+\caption{Component Cost Estimation}
+\label{tab:component_cost}
+\end{table}
+
+\vspace{0.5em}

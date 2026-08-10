@@ -1,0 +1,38 @@
+%======================
+% Chapter 6 : Expected Output
+%======================
+
+\chapter{\scshape Expected Output}
+\label{chap:expected_output}
+
+This chapter describes the deliverables, performance targets, and project schedule for SPARK. The system is developed in three sequential phases: proposal and planning (June--July 2026), skill development and dataset preparation (July--August 2026), and core build, integration, and evaluation (September 2026 -- March 2027).
+
+\section{Deliverables}
+
+SPARK produces the following tangible deliverables by the March 2027 demonstration deadline:
+
+\subsection{Hardware Deliverables}
+
+\begin{enumerate}
+    \item \textbf{Functional wearable node} : ESP32 DevKit V1 with MPU6050 6-axis IMU, 18650 LiPo battery, TP4056 charger module, AMS1117-3.3 LDO regulator and INA219 power telemetry sensor, mounted in a wrist or chest enclosure 3D-printed in PLA at KEC Makerspace.
+
+    \item \textbf{Gateway unit} : Raspberry Pi 4B (4\,GB, KEC unit or separately procured) running the complete SPARK gateway stack (Mosquitto, FastAPI/Uvicorn, PostgreSQL, Streamlit, python-telegram-bot, ReportLab, SHAP pipeline).
+
+    \item \textbf{Power characterization report} : INA219 telemetry measurements documenting active current draw, idle current draw, and estimated battery life (target: $\geq 25$ hours from 2000\,mAh cell at Standard sensitivity profile).
+\end{enumerate}
+
+\subsection{Software Deliverables}
+
+\begin{enumerate}
+    \item \textbf{ESP32 firmware} (PlatformIO/Arduino C++) :MPU6050 ISR at 100\,Hz, complementary filter, sliding window ring buffer, Layer~1 threshold pre-filter, Layer~2 TFLite Micro INT8 CNN inference, ArduinoJSON MQTT publisher, and MQTT-based sensitivity profile receiver.
+
+    \item \textbf{Trained and quantized 1D CNN model} --- INT8 TFLite model file ($\leq 120$\,KB) achieving Sensitivity $\geq 90\%$ and Specificity $\geq 90\%$ on the held-out test set, integrated as a C header array in the PlatformIO build.
+
+    \item \textbf{Gateway backend} (Python 3.11+): FastAPI/Uvicorn REST API with MQTT consumer, PostgreSQL \texttt{fall\_events} schema with SHAP columns, SHAP attribution pipeline (per-event, $< 200$\,ms latency on RPi 4B), Telegram caregiver alert ($< 2$\,s from fall confirmation), Streamlit clinical dashboard, and ReportLab PDF incident report generator.
+
+    \item \textbf{Self-collected KEC Wearable Fall Dataset}: Minimum 500 labelled fall event windows and 2000 ADL windows recorded at KEC campus using the SPARK node, with subject metadata, published to GitHub under an open licence as ``KEC Wearable Fall Dataset in Nepal Context.''
+
+    \item \textbf{GitHub repository} : Complete open-source repository containing firmware, gateway software, trained model, dataset, KiCad schematic (breadboard-level), and a reproducible README enabling replication of the full system.
+
+\end{enumerate}
+

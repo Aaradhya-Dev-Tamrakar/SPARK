@@ -1,0 +1,71 @@
+%======================
+% Chapter 1 : Introduction
+%======================
+
+\chapter{\scshape Introduction}
+
+\section{Background}
+
+Falls are a leading cause of injury-related mortality and morbidity among adults aged 65 and above worldwide. The WHO Global Report on Falls Prevention in Older Age (2007) identifies falls as the second leading cause of unintentional injury death globally, with approximately 684,000 fatal falls occurring each year \cite{who2007falls}. Non-fatal falls cause serious injuries including hip fractures, traumatic brain injuries, and long-term disability, placing a heavy burden on healthcare systems and caregivers.
+
+Nepal is undergoing a rapid demographic shift. The Central Bureau of Statistics projects that Nepal's population aged 65 and above will double by 2035 \cite{cbs2021nepal}, driven by improving life expectancy and urbanization. Despite this growing demographic pressure, no domestic fall detection product exists in the Nepali market. Commercial solutions such as the Apple Watch and medical alert pendants are cost-prohibitive --- a single Apple Watch SE (2nd generation) retails above NPR~30,000 --- and require proprietary ecosystems unavailable to most Nepali families. Urban WiFi penetration in Kathmandu, however, is increasingly reliable, making a WiFi-based alert pipeline practically deployable in the target care settings.
+
+Academic fall detection systems published in the literature typically rely on one of two approaches: threshold-only detection on raw accelerometer data, which produces unacceptably high false-positive rates on activities of daily living such as sit-to-stand transitions and stair climbing; or cloud-dependent machine learning inference, which introduces unacceptable network dependencies for a safety-critical application. Neither approach has been validated on a Nepal-context dataset, nor do any of the published open-source systems provide per-event classifier explainability for care staff.
+
+SPARK addresses these gaps with a two-layer gated edge AI architecture running entirely on an ESP32 microcontroller, a SHAP-based explainability pipeline at the gateway, and a self-collected Nepal-context IMU dataset collected at KEC.
+
+\section{Problem Statement}
+
+Falls are the leading cause of injury-related mortality among adults over 65 globally \cite{who2007falls}. Nepal's elderly population is projected to double by 2035 \cite{cbs2021nepal}, yet no affordable domestic fall detection solution exists. Commercial fall detection systems (Apple Watch, Samsung Galaxy Watch, Withings ScanWatch) are cost-prohibitive for Nepal's eldercare context, require proprietary ecosystems, and operate as closed black-box systems --- returning a binary fall verdict with no classifier explanation. Published academic systems use either threshold-only detection (unacceptably high false-positive rate) or cloud-dependent machine learning inference (network dependency unacceptable for safety-critical applications in Nepal's connectivity environment). No published open-hardware system demonstrates: 
+\begin{enumerate}
+\item A two-layer gated architecture with on-device TFLite Micro inference.
+\item  SHAP-based per-event explainability surfaced to caregivers.
+\item Adaptive sensitivity profiles. 
+\item  Clinical-format automated incident reporting validated on a Nepal-context IMU dataset.
+\end{enumerate}
+
+\section{Objectives}
+
+
+	This project focuses on building a wearable fall detection system that combines hardware, software, and edge AI to automate real-time monitoring and caregiver alerting. The scope includes the following key objectives:
+\begin{enumerate}
+\item To construct the hardware structure of a wearable edge computing node.
+
+\item To integrate a two-layer gated AI architecture for cloud-independent, real-time fall classification.
+
+\item To implement SHAP-based explainability techniques to log and render transparent feature attribution per event.
+\end{enumerate}
+
+\section{Scope of the Project}
+\label{sec:scope}
+
+The scope of our project includes:
+
+\begin{itemize}
+    \item \textbf{On-Device Data Acquisition:} We sample and filter 6-axis accelerometer and gyroscope data directly on the wearable node at a continuous 100\,Hz frequency.
+
+    \item \textbf{Dual-Layer Gated Inference:} Our system uses a fast mathematical threshold check to wake up an on-device, quantized 1D CNN classifier only when a potential fall signature is detected.
+
+    \item \textbf{Gateway Ingestion \& Storage:} We build a localized backend setup using FastAPI and PostgreSQL to securely save event history and user configuration data.
+
+    \item \textbf{SHAP Explainability Pipeline:} The system calculates Shapley additive feature values at the gateway to show caregivers exactly which sensor movements triggered the alarm.
+
+    \item \textbf{Instant Caregiver Alerting:} We route confirmed fall events to a Telegram Bot to message caregivers within two seconds of an incident.
+
+    \item \textbf{Automated Clinical Reporting:} The pipeline automatically packages peak movement data and model confidence ratings into formal PDF incident summary files.
+\end{itemize}
+\section{Application of the Project}
+\begin{enumerate}
+
+\item Assistive Technology: Provides real-time, hands-free fall monitoring to increase the independence and safety of vulnerable individuals living alone.
+
+\item Medical \& Rehabilitation: Assists clinicians in tracking recovery progress and movement patterns during post-injury or post-stroke rehabilitation.
+
+\item Elderly Care Facilities \& Nursing Homes: Optimizes institutional care by allowing a small staff footprint to respond instantly to high-priority fall alerts.
+
+\item Smart Home \& IoT Integration: Functions as a localized, network-independent safety module that interfaces seamlessly with residential intranet hubs.
+
+\item Clinical Documentation \& Compliance Monitoring: Automatically logs and formats objective, auditable incident data required for formal medical reports and facility compliance audits.
+
+\item Research \& Development: Serves as an open-hardware reference design and provides a localized, South Asian regional IMU motion dataset for public academic research.
+\end{enumerate}

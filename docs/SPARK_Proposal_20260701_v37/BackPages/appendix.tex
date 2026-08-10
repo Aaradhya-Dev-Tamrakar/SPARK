@@ -1,0 +1,69 @@
+%======================
+% Appendix
+%======================
+
+\section*{A.1 \quad Self-Collected Dataset Protocol}
+
+The SPARK self-collected dataset is recorded at KEC campus using the SPARK wearable node (ESP32 + MPU6050 at 100\,Hz). All four team members plus recruited volunteers act as subjects. The protocol defines four fall types and five ADL types as listed below.
+
+\textbf{Fall types (positive class):}
+\begin{itemize}
+    \item Forward trip fall --- simulated stumble onto a crash mat
+    \item Lateral fall (left) --- sideways fall onto crash mat
+    \item Lateral fall (right) --- sideways fall onto crash mat
+    \item Sitting-to-floor fall --- controlled seat loss from a chair
+\end{itemize}
+
+\textbf{ADL types (negative class):}
+\begin{itemize}
+    \item Walking (normal pace, indoor)
+    \item Running (moderate pace, corridor)
+    \item Stair climbing (ascending and descending, KEC stairwell)
+    \item Sit-to-stand transition (chair, rapid)
+    \item Bending to pick up an object
+\end{itemize}
+
+Each fall is repeated a minimum of 5 times per subject. ADL sequences are recorded in 2-minute continuous blocks. The node is worn on the dominant wrist during all recordings. Raw CSV output is labelled using a post-hoc annotation script keyed to the Layer~1 flag timestamp.
+
+\section*{A.2 \quad ESP32 Hardware Connections}
+
+\begin{table}[H]
+    \centering
+    \caption*{Wearable Node Pin Connections}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Component} & \textbf{ESP32 Pin} & \textbf{Function} \\
+        \hline
+        MPU6050 SDA & GPIO 21 & I$^2$C Data \\
+        MPU6050 SCL & GPIO 22 & I$^2$C Clock \\
+        MPU6050 VCC & 3.3\,V rail & Power \\
+        MPU6050 GND & GND & Ground \\
+        INA219 SDA & GPIO 21 & I$^2$C Data (address 0x41) \\
+        INA219 SCL & GPIO 22 & I$^2$C Clock \\
+        INA219 VIN+ & After LDO output & Current sense (series) \\
+        TP4056 OUT+ & LDO AMS1117 IN & Battery regulated output \\
+        AMS1117-3.3 OUT & ESP32 VIN & 3.3\,V regulated supply \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section*{A.3 \quad PostgreSQL Schema}
+
+\begin{verbatim}
+CREATE TABLE fall_events (
+    event_id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id            VARCHAR(64) NOT NULL,
+    timestamp          TIMESTAMPTZ NOT NULL,
+    layer1_flag        BOOLEAN NOT NULL,
+    layer2_confidence  FLOAT NOT NULL,
+    fall_confirmed     BOOLEAN NOT NULL,
+    ax_peak            FLOAT,
+    ay_peak            FLOAT,
+    az_peak            FLOAT,
+    severity_score     INT CHECK (severity_score BETWEEN 1 AND 5),
+    shap_top_feature   VARCHAR(32),
+    shap_json          JSONB,
+    alert_sent         BOOLEAN DEFAULT FALSE,
+    false_positive_flagged BOOLEAN DEFAULT FALSE
+);
+\end{verbatim}

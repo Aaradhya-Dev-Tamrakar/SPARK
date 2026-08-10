@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper]{report}
+\input{../utils.tex}
+\graphicspath{{../Figures/}}
+\begin{document}
+	\setlength{\parindent}{0pt}
+	\setlength{\parskip}{1.0em}
+
+	\input{../FrontPages/title}
+	\cleardoublepage
+	\pagenumbering{roman}
+	\setcounter{page}{1}
+	\input{../FrontPages/declaration}
+	\cleardoublepage
+	% \input{../FrontPages/certificate}  % Not required at proposal stage
+	% \cleardoublepage
+	\input{../FrontPages/acknowledgement}
+	\addcontentsline{toc}{chapter}{Acknowledgement}
+	\input{../Chapters/abstract}
+	\addcontentsline{toc}{chapter}{Abstract}
+
+	\tableofcontents
+
+	\cleardoublepage
+	\phantomsection
+	\input{../FrontPages/abbreviations}
+
+	\cleardoublepage
+	\phantomsection
+	\addcontentsline{toc}{chapter}{List of Figures}
+	\listoffigures
+
+	\cleardoublepage
+	\phantomsection
+	\listoftables
+	\addcontentsline{toc}{chapter}{List of Tables}
+
+	\cleardoublepage
+	\phantomsection
+	%\listofalgorithms
+	\addcontentsline{toc}{chapter}{List of Algorithms}
+
+	\cleardoublepage
+	\pagenumbering{arabic}
+	\setcounter{page}{1}
+
+	\input{../Chapters/chapter1_introduction}
+	\input{../Chapters/chapter2_literature}
+	\input{../Chapters/chapter3_related_theory}
+	\input{../Chapters/chapter4_feasibility_study}
+	\input{../Chapters/chapter5_methodology}
+	\input{../Chapters/chapter6_expected_output}
+    
+	\cleardoublepage
+	\input{../Chapters/Gantt chart}    
+
+	\cleardoublepage
+	\addcontentsline{toc}{chapter}{References}
+	\input{../BackPages/references_manual}
+
+	\clearpage
+	\appendix
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+	\chapter*{\scshape Appendix}
+	\addcontentsline{toc}{chapter}{Appendix}
+	\input{../BackPages/appendix}
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
+
+\end{document}
