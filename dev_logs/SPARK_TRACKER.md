@@ -80,7 +80,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 - **Bring-up hardware added (Actions #32/#33, new):** current locked design (§2.2, ESP32-S3-only) had zero BOM coverage for the physical MPU6050↔ESP32-S3 wired link or Li-ion/LiPo charge protection — both genuinely required, not legacy RPi-era noise. Added as 2 new BOM line items:
   - Charge/protection circuit (TP4056-class), 1 unit — required unless the sourced battery is a protected pack (Action #32)
   - Bring-up consumables — breadboard + jumper wires (2 sets), resistor/capacitor assortment (1 lot) (Action #33)
-  - Pricing sourced from the legacy RPi-era proposal cost table (`docs/SPARK_Proposal_20260701_v37/main.md`) as a cost baseline only — component selection is new-design bring-up, not a revival of dropped RPi parts (AMS1117, INA219, 18650 cell, microSD, chest/velcro strap remain dead, not re-added).
+  - Pricing sourced from the legacy RPi-era proposal cost table (`docs/SPARK_Proposal/main.md`) as a cost baseline only — component selection is new-design bring-up, not a revival of dropped RPi parts (AMS1117, INA219, 18650 cell, microSD, chest/velcro strap remain dead, not re-added).
 - **§2.6 "locked v27" labels corrected to v28** (battery/enclosure/BLE lock actually landed this version, not v27).
 
 **v27 change log (August 6, 2026 — parallel-track skeleton code landed, wire format locked, BOM reviewed):**
