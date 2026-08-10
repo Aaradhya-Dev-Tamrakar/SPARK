@@ -3,10 +3,45 @@
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 6, 2026 (v30 — enclosure closure mechanism locked, Velcro; arm sleeve base layer added to BOM) ·
+**Last updated:** August 10, 2026 (v34 — battery sourced (Giga Nepal, NPR 550, 1100mAh), enclosure material switched PLA→TPU (real KEC Makerspace stock)) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v34 change log (August 10, 2026 — battery sourced, enclosure material switched PLA→TPU):**
+
+- **Battery: sourced.** Giga Nepal, 3.7V **1100mAh** LiPo, **NPR 550** — live listing, pouch cell, exceeds v28's 1000mAh target. Clears the 4hr endurance floor with margin at realistic ESP32-S3+MPU6050 draw estimates. Sourcing gap closed; the underlying R-05 draw-figure staleness (Action #21) is a separate, still-open issue — not resolved by this.
+- **Enclosure material: PLA → TPU, switched.** KEC Makerspace's real checkout/inventory system stocks TPU only (886g Black in stock, NPR 4/g KEC rate) — PLA was never actually verified against real makerspace stock, just assumed since v13. This also aligns the tracker with the enclosure concept render (`dev_logs/design-assets/enclosure_concept_v1_two_zone_bracer.png`), which already specified TPU — previously flagged as a render-vs-tracker conflict, now resolved by fixing the tracker side.
+- **Enclosure cost: NPR 0 → ~NPR 160 (estimate).** TPU is gram-priced at KEC (NPR 4/g), not free — the v13 "negligible/in-house" note assumed PLA scrap/inhouse-free fabrication that doesn't hold for TPU. Rough 40g estimate, not a measured slice — needs a real slicer estimate once the enclosure model exists.
+- **Total BOM: NPR 9,027 → NPR 9,737** (+NPR 550 battery, +~NPR 160 enclosure).
+- **§2.2, §2.6, §0 updated.** BOM xlsx not yet synced this session — pending.
+
+**v33 change log (August 10, 2026 — MPU6050 sourced, USB-C priced, Velcro strap re-added):**
+
+- **MPU6050: sourced.** Himalayan Solutions, live listing, MPU-6050/GY-251 module, 17 in stock — **NPR 350/unit** (below the v31 NPR 500 placeholder). Action #18's MPU6050 half resolved.
+- **USB-C cable: sourced.** Daraz, **qty 3 @ NPR 267/unit = NPR 801** (was unpriced placeholder, Action #19). Quantity raised 1→3 (spares included).
+- **Velcro wrist strap re-added as a genuine separate BOM line.** RR-papers, qty 2 @ NPR 500 = NPR 1,000. Distinct from the enclosure's built-in Velcro closure (§2.2, no separate purchase) and the compression arm sleeve (base layer, different function) — user confirmed this is a real, separate item, not a duplicate.
+- **AMS1117-3.3 LDO: confirmed dead, not re-added.** ESP32-S3 devboard and MPU6050 breakout both carry their own onboard regulation; no unregulated sensor in this design needs it. Same RPi-era-only part flagged dead since v28.
+- **Total BOM: NPR 7,376 → NPR 9,027** (MPU6050 net −NPR 150 vs. its own NPR 500 placeholder, +NPR 801 USB-C ×3, +NPR 1,000 Velcro strap ×2, over v32's NPR 7,376).
+- **§1 (Actions #18, #19), §2.2, §2.6 updated.** BOM xlsx synced.
+
+**v32 change log (August 10, 2026 — ESP32-S3 vendor reverted Himalayan, Action #14 reopened):**
+
+- **Action #14 reopened and re-resolved.** Himalayan (dropped v12 — went out of stock same day locked) is confirmed back in stock (152 units, live listing, WROOM-1-CAM/N16R8 variant matching spec) at **NPR 1,800/unit**, undercutting RoboNepal's NPR 1,979/unit.
+- **Vendor switched: RoboNepal → Himalayan**, all 3 units (post-v31 spare-inclusive count). **BOM delta: 3 × NPR 1,979 = NPR 5,937 → 3 × NPR 1,800 = NPR 5,400, −NPR 537.**
+- **Total BOM: NPR 7,913 → NPR 7,376** (v31's reconciled total, corrected for the vendor swap only — no other lines touched).
+- **Legacy Table 4.1 (proposal, `chapter4_feasibility_study.tex`) re-checked, still not a source.** Contains ESP32 DevKit V1 (not S3), 18650/TP4056/AMS1117/INA219/MicroSD/RPi 4B/Velcro strap — all confirmed dead per v28's exclusion list. Not reconciled into tracker.
+- **§1 (Action #14), §2.2, §2.6 updated.** BOM xlsx synced (vendor/price cells only).
+
+**v31 change log (August 10, 2026 — funding model changed to all-departmental, spare ESP32-S3 added):**
+
+- **Funding model changed: all BOM lines now departmental-ordered.** Self-funded (Aaradhya) and lab-borrowed statuses dropped across the board — supersedes v13's self-funding split and MPU6050's lab-borrowed status.
+- **ESP32-S3: 2 → 3 units.** Action #16 spare buffer added to BOM (previously tracked as an open gap with 0 spares). All 3 units departmental-ordered, RoboNepal, NPR 1,979/unit = NPR 5,937.
+- **MPU6050: lab-borrowed → departmental-ordered.** No confirmed vendor/price exists anywhere in tracker history; entered as an unsourced NPR 500 placeholder — needs a real quote before ordering (Action #18 updated to reflect this).
+- **USB-C cable, arm sleeve: self-funded → departmental-ordered.** Prices/specs unchanged (cable still unpriced/Action #19; arm sleeve still NPR 136 Daraz listing, locked v30).
+- **Total BOM corrected to NPR 7,913** (formula-driven per-line sum). Discovered the tracker's carried-forward "~NPR 15,004"/"~NPR 16,480" prose totals never actually equaled a real itemized sum — same gap v27 flagged but left unfixed. v31 reconciles tracker and xlsx to the real number instead of propagating it further.
+- **§2.2/§2.6/§1 (Actions #16/#18/#19) updated accordingly.** BOM xlsx (`docs/SPARK_BOM_Procurement.xlsx`) synced to v31 (qty/funding/notes cells only — merges/dims/formulas untouched, row-insert avoided per v15 lesson).
+- **Not addressed this session:** the uploaded `SPARK_Component_Order_Form_2.xlsx` draft (18650/TP4056/AMS1117/INA219/microSD/TPU enclosure/separate Velcro strap line) contains dead RPi-era parts and conflicts with locked §2.2/§2.6 specs (PLA not TPU, no separate strap line, single arm sleeve SKU). Not reconciled into the tracker — flagged as stale, not used as a source for this update.
 
 **v30 change log (August 6, 2026 — closure mechanism locked + arm sleeve base layer):**
 
@@ -23,7 +58,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 **v28 change log (August 6, 2026 — three open BOM decisions locked + bring-up hardware added):**
 
 - **Battery: 1000 mAh Li-ion/LiPo, locked.** Uses R-05's existing endurance assumption (~5 mA @ 200 Hz → 8–10 hr) as the spec rather than a new estimate. Sourcing still TBD (unpriced).
-- **Enclosure form factor: wrist-worn, locked (Action #8 resolved).** Fabrication method (3D-printed PLA) was already resolved v13; wear location was the last open piece and directly gates Layer 1 threshold calibration (Action #7, §2.5).
+- **Enclosure form factor: wrist-worn, locked (Action #8 resolved).** Fabrication method switched PLA→TPU v34 (real KEC Makerspace stock only carries TPU); wear location was the last open piece and directly gates Layer 1 threshold calibration (Action #7, §2.5).
 - **BLE modality: dongle required, locked.** Gateway is phone-app-involved (not laptop-only), so built-in-BLE-only is ruled out; a BLE dongle is now the confirmed line, not an either/or.
 - **BOM xlsx synced to the three locks** (commit `e76616a`) — cell-only edits, merges/dims/formulas untouched.
 - **Bring-up hardware added (Actions #32/#33, new):** current locked design (§2.2, ESP32-S3-only) had zero BOM coverage for the physical MPU6050↔ESP32-S3 wired link or Li-ion/LiPo charge protection — both genuinely required, not legacy RPi-era noise. Added as 2 new BOM line items:
@@ -106,7 +141,7 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 **Locked scope-invariant facts:**
 
-1. **Wearable node:** ESP32-S3 (2 units, 1 self-funded by Aaradhya)
+1. **Wearable node:** ESP32-S3 (3 units, all departmental-ordered — Action #16 spare added, self-funding dropped)
 2. **Sensor:** MPU6050 (borrowed from lab, integration with existing driver from FallGuard)
 3. **Gateway:** laptop only (RPi 4B fully dropped as of v12); procedural uptime mitigation confirmed executed (v22)
 4. **Output:** local JSON + clinical PDF + SHAP explainability (Layer 2 only)
@@ -157,8 +192,8 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 🟡 Claims 1 and 3's wording may need narrowing (Action #26)
    - 🟢 Gateway host is laptop; RPi dropped entirely, not kept as backup (Action #15 reframed)
    - 🟡 Wearable MCU: ESP32-S3 confirmed; Himalayan (v12) went out of stock; **RoboNepal confirmed as vendor: NPR 1,979/unit, +NPR 358 BOM delta** (Action #14 re-resolved, no longer net-zero)
-   - 🟡 Two open gaps: spare-board firmware-bring-up-risk buffer doesn't exist (Action #16); board physical footprint unconfirmed vs. §7 assumption, low-priority (Action #17)
-   - 🟡 Purchase/inventory status (units ordered, MPU6050 in hand) discussed but not confirmed (Action #18)
+   - 🟢 Spare-board buffer added to BOM v31 (Action #16 BOM-resolved, order pending); 🟡 board physical footprint unconfirmed vs. §7 assumption, low-priority (Action #17)
+   - 🟡 Purchase/inventory status (3 × ESP32-S3 + MPU6050, all now departmental-ordered) discussed but not confirmed (Action #18)
 
 2. **Proposal package**
    - 🟢 `SPARK_Proposal_20260701_v35.zip` — signed hardcopy, submitted-of-record (resubmitted July 6, 2026 after deadline shift)
@@ -303,33 +338,34 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **Owner:** TBD
    - **Status:** Open. Flagged v15; low priority since n=2 is well within typical caps (usually 10+).
 
-3. **#19 — Log USB-C cable price (Tier 2)**
-   - **Item:** USB-C cable for ESP32-S3 gateway connection is self-funded but price was never recorded. Log the amount once purchased.
+3. **#19 — Log USB-C cable price (Tier 2) [RESOLVED v33]**
+   - **Item:** USB-C cable for ESP32-S3 gateway connection is departmental-ordered (v31 — no longer self-funded); price was never recorded. Log the amount once purchased.
    - **Owner:** Aaradhya
-   - **Status:** Open. Tier 2; gates WP 2.0.
+   - **Status:** Resolved v33. Daraz, qty 3 @ NPR 267 = NPR 801.
 
-4. **#18 — Confirm receipt of self-funded/lab-sourced items (Tier 2)**
-   - **Item:** Confirm: (a) 1 × ESP32-S3 self-funded by Aaradhya — has it been ordered/received?; (b) MPU6050 borrowed from lab — is it in hand and ready for integration testing?
+4. **#18 — Confirm receipt of departmental-ordered items (Tier 2) [MPU6050 SOURCED v33, ESP32-S3 ORDER STILL PENDING]**
+   - **Item:** Confirm: (a) 3 × ESP32-S3, all departmental-ordered (v31, Himalayan v32) — has the order been placed/received?; (b) MPU6050 — vendor/price sourced v33.
    - **Owner:** Aaradhya
-   - **Status:** Open. Tier 2; gates WP 2.0.
+   - **Status:** (b) resolved v33 — Himalayan Solutions, NPR 350, GY-251 module. (a) still open — order placement not yet confirmed.
 
 5. **#17 — Board physical footprint vs. enclosure (Tier 5)**
-   - **Item:** RoboNepal's ESP32-S3 board is a WROOM-1-**CAM** variant with an onboard camera FPC connector (unused by SPARK). Enclosure design (still not started, v23) needs to account for this footprint. Check compatibility once board is in hand.
+   - **Item:** Himalayan's ESP32-S3 board (vendor reverted v32) is a WROOM-1-**CAM** variant with an onboard camera FPC connector (unused by SPARK). Enclosure design (still not started, v23) needs to account for this footprint. Check compatibility once board is in hand.
    - **Owner:** Sankalpa + Aaradhya
    - **Status:** Open. Low priority (Tier 5); enclosure work hasn't started yet (v23).
 
-6. **#16 — Confirm/order spare ESP32-S3 board (Tier 2)**
+6. **#16 — Confirm/order spare ESP32-S3 board (Tier 2) [BOM RESOLVED v31, ORDER PENDING]**
    - **Item:** Quantity was reduced to 2 units (no RPi backup). Zero spare board exists for firmware bring-up risk. Add 1 unit at next order to reintroduce a buffer.
    - **Owner:** Rupesh + Aaradhya
-   - **Status:** Open. Tier 2; gates WP 2.0. Action items #16, #18, #19 should be bundled in the same order.
+   - **Status:** Spare unit added to BOM v31 (3 × ESP32-S3, all departmental-ordered). Actual order placement not yet confirmed — bundle with #18/#19.
 
 7. **#15 — Gateway procedural uptime mitigation (Tier 4) [PARTIALLY RESOLVED v22]**
    - **Item:** Confirm that laptop gateway uptime is guarded by an actual procedure (e.g., plugged in at demo, hotspot ready, restart scripts staged). Both compute and power halves need documentation.
    - **Owner:** Aaradhya
    - **Status:** Compute half resolved (v15 compared laptop vs. RPi 4B, confirmed laptop is sufficient; no longer a technical risk). Procedural half confirmed executed (v22, same-day as defence prep). Formalization still pending — lock the procedure as documented practice, not stated intent. Tier 4.
 
-8. **#14 — ESP32-S3 vendor/pricing (Tier 2) [RESOLVED v13 with BOM delta]**
+8. **#14 — ESP32-S3 vendor/pricing (Tier 2) [REOPENED v32, RE-RESOLVED v32]**
    - **Item:** Himalayan went out of stock same day v12 locked them as "confirmed." RoboNepal (existing SPARK vendor for RPi) carries the same module.
+   - **Status (v32, current):** Himalayan confirmed back in stock — live listing, "ESP32-S3 WROOM CAM Development Board with Port for camera OV2640," WROOM-1-CAM/N16R8 module, dual USB-C, BOOT/RST buttons, matching spec. **NPR 1,800/unit, 152 available.** Undercuts RoboNepal's NPR 1,979/unit. **Vendor reverted to Himalayan.** BOM delta: 3 × NPR 1,979 = NPR 5,937 → 3 × NPR 1,800 = NPR 5,400, **−NPR 537**.
    - **Owner:** Aaradhya
    - **Status:** **Resolved v13.** RoboNepal confirmed: NPR 1,979/unit, 5 in stock. Board legitimacy checked (dual USB-C, BOOT/RST buttons, 16MB flash/8MB PSRAM/dual-core LX7 all match spec). **BOM delta:** 2 × NPR 1,979 = NPR 3,958 (was 2 × 1,800 = NPR 3,600) — **+NPR 358, no longer net-zero**. New BOM total: ~NPR 15,004 (was 14,646). Board variant is WROOM-1-CAM (has unused camera FPC) — different footprint than plain N16R8; see Action #17 (low-priority, enclosure not started).
 
@@ -427,32 +463,32 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ### §2.2 — Wearable Hardware
 
-**Bill of Materials (as of v13, Aug 1, 2026):**
+**Bill of Materials (as of v31, Aug 10, 2026):**
 
-1. **Microcontroller:** 2 × ESP32-S3 (RoboNepal, NPR 1,979/unit confirmed v13)
-   - Quantization testbed: 1 unit (self-funded by Aaradhya, v13)
+1. **Microcontroller:** 3 × ESP32-S3 (Himalayan, NPR 1,800/unit confirmed v32 — reverted from RoboNepal, Action #14 reopened)
+   - Quantization testbed: 1 unit (departmental-ordered, v31)
    - Deployment wearable: 1 unit (departmental ask)
-   - Spare: 0 units (risk, Action #16 to add 1 more)
+   - Spare: 1 unit (departmental-ordered, v31 — Action #16 resolved)
    - Firmware: Arduino/ESP-IDF, same baseline as FallGuard legacy project
 
-2. **Inertial Measurement Unit:** 1 × MPU6050 (lab-borrowed, v13, no purchase)
+2. **Inertial Measurement Unit:** 1 × MPU6050 (departmental-ordered, v31; **sourced v33 — Himalayan Solutions, NPR 350, GY-251 module, live listing**)
    - 200 Hz, 3-axis accelerometer
    - Driver: reuse/rewrite TBD with Rupesh (Action #24)
 
 3. **Power:**
-   - Lithium battery: 1000 mAh Li-ion/LiPo (locked v28, per R-05's endurance assumption; sourcing still TBD)
+   - Lithium battery: 1100 mAh Li-ion/LiPo (sourced v34 — Giga Nepal, NPR 550; sourcing resolved. Endurance figure itself still traces to R-05's unverified ~5mA draw assumption — Action #21 open, see §2.7)
    - USB-C charging connector (included on ESP32-S3 devboard)
-   - USB-C cable (self-funded by Aaradhya, v13, unpriced, Action #19)
+   - USB-C cable (departmental-ordered, v31; **priced v33 — Daraz, qty 3 @ NPR 267 = NPR 801, Action #19 resolved**)
 
 4. **Enclosure:**
    - Form factor: Wrist-worn (locked v28, Action #8)
    - Electronics placement: Top-of-wrist / dorsal side (locked v29, Action #34) — consistent MPU6050 orientation, clear of wrist flexion crease
-   - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening
-   - Base layer: Compression arm sleeve, thumb-hole (locked v30, Action #34) — worn under enclosure, doubles as skin protection under Velcro
-   - Material: 3D-printed PLA (KEC Makerspace, v13)
-   - Footprint: RoboNepal board is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
+   - Closure mechanism: Hook-and-loop Velcro (locked v30, Action #34) — elderly-dexterity rationale, one-handed fastening. **Note (v33): a standalone "Velcro wrist strap" BOM line (RR-papers, NPR 500×2) was re-added as a separate purchased item — not yet reconciled against this locked design note, which describes Velcro as the enclosure's own closure mechanism with no separate purchase. Flagging, not resolving: either this design note needs updating to describe a distinct strap component, or the BOM line is redundant. Needs a design decision, not a BOM-only fix.**
+   - Base layer: Compression arm sleeve, thumb-hole (locked v30, Action #34, departmental-ordered v31) — worn under enclosure, doubles as skin protection under Velcro
+   - Material: 3D-printed TPU (KEC Makerspace, switched v34 — real KEC inventory only stocks TPU, not PLA; PLA lock v13 was never verified against actual makerspace stock)
+   - Footprint: Himalayan board (vendor reverted v32) is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
-**Total BOM (§2.6):** ~NPR 16,480 (v30: +NPR 136 arm sleeve over v28's NPR 16,344; v13 baseline was NPR 15,004)
+**Total BOM (§2.6):** **NPR 9,737** (v34 — battery sourced +NPR 550, enclosure TPU switch +~NPR 160 estimate, over v33's NPR 9,027. Funding: all lines departmental-ordered, no self-funded/lab-borrowed split.)
 
 ### §2.3 — Novelty Claims (5 total)
 
@@ -542,13 +578,14 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Component list (ordered list format, was 2-column table in v25):**
 
 1. **Wearable node:**
-   - 2 × ESP32-S3, RoboNepal: 2 × NPR 1,979 = NPR 3,958
-   - 1 × MPU6050 (lab-borrowed): NPR 0
-   - 1 × Lithium battery, 1000 mAh Li-ion/LiPo (locked v28, unpriced, sourcing TBD): NPR 0 (placeholder)
-   - 1 × USB-C cable (self-funded): Unpriced (Action #19)
+   - 3 × ESP32-S3, Himalayan: 3 × NPR 1,800 = NPR 5,400 (Action #14 vendor reverted v32; Action #16 spare added v31; all departmental-ordered)
+   - 1 × MPU6050, Himalayan: NPR 350 (sourced v33, GY-251 module, live listing — Action #18's MPU6050 half resolved)
+   - 1 × Lithium battery, 1100 mAh Li-ion/LiPo: NPR 550 (sourced v34, Giga Nepal — sourcing resolved; Action #21's separate R-05 draw-figure issue still open, see §2.7)
+   - 1 × USB-C cable, departmental-ordered: qty 3 × NPR 267 = NPR 801 (sourced v33, Daraz — Action #19 resolved)
    - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
-   - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, NEW v30): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
-   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed PLA: Material cost negligible; labor within KEC Makerspace
+   - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
+   - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33 as a genuine separate item — see §2.2 flag on unreconciled overlap with the enclosure's own Velcro closure note)
+   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): ~NPR 160 (estimate, 40g × KEC rate NPR 4/g — rough figure, not a measured slice; supersedes v13's "negligible/in-house" PLA note now that TPU is confirmed gram-priced, not free)
 
 2. **Gateway (laptop):**
    - Acer Swift Go 16 (already owned): NPR 0
@@ -561,13 +598,13 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
-**Total project cost:** ~NPR 16,480 (was NPR 15,004; +NPR 1,340 for Actions #32/#33 bring-up hardware v28, +NPR 136 for Action #34 arm sleeve v30; baseline pricing, largely unconfirmed against current vendors — arm sleeve price is confirmed live Daraz listing)
+**Total project cost:** **NPR 9,737** (v34 — battery sourced NPR 550, enclosure material switched PLA→TPU +~NPR 160 estimate, over v33's NPR 9,027).
 
-**Funding breakdown:**
+**Funding breakdown (v31 — all self-funded/lab-borrowed status dropped):**
 
-- Departmental ask (revised post-RPi drop): NPR 15,004 − NPR 1,979 (self-funded ESP32-S3) − unpriced USB-C ≈ **NPR 13,025** (departmental request, v22)
-- Self-funded by Aaradhya: NPR 1,979 (ESP32-S3 for quantization testbed) + USB-C cable (unpriced)
-- Lab-borrowed: 1 × MPU6050 (no cost)
+- Departmental ask: **NPR 9,737** (full BOM total — all lines now departmental-ordered, no self-funded or lab-borrowed split)
+- Self-funded by Aaradhya: **None** (v31 — previously 1 × ESP32-S3 + USB-C cable, now departmental)
+- Lab-borrowed: **None** (v31 — previously MPU6050, now departmental-ordered)
 
 **Cost deltas (version history):**
 
