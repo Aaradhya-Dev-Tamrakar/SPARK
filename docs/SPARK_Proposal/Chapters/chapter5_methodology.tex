@@ -74,7 +74,7 @@ The MPU6050 is configured via I$^2$C at startup: accelerometer full-scale $\pm$8
 
 \subsection{Sliding Window Buffer}
 
-A circular ring buffer stores the most recent samples of all six channels ($a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$) in SRAM, continuously overwritten. When Layer~1 fires a \texttt{PRE\_FALL} flag, the gate-triggered window is copied to a local array, normalized using StandardScaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
+A circular ring buffer stores the most recent samples of all six channels ($a_x$, $a_y$, $a_z$, $\omega_x$, $\omega_y$, $\omega_z$) in SRAM, continuously overwritten. When Layer~1 fires a \texttt{PRE\_FALL} flag, the gate-triggered window is copied to a local array, normalized using Standard\-Scaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
 
 \subsection{Layer 1 - Threshold Pre-filter}
 
@@ -168,9 +168,9 @@ On \texttt{CONFIRMED\_FALL}, the ESP32-S3 serializes the event as a JSON payload
 Three sensitivity profiles are implemented as configurable parameter sets, adjustable without a firmware reflash:
 
 \begin{itemize}
-	\item \textbf{HighSensitivity} (elderly, bed-ridden): Layer~1 threshold $|a|_{\text{spike}} = 2.0$\,g, rest duration 200\,ms; Layer~2 threshold $P(\text{FALL}) > 0.75$.
-	\item \textbf{Standard} (default): $|a|_{\text{spike}} = 2.5$\,g, rest duration 300\,ms; Layer~2 threshold $P(\text{FALL}) > 0.85$.
-	\item \textbf{SportMode} (active ADL): $|a|_{\text{spike}} = 3.0$\,g, rest duration 400\,ms; Layer~2 threshold $P(\text{FALL}) > 0.90$.
+	\item \textbf{HighSensitivity} (elderly, bed-ridden): Layer 1 threshold $|a|_{\text{spike}} = 2.0$\,g, rest duration 200\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.75$.
+	\item \textbf{Standard} (default): $|a|_{\text{spike}} = 2.5$\,g, rest duration 300\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.85$.
+	\item \textbf{SportMode} (active ADL): $|a|_{\text{spike}} = 3.0$\,g, rest duration 400\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.90$.
 \end{itemize}
 
 \section{Machine Learning Pipeline}
