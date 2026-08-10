@@ -3,10 +3,18 @@
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 10, 2026 (v34 — battery sourced (Giga Nepal, NPR 550, 1100mAh), enclosure material switched PLA→TPU (real KEC Makerspace stock)) ·
+**Last updated:** August 10, 2026 (v35 — gateway architecture clarified: laptop remains sole BLE gateway + sole pipeline compute; phone added as display-only client, no BLE/compute role; BLE dongle dropped from BOM) ·
 **Proposal submitted:** July 2 (v33, hardcopy) → resubmitted July 6 (v35, hardcopy) ·
 **Proposal defence:** July 9, 2026 — **occurred as scheduled, panel optimistic** (Action #25 resolved v20) ·
 **Mid-term defence:** July 13, 2026 — **status not confirmed this session, see §6.5** · **Demo/thesis boards:** March 2027
+
+**v35 change log (August 10, 2026 — gateway architecture clarified, BLE dongle dropped):**
+
+- **§2.1 System Overview revised.** The v28-era "either/or, phone-or-laptop gateway" framing (which never had solid reasoning behind it — see below) is dropped. **Laptop remains the sole BLE gateway and sole SHAP/PDF pipeline compute**, matching the original single-gateway design. **Phone added as a new Layer 3: display-only client** — no direct BLE link to the wearable, no on-device SHAP/PDF computation, just reads a completed report from the laptop over local network.
+- **BLE dongle line dropped from BOM (§2.6).** It was locked v28 on reasoning that didn't actually hold up: "phone-app-involved rules out built-in-BLE-only" doesn't follow, since ESP32-S3, laptop, and phone all have native BLE — no external hardware needed on any device. With the phone now display-only (not a BLE client at all), the justification is doubly moot. Was unpriced (NPR 0) — no cost impact, total unchanged at NPR 9,737.
+- **Action #20 (hotspot max-client cap) assumption revised**: n=2 → n=3 (wearable + laptop + phone display client), still low priority.
+- **Rationale for display-only over full-pipeline phone:** re-implementing/porting the SHAP + PDF stack to mobile (native rewrite or bundled Python runtime) is real, non-trivial scope this late in the timeline; duplicated pipeline logic across laptop and phone means every future fix/format change lands twice; Novelty Claim 3 ("per-event SHAP explainability at local gateway") only requires the computation to happen locally somewhere — the laptop already satisfies that, so a display-only phone doesn't weaken the claim.
+- **Not yet done:** §3 (WBS) doesn't yet assign an owner for the phone display client's implementation — flagging, not resolving, since that's a team/scope discussion, not a spec fix.
 
 **v34 change log (August 10, 2026 — battery sourced, enclosure material switched PLA→TPU):**
 
@@ -334,9 +342,9 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **Status:** Open. Flagged v16; no action yet.
 
 2. **#20 — Mobile hotspot max-client cap (Tier 5, low priority)**
-   - **Item:** Measure the maximum number of simultaneous client connections supported by the mobile hotspot device(s) used for demo-day gateway uptime. Current assumption: n=2 (wearable + gateway). Real cap might be lower; if lower, affects single-device hotspot viability.
+   - **Item:** Measure the maximum number of simultaneous client connections supported by the mobile hotspot device(s) used for demo-day gateway uptime. Assumption updated v35: n=3 (wearable BLE to laptop + laptop's own hotspot/network link + phone display client pulling from laptop) — was n=2 pre-phone-display-client. Real cap might be lower; if lower, affects single-device hotspot viability.
    - **Owner:** TBD
-   - **Status:** Open. Flagged v15; low priority since n=2 is well within typical caps (usually 10+).
+   - **Status:** Open. Flagged v15, assumption revised v35 (phone display client added). Still low priority since n=3 is well within typical caps (usually 10+).
 
 3. **#19 — Log USB-C cable price (Tier 2) [RESOLVED v33]**
    - **Item:** USB-C cable for ESP32-S3 gateway connection is departmental-ordered (v31 — no longer self-funded); price was never recorded. Log the amount once purchased.
@@ -457,7 +465,12 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Receives JSON streams from wearable over BLE
    - Runs full SHAP analysis (device-side) for feature importance visualization
    - Generates clinical PDF + JSON summary for caregiver/patient
-   - Laptop (Acer Swift Go 16) as the sole gateway; procedure-based uptime mitigation (hotspot, staging scripts)
+   - Laptop (Acer Swift Go 16) as the **sole BLE gateway and sole pipeline compute** (locked v35 — reverts the interim "either/or, phone-or-laptop" framing floated v28); procedure-based uptime mitigation (hotspot, staging scripts)
+
+3. **Layer 3 (Phone display client, NEW v35):** Read-only results viewer
+   - No direct BLE link to the wearable — pulls/receives report data from the laptop (local network) after Layer 2 finishes
+   - No SHAP computation, no PDF generation on-device — display only
+   - Purpose: lets caregiver/patient view a completed report without the laptop physically present
 
 **Operational scope:** Fall detection for elderly care, primary use case Singapore/Nepal-context testing (SisFall-like data collection with local validation).
 
@@ -590,11 +603,15 @@ Landed via three raw commits (see above note) — future edits must route throug
 2. **Gateway (laptop):**
    - Acer Swift Go 16 (already owned): NPR 0
 
-3. **Miscellaneous:**
-   - BLE dongle (locked v28 — phone app confirmed, dongle required over built-in BLE): Unpriced
+3. **Phone display client (NEW v35):**
+   - User's own phone (already owned, no purchase): NPR 0
+   - Display-only, no BLE hardware needed — reads native phone BLE/network stack
+
+4. **Miscellaneous:**
+   - ~~BLE dongle~~ — **dropped v35.** Was locked v28 on flawed reasoning ("phone-app-involved rules out built-in-BLE-only") that didn't actually follow; every device in the real data path (ESP32-S3, laptop, phone) has native BLE, and the phone doesn't even need BLE since it's a display-only client reading from the laptop over local network, not a direct wearable BLE client. No dongle needed anywhere.
    - Development/test boards: Covered by above
 
-4. **Bring-up/Assembly (NEW v28, Action #33):**
+5. **Bring-up/Assembly (NEW v28, Action #33):**
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
