@@ -32,3 +32,18 @@ Thumbs.db
 ~$*.docx
 ~$*.xlsx
 ~$*.pptx
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+!docs/SPARK_Proposal/ThesisReports/thesis_report.pdf
