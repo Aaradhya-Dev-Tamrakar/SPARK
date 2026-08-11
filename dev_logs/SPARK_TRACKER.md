@@ -1,4 +1,4 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v37)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v38)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
@@ -30,7 +30,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 - **BLE dongle line dropped from BOM (§2.6).** It was locked v28 on reasoning that didn't actually hold up: "phone-app-involved rules out built-in-BLE-only" doesn't follow, since ESP32-S3, laptop, and phone all have native BLE — no external hardware needed on any device. With the phone now display-only (not a BLE client at all), the justification is doubly moot. Was unpriced (NPR 0) — no cost impact, total unchanged at NPR 9,737.
 - **Action #20 (hotspot max-client cap) assumption revised**: n=2 → n=3 (wearable + laptop + phone display client), still low priority.
 - **Rationale for display-only over full-pipeline phone:** re-implementing/porting the SHAP + PDF stack to mobile (native rewrite or bundled Python runtime) is real, non-trivial scope this late in the timeline; duplicated pipeline logic across laptop and phone means every future fix/format change lands twice; Novelty Claim 3 ("per-event SHAP explainability at local gateway") only requires the computation to happen locally somewhere — the laptop already satisfies that, so a display-only phone doesn't weaken the claim.
-- **Not yet done:** §3 (WBS) doesn't yet assign an owner for the phone display client's implementation — flagging, not resolving, since that's a team/scope discussion, not a spec fix.
+- **Owner assigned v38:** Aaradhya (Project Lead, Gateway) — display client is a read-only consumer of the laptop-gateway pipeline he already owns (SHAP/PDF, local-network report serving); no new team member needed. §3 updated.
 
 **v34 change log (August 10, 2026 — battery sourced, enclosure material switched PLA→TPU):**
 
@@ -242,7 +242,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Still open: #3, #5, #32, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
-   - 🟢 34 action items logged total (#1–34)
+   - 🟢 35 action items logged total (#1–35)
    - Tiers rank open, actionable items by dependency/lead-time
    - Resolved items and Future-Work-only items (7, above) sit outside tier system by design
    - Tier 1 resolved v20 (defence outcome confirmed)
@@ -285,9 +285,15 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**34 action items logged total. Ordered by item number (not priority tier); newest addition (#34) placed at top per convention, remaining items retain original recency ordering.**
+**35 action items logged total. Ordered by item number (not priority tier); newest addition (#35) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
+1. **#35 — Finalize BOM v35→v38 open items pass (NEW v38)**
+   - **Item:** Reviewed 4 flagged open items from BOM v35 lock: (a) Velcro strap design decision, (b) enclosure cost real slicer figure, (c) battery-draw endurance figure in risk matrix, (d) phone display-client owner.
+   - **Findings:** (a) already resolved — Action #34 (v30) locked top-of-wrist Velcro closure; no separate open decision exists. (b) still genuinely blocked — NPR 160 remains a 40g eyeball estimate (§2.6); no CAD model exists to slice, and Action #17 (WROOM-1-CAM FPC footprint check) is an open prerequisite. Not resolvable without the model existing first. (c) already resolved — Action #21 (v36) replaced the broken 5 mA figure with the reconciling 110–140 mA estimate. (d) resolved this pass — owner assigned, see below.
+   - **Owner:** Aaradhya
+   - **Status:** 2 of 4 confirmed already-resolved (stale items in the v35 recollection), 1 newly resolved (owner assignment), 1 remains open pending physical enclosure model (blocked on Action #17, not a paperwork fix).
+
+2. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
    - **Item:** Enclosure electronics housing confirmed at top-of-wrist (dorsal side), not underside/palm-side. Fixes MPU6050 orientation reference for Layer 1 threshold calibration (Action #7) and rules out volar-side mounting.
    - **v30 addition — closure mechanism:** Hook-and-loop Velcro (not belt-buckle). Elderly-dexterity rationale: target population (healthy independent elderly, per proposal scope) needs one-handed, no-fine-motor-control fastening; Velcro tolerates daily wrist-swelling variance and doesn't require threading/pulling tension like a buckle. Skin protection is handled by the arm sleeve base layer (new BOM row, Action #34), not by the closure choice.
    - **v30 addition — arm sleeve base layer:** Compression arm sleeve (thumb-hole, stretchable) worn under the enclosure. Added to BOM at NPR 136 (Daraz, "BLUE BELL Let's Slim").
@@ -691,7 +697,7 @@ Landed via three raw commits (see above note) — future edits must route throug
      - WP 0: Proposal (completed)
      - WP 1: Literature review + dataset protocol (HOD discussion held, confirmation pending)
      - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantization TBD; SHAP gateway TBD)
-     - WP 3: Integration testing (simulator + real falls, TBD)
+     - WP 3: Integration testing (simulator + real falls, TBD); phone display-client implementation (owner assigned v38, Action tracker updated — read-only viewer against laptop's local-network report endpoint)
      - WP 4: Demo prep + thesis writing
 
 2. **Rupesh Kadel (ID: 79034)**
