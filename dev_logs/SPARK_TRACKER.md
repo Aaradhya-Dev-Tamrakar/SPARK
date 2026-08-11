@@ -1,9 +1,9 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v40)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v41)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 10, 2026 (v37 — repo hygiene: `docs/SPARK_BOM_Procurement.xlsx` actually deleted, git-tracking never matched v36's changelog claim; proposal reformatted for VS Code/LaTeX Workshop compile via `.latexmkrc`; repo decluttered — 17 duplicate PNGs, orphaned `main.md` copy, redundant `.gitkeep` files removed; README synced to current status) ·
+**Last updated:** August 11, 2026 (v41 — Action #38 added: charging interface locked to dual single-purpose USB-C ports, off-body access only, no cost impact. Note: v38–v40 change-log summaries were never backfilled to this line despite being present elsewhere in the file — v40's Action #32 resolution is documented in §1 directly; this is a pre-existing gap, not touched here) ·
 
 **v37 change log (August 10, 2026 — repo hygiene regression fixed, VS Code compile support added, repo decluttered):**
 
@@ -285,9 +285,17 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**37 action items logged total. Ordered by item number (not priority tier); newest addition (#37) placed at top per convention, remaining items retain original recency ordering.**
+**38 action items logged total. Ordered by item number (not priority tier); newest addition (#38) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#37 — Enclosure material sourcing: switched to bulk 1kg TPU roll purchase (NEW v39)**
+1. **#38 — Charging interface: dual single-purpose USB-C ports, off-body access only (NEW v41)**
+   - **Item:** Enclosure houses ESP32-S3, MPU6050, LiPo, TP4056, and internal wiring only — no charging-interface design existed prior to this decision. Two architectures considered: single combined USB-C port (phone-style, data+charge muxed) vs two separate single-purpose ports (ESP32-S3 native USB-C for programming/data, TP4056's own USB-C for charge input). Combined-port option rejected — TP4056 has no data lines (charge-only IC), so true 2-in-1 would need an added USB hub/mux PCB not currently in scope or BOM.
+   - **Decision:** Two ports, each single-purpose. Plausibly explains existing row 12 "USB-C ×3" BOM count (1 ESP32-S3 programming port + 1 TP4056 charge port + 1 spare, matching the Action #16 spare-buffer pattern) — not previously stated anywhere in the tracker, inferred this session.
+   - **Governing constraint:** Device confirmed never worn while charging (user-stated). This decouples the charge port from the sealed-enclosure water-ingress concern raised in this session's (unlogged) thermal/venting discussion — charge port can sit behind an occasional-access panel/gasketed cap rather than a daily-sealed cutout, since it's never exposed to sweat/motion during actual use.
+   - **Status:** Open. Two sub-gaps remain: (1) TP4056 module's actual connector type (USB-C vs Micro-USB) unconfirmed — no listing/datasheet sourced for the specific unit under row 8, same gap Action #32 already carried; (2) single shared access-panel vs two separate cutouts is a CAD decision, blocked on Action #17 (no enclosure model exists yet). Row 12's "×3" purpose is inferred from this decision, not independently confirmed by Aaradhya — flagged, not asserted as fact.
+   - **Owner:** Aaradhya
+   - **Cost impact:** None — no BOM line changed, existing row 12 quantity already covers this reading.
+
+2. **#37 — Enclosure material sourcing: switched to bulk 1kg TPU roll purchase (NEW v39)**
    - **Item:** Action #36's NPR 90 figure assumed KEC Makerspace's per-part print-service model (they supply filament, charge NPR 4/g of material used per print). Aaradhya opted instead to buy a 1kg TPU roll outright at the same NPR 4/g rate, owning the filament rather than paying per-print.
    - **Cost:** 1000g × NPR 4/g = **NPR 4,000** (replaces the NPR 90 per-part line). Only ~22g is needed for one enclosure per Action #36's estimate — the rest of the roll is spare capacity for future prints/iterations, not consumed by this BOM line alone.
    - **Status:** Open — roll vendor not yet sourced to a live listing (Order Form lists "KEC Makerspace / vendor TBD"). Confirm actual source before ordering. §2.6 and Order Form updated. BOM total revised **NPR 9,667 → NPR 13,577** (+NPR 3,910).
