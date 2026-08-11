@@ -1,9 +1,57 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v41)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v48)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 11, 2026 (v41 — Action #38 added: charging interface locked to dual single-purpose USB-C ports, off-body access only, no cost impact. Note: v38–v40 change-log summaries were never backfilled to this line despite being present elsewhere in the file — v40's Action #32 resolution is documented in §1 directly; this is a pre-existing gap, not touched here) ·
+**Last updated:** August 11, 2026 (v48 — Action #39: international-availability check closed. Original v43 spec (A2 stainless/flanged button head) confirmed real and in-stock via UK/international sellers only — no Nepal match. v45-sourced Daraz kit remains the vendor, no further candidates pending. No cost change) ·
+
+**v48 change log (August 11, 2026 — Action #39, international-availability check, search closed):**
+
+- **Google Images search for the original v43 spec** (M2.5 self-tapping, A2 stainless, flanged button head) returns real, genuine matches — confirming this is a normal, standard, buyable fastener, not an over-specified fiction.
+- **Every visible result is UK/international**: eBay UK, Westfield Fasteners, Nuts of Chorley, TIMCO, Amazon UK, RC4WD, Fusion Fixings. No Nepal-based seller appeared. Same "not locally available" conclusion already reached for Ubuy (v44) — international stock, cross-border shipping, doesn't meet the "readily available in Nepal" bar set for this Action.
+- **No new candidate, no vendor change.** This closes the spec-search loop: the ideal spec is confirmed real but confirmed non-local; the v45 Daraz kit (relaxed spec, local, in-stock) remains the sourced answer unless the person chooses to import instead.
+- **No cost/BOM change.**
+
+**v47 change log (August 11, 2026 — Action #39, Himalayan Solution candidate reviewed and rejected):**
+
+- **Reviewed `himalayansolution.com` — "500PCS M2 M2.5 M3 KM Screw Flat Head Phillips," Rs.1,200.** Himalayan Solution is already an established BOM vendor (TP4056, breadboard, R/C assortment lines) — genuinely worth checking.
+- **Rejected on two independent grounds:** (1) listing confirms **0 available / Out of Stock** — not currently purchasable regardless of spec fit; (2) product photos show a **flat/countersunk head profile**, same geometry the v43 spec explicitly excluded (needs a precisely matched conical seat in the TPU or risks a proud sharp edge / cracked boss).
+- **Decision: keep the v45-sourced Daraz kit as-is.** No cost/BOM change.
+
+**v46 change log (August 11, 2026 — Action #39, second candidate reviewed, not adopted):**
+
+- **Reviewed `daraz.com.np/tag/self-tapping-screws/` category listing** — one product ("100pcs Small Micro Phillips...") shows dimensions M2×5/6/8/10mm, **M2.5×6/8/10/12mm**, M3×8/10mm on its card. Real size match for M2.5×6/×8mm.
+- **Not adopted.** Product title itself reads "Flat Countersunk...Pan Head" — countersunk and pan head are different, mutually exclusive geometries (flat conical bearing surface vs. rounded cylindrical sides), so the title contradicts itself. Head shape can't be trusted from the card alone; would need the live listing opened to resolve, which wasn't done this session.
+- **Decision: keep the v45-sourced Daraz kit as-is** rather than swap on an unconfirmed detail. This candidate logged for future reference only.
+- **No cost/BOM change.**
+
+**v45 change log (August 11, 2026 — Action #39 spec relaxed, vendor resolved):**
+
+- **Minimum requirements re-derived, separating fixed from preferred.** Fixed: M2.5 thread, self-tapping (no insert equipment on hand), length within wall/boss thickness (unverified regardless of vendor — Action #17 CAD blocker), not countersunk (tolerance risk). Downgraded from requirement to preference: A2 stainless, flanged button head — both were precautionary for a skin-contact scenario at the fastener that was never actually confirmed to exist.
+- **Length unified ×6mm/×10mm → ×8mm** for both PCB mount and shell-join. Matches the sourced kit's max size; shorter length is also lower-risk against an unverified wall thickness, so this reads as a safety-neutral-to-positive simplification rather than a pure compromise.
+- **Vendor resolved: Daraz Nepal (`daraz.com.np`) M2/M2.5/M3 machine screw kit** — live listing, confirmed Kathmandu-valley delivery. Ubuy Nepal 304-stainless/button-head assortments were considered but set aside: Ubuy is cross-border resale (international stock shipped in), not local stock, same treatment already applied to other BOM sourcing decisions this session; also, the specific M2.5 size wasn't confirmed present in any Ubuy listing's size breakdown, unlike the Daraz kit which explicitly lists M2.5×3–8mm.
+- **Material/head-type downgrade logged explicitly, not silently dropped** — if the CAD model later shows the fastener does contact skin, this line should be revisited against the original A2-stainless/button-head spec.
+- **No cost change** — NPR 300 placeholder retained; kit's real price wasn't visible on the fetched listing page.
+
+**v44 change log (August 11, 2026 — Action #39 vendor search, no confirmed match):**
+
+- **Searched Nepal market for M2.5 A2-stainless flanged-button-head self-tapping screws.** General Kathmandu hardware retailers (hardwarepasal.com, confirmed via live category page) stock only construction-scale clipboard/truss-head screws (4mm–8mm shaft, 20–100mm length) — no M2.5 or electronics-scale fasteners.
+- **One real match found:** Daraz Nepal (`daraz.com.np`) lists "helper 300pcs M2/M2.5/M3 Machine Screws Set" (No Brand) — includes M2.5×3/4/5/6/7/8mm, covers the ×6mm PCB-mount length. **Not adopted as the sourced vendor** — listing states material as "metal" only (stainless unconfirmed), doesn't specify button head, and has no ×10mm length (shell-join length would need a different source, or the spec relaxes to ≤8mm).
+- **No cost/BOM change.** Logged as an open partial-candidate in §1 Action #39, not a resolution.
+
+**v43 change log (August 11, 2026 — Action #39 fastener spec finalized: material, head type, safety reasoning):**
+
+- **Material: A2 stainless.** Rejects black-oxide/plated carbon steel — sweat exposure (worn device) risks corrosion; stainless also avoids nickel-heavy alloys linked to contact dermatitis, relevant since fasteners sit against/near skin through the TPU shell.
+- **Head type: flanged button head, not countersunk.** Countersunk needs a precisely matched conical seat printed into the TPU — any mismatch either leaves the head proud with a sharp rim, or over-drives and cracks the boss. Flanged button head spreads clamp force over more surface area, reducing head sink-in as TPU compresses under repeated wear-cycle flex; integrated washer face is more forgiving of print tolerance than a countersunk seat.
+- **Open item flagged, not resolved:** ×6mm/×10mm lengths still unverified against actual wall/boss thickness — no CAD model exists yet (same Action #17 blocker as Action #38's charging panel). This is a real pending safety check, not just documentation debt — a screw bottoming through the inner wall toward skin is the actual failure mode to avoid, independent of head style.
+- **No cost/quantity change** — same qty 20, NPR 300 total, vendor still TBD.
+
+**v42 change log (August 11, 2026 — fasteners added to BOM, xlsx duplicate regression re-fixed):**
+
+- **Action #39 added — fasteners were never in the BOM.** Neither `docs/SPARK_BOM_Procurement.xlsx` (pre-deletion) nor `docs/SPARK_Component_Order_Form.xlsx` had a screw/fastener line, despite the enclosure's PCB mount (locked v29) and shell-half join both needing them. Added: M2.5 self-tapping, qty 20 (mixed ×6mm PCB mount / ×10mm shell join), NPR 15/unit placeholder = NPR 300. Vendor TBD, unpriced-baseline like other placeholder lines (breadboard, R/C assortment).
+- **`docs/SPARK_Component_Order_Form.xlsx` updated:** new row 11 (fasteners) inserted with merge ranges (`D:E`, `H:I` on the GRAND TOTAL row) manually unmerged/reapplied per the v15 row-insert lesson — formula drift avoided.
+- **Regression re-found and fixed: `docs/SPARK_BOM_Procurement.xlsx` was still on disk.** v37's changelog claimed this file was `git rm`'d, but it remained tracked and present — identical failure class to the bug v37 itself was fixing. Actually deleted this session.
+- **Total: NPR 13,577 → NPR 13,877** (+NPR 300, fasteners).
 
 **v37 change log (August 10, 2026 — repo hygiene regression fixed, VS Code compile support added, repo decluttered):**
 
@@ -285,9 +333,21 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**38 action items logged total. Ordered by item number (not priority tier); newest addition (#38) placed at top per convention, remaining items retain original recency ordering.**
+**39 action items logged total. Ordered by item number (not priority tier); newest addition (#39) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#38 — Charging interface: dual single-purpose USB-C ports, off-body access only (NEW v41)**
+1. **#39 — Fasteners: M2.5 self-tapping, ×8mm, sourced Daraz Nepal — spec relaxed from A2 stainless/button-head (v42→v45)**
+   - **Item:** No fastener/screw line existed anywhere in the BOM (neither the deleted `SPARK_BOM_Procurement.xlsx` nor the canonical `SPARK_Component_Order_Form.xlsx`) despite the PCB mount (Action #34, locked v29) and Velcro-closure shell (locked v30) both implying mechanical fastening points.
+   - **v42–v44 history:** Added (v42), spec locked to A2 stainless/flanged button head/×6mm+×10mm mixed lengths (v43) on corrosion/skin-safety and TPU-clamp reasoning, vendor-searched with no confirmed local match (v44) — one Daraz Nepal listing found but didn't confirm stainless or button head, and lacked the ×10mm length.
+   - **v45 — spec relaxed to match what's actually available in Nepal.** Minimum requirements re-derived: M2.5 thread (fixed), self-tapping (fixed, no insert equipment on hand), length within wall/boss thickness (unverified either way pending CAD — Action #17 blocker, not vendor-dependent), not countersunk (fixed, tolerance risk). Material (stainless) and head type (button/flanged) were downgraded from requirements to preferences — the corrosion/dermatitis reasoning was precautionary for a skin-contact scenario never confirmed to actually exist, and head shape isn't load-bearing at this torque/application. Countersunk remains excluded.
+   - **Decision:** Daraz Nepal (`daraz.com.np`) M2/M2.5/M3 machine screw assortment kit adopted as sourced vendor — real, live, local-delivery listing (confirmed available in Nepal, unlike Ubuy which is cross-border resale and was set aside for that reason, consistent with how other BOM lines already treat Ubuy). **Length unified to ×8mm for both PCB mount and shell-join** (was ×6mm/×10mm split) — kit's max size is M2.5×8mm; shorter is also lower-risk against bottoming through an unverified wall thickness, so this is a safety-neutral-to-positive simplification, not just an availability compromise.
+   - **Material/head, downgraded:** generic "metal" per listing, stainless not confirmed; head type not stated as button head. Logged as a known spec downgrade, not silently accepted — if wall-thickness verification later shows real skin contact, this line should be revisited.
+   - **Cost:** kit's actual per-unit/kit price not confirmed on the listing page. NPR 300 placeholder (NPR 15/unit × 20) retained pending real price.
+   - **Status:** Vendor resolved. Open: actual kit price, and the wall/boss-thickness safety check (blocked on Action #17 CAD).
+   - **Alternate candidate seen, not adopted (v46):** a `daraz.com.np/tag/self-tapping-screws/` category listing shows sizes including M2.5×6mm/×8mm — real size match — but its own title reads "Flat Countersunk...Pan Head," a self-contradictory head-shape claim (countersunk and pan are mutually exclusive geometries). Head shape unconfirmed without opening the live listing; material also unstated. Logged as generic/unverified — not swapped in over the resolved Daraz kit above.
+   - **Second alternate seen, rejected (v47):** Himalayan Solution (existing BOM vendor, TP4056/breadboard/R-C lines) — "500PCS M2 M2.5 M3 KM Screw Flat Head Phillips," Rs.1,200, includes M2.5. **Rejected on two independent grounds:** (1) confirmed **out of stock**, "0 available," not currently purchasable; (2) product photos confirm **flat/countersunk head** — same excluded geometry as the v43 countersunk rejection, disqualifying even if stock existed.
+   - **International-availability check, closed (v48):** Google Images search for the original v43 spec (A2 stainless, flanged button head, self-tapping, M2.5) returns real, in-stock matches — but exclusively from UK/international sellers (eBay UK, Westfield Fasteners, Nuts of Chorley, TIMCO, Amazon UK, RC4WD, Fusion Fixings), none Nepal-based. Confirms the original spec is a real, buyable part — just not locally, same category gap already established for Ubuy. No new local candidate; search loop closed, v45 kit remains sourced.
+
+2. **#38 — Charging interface: dual single-purpose USB-C ports, off-body access only (NEW v41)**
    - **Item:** Enclosure houses ESP32-S3, MPU6050, LiPo, TP4056, and internal wiring only — no charging-interface design existed prior to this decision. Two architectures considered: single combined USB-C port (phone-style, data+charge muxed) vs two separate single-purpose ports (ESP32-S3 native USB-C for programming/data, TP4056's own USB-C for charge input). Combined-port option rejected — TP4056 has no data lines (charge-only IC), so true 2-in-1 would need an added USB hub/mux PCB not currently in scope or BOM.
    - **Decision:** Two ports, each single-purpose. Plausibly explains existing row 12 "USB-C ×3" BOM count (1 ESP32-S3 programming port + 1 TP4056 charge port + 1 spare, matching the Action #16 spare-buffer pattern) — not previously stated anywhere in the tracker, inferred this session.
    - **Governing constraint:** Device confirmed never worn while charging (user-stated). This decouples the charge port from the sealed-enclosure water-ingress concern raised in this session's (unlogged) thermal/venting discussion — charge port can sit behind an occasional-access panel/gasketed cap rather than a daily-sealed cutout, since it's never exposed to sweat/motion during actual use.
@@ -644,6 +704,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
    - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33, **§2.2 conflict resolved v36** — confirmed distinct from the enclosure's own built-in Velcro closure tab; this strap provides additional wearable retention/security, separate purchase)
    - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): material sourced as **1kg roll purchase, NPR 4,000** (v39, Action #37 — supersedes v38's per-part NPR 90 estimate; sourcing model changed from KEC print-service to owning the filament, same NPR 4/g rate; only ~22g needed per Action #36's geometric estimate, rest is spare)
+   - Fasteners (v42, Action #39; spec relaxed + vendor sourced v45, see §1): M2.5 self-tapping, **×8mm** (unified from a ×6mm/×10mm split — shorter length is lower-risk against an unverified wall thickness), generic metal (stainless/button-head downgraded from requirement to preference — precautionary reasoning for a skin-contact scenario never confirmed to exist), sourced **Daraz Nepal** (`daraz.com.np`, live listing, confirmed local delivery — unlike cross-border resellers like Ubuy, set aside for that reason). Qty 20 — NPR 15/unit placeholder × 20 = **NPR 300** (real kit price not yet confirmed). Countersunk rejected — needs exact-matched conical seat or risks a proud sharp edge / cracked boss. Length-vs-wall-thickness still not verified against a real model (blocked on Action #17) — this is a hard floor independent of vendor choice.
 
 2. **Gateway (laptop):**
    - Acer Swift Go 16 (already owned): NPR 0
@@ -660,7 +721,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
-**Total project cost:** **NPR 13,577** (v39 — enclosure material sourcing switched from per-part TPU print-service to 1kg roll purchase, NPR 90→4,000, +NPR 3,910, over v38's NPR 9,667).
+**Total project cost:** **NPR 13,877** (v42 — fasteners added, NPR 0→300, over v39's NPR 13,577).
 
 **Funding breakdown (v31 — all self-funded/lab-borrowed status dropped):**
 
