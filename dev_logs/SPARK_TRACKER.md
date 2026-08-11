@@ -21,7 +21,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 - **Action #21 resolved — R-05 draw/endurance math fixed.** Old figure ("~5 mA @ 200 Hz → 8–10hr on 1000 mAh") didn't reconcile (1000/5 = 200hr). Replaced with an estimated ~110–140 mA active-draw range that actually reconciles against the sourced 1100 mAh LiPo (v34) at 8–10hr. Explicitly flagged as estimate (no INA219 telemetry exists in this design to measure it — that part is dead/RPi-era). §2.2, §2.7 updated.
 - **§2.2 Velcro/enclosure conflict resolved.** Confirmed as two distinct components: the enclosure's own built-in Velcro closure tab (part of the 3D-printed shell, no separate purchase) and the BOM's separately-purchased "Velcro wrist strap" (RR-papers, NPR 500×2) for additional retention/security. §2.2 and §2.6 wording updated.
 - **`docs/SPARK_BOM_Procurement.xlsx` found frozen at v30 state** (NPR 5,434, missing spare ESP32-S3, Velcro strap, TPU enclosure pricing, all v31–v35 changes) — never synced despite 5 tracker version bumps. Deleted — `docs/SPARK_Component_Order_Form.xlsx` (already at v35 state, NPR 9,737, matches tracker) is now the sole canonical procurement spreadsheet.
-- **Enclosure weight (~NPR 160) — still an unmeasured 40g guess.** No CAD model exists to slice. Not fixable without the model; flagged as-is.
+- **Enclosure weight (~NPR 90, v38) — improved geometric estimate, still not a real slice.** No CAD model exists to slice; see §1 Action #36 for the calculation basis. Not fully resolvable without the model.
 - **Order placement — still zero confirmed.** Actions #16/#18 remain open; procurement, not tracker editing, resolves these.
 
 **v35 change log (August 10, 2026 — gateway architecture clarified, BLE dongle dropped):**
@@ -36,7 +36,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 
 - **Battery: sourced.** Giga Nepal, 3.7V **1100mAh** LiPo, **NPR 550** — live listing, pouch cell, exceeds v28's 1000mAh target. Clears the 4hr endurance floor with margin at realistic ESP32-S3+MPU6050 draw estimates. Sourcing gap closed; the underlying R-05 draw-figure staleness (Action #21) is a separate, still-open issue — not resolved by this.
 - **Enclosure material: PLA → TPU, switched.** KEC Makerspace's real checkout/inventory system stocks TPU only (886g Black in stock, NPR 4/g KEC rate) — PLA was never actually verified against real makerspace stock, just assumed since v13. This also aligns the tracker with the enclosure concept render (`dev_logs/design-assets/enclosure_concept_v1_two_zone_bracer.png`), which already specified TPU — previously flagged as a render-vs-tracker conflict, now resolved by fixing the tracker side.
-- **Enclosure cost: NPR 0 → ~NPR 160 (estimate).** TPU is gram-priced at KEC (NPR 4/g), not free — the v13 "negligible/in-house" note assumed PLA scrap/inhouse-free fabrication that doesn't hold for TPU. Rough 40g estimate, not a measured slice — needs a real slicer estimate once the enclosure model exists.
+- **Enclosure cost: NPR 0 → ~NPR 160 → ~NPR 90 (v38, geometric estimate).** TPU is gram-priced at KEC (NPR 4/g), not free — the v13 "negligible/in-house" note assumed PLA scrap/inhouse-free fabrication that doesn't hold for TPU. v34's NPR 160 was a flat 40g eyeball guess with no basis shown. v38 replaces it with a hand-computed two-zone volume (270° arc / 75% wrap from Aaradhya's forearm measurement — 12cm band length, 16cm reference circumference, matches the render's stated 75% wrap independently; wrist zone slim + forearm zone with electronics bulge sized against DI-01's real component footprints: ESP32-S3 25×50×7mm, 1000mAh LiPo 32×52×7mm, TP4056 15×17×2mm; 2mm wall per CAD_SOFTWARE_GUIDE.md's logged spec; TPU 95A density 1.21 g/cm³) → **~18.5 cm³, ~22g, ~NPR 90**. **This is still not a real slice** — no CAD model or slicer output exists in the repo. Treat as a better-grounded placeholder, not Action #17's resolution; that needs the actual model built and sliced.
 - **Total BOM: NPR 9,027 → NPR 9,737** (+NPR 550 battery, +~NPR 160 enclosure).
 - **§2.2, §2.6, §0 updated.** BOM xlsx not yet synced this session — pending.
 
@@ -242,7 +242,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Still open: #3, #5, #32, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
-   - 🟢 35 action items logged total (#1–35)
+   - 🟢 36 action items logged total (#1–36)
    - Tiers rank open, actionable items by dependency/lead-time
    - Resolved items and Future-Work-only items (7, above) sit outside tier system by design
    - Tier 1 resolved v20 (defence outcome confirmed)
@@ -285,15 +285,23 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**35 action items logged total. Ordered by item number (not priority tier); newest addition (#35) placed at top per convention, remaining items retain original recency ordering.**
+**36 action items logged total. Ordered by item number (not priority tier); newest addition (#36) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#35 — Finalize BOM v35→v38 open items pass (NEW v38)**
-   - **Item:** Reviewed 4 flagged open items from BOM v35 lock: (a) Velcro strap design decision, (b) enclosure cost real slicer figure, (c) battery-draw endurance figure in risk matrix, (d) phone display-client owner.
-   - **Findings:** (a) already resolved — Action #34 (v30) locked top-of-wrist Velcro closure; no separate open decision exists. (b) still genuinely blocked — NPR 160 remains a 40g eyeball estimate (§2.6); no CAD model exists to slice, and Action #17 (WROOM-1-CAM FPC footprint check) is an open prerequisite. Not resolvable without the model existing first. (c) already resolved — Action #21 (v36) replaced the broken 5 mA figure with the reconciling 110–140 mA estimate. (d) resolved this pass — owner assigned, see below.
+1. **#36 — Enclosure cost: geometric estimate from real forearm measurement (NEW v38)**
+   - **Item:** Action #35 (below) left enclosure cost genuinely blocked — no CAD model existed to slice. Aaradhya provided real forearm measurements (12cm C-shaped band arc length, 16cm reference circumference, ~4cm tentative height, open end under forearm closed by Velcro strap) matching the `enclosure_concept_v1_two_zone_bracer.png` render's stated 75% wrap / 25–30% open-seam geometry — an independent cross-check that passed (12/16 = 75% exactly).
+   - **Calculation:** Two-zone volume computed from the 270° arc (75% of 360°), split across wrist zone (slim, sensor-only, 3cm), spine (wiring bridge, 3cm), and forearm zone (wider/thicker electronics bay, 6cm) per the render's real component footprints logged in `CAD_PRACTICE_PART_WALKTHROUGH.md`/`DESIGN_IDEAS.md` (ESP32-S3 25×50×7mm, 1000mAh LiPo 32×52×7mm, TP4056 15×17×2mm). Wall thickness 2mm per the DI-01 spec already logged in `CAD_SOFTWARE_GUIDE.md`. TPU 95A density 1.21 g/cm³.
+   - **Result:** ~18.5 cm³ → ~22g → **~NPR 90** (was NPR 160). BOM total revised NPR 9,737 → **NPR 9,667** (−NPR 70). §2.6 and Order Form updated.
+   - **Caveat — still not Action #17's resolution:** this is a hand-computed estimate from stated dimensions, not a CAD model or slicer output. No `.f3d`/`.step`/`.stl` file exists in the repo. Real slice still needed once the model is built; treat NPR 90 as a better-grounded placeholder, not a locked figure.
    - **Owner:** Aaradhya
-   - **Status:** 2 of 4 confirmed already-resolved (stale items in the v35 recollection), 1 newly resolved (owner assignment), 1 remains open pending physical enclosure model (blocked on Action #17, not a paperwork fix).
+   - **Status:** Open (placeholder improved, Action #17 itself unresolved).
 
-2. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
+2. **#35 — Finalize BOM v35→v38 open items pass (v38)**
+   - **Item:** Reviewed 4 flagged open items from BOM v35 lock: (a) Velcro strap design decision, (b) enclosure cost real slicer figure, (c) battery-draw endurance figure in risk matrix, (d) phone display-client owner.
+   - **Findings:** (a) already resolved — Action #34 (v30) locked top-of-wrist Velcro closure; no separate open decision exists. (b) blocked at the time — NPR 160 was a 40g eyeball estimate with no basis shown; no CAD model existed to slice, and Action #17 (WROOM-1-CAM FPC footprint check) was an open prerequisite. **Superseded same-session by Action #36** (real measurement provided, better estimate computed — still not a full resolution, see #36's caveat). (c) already resolved — Action #21 (v36) replaced the broken 5 mA figure with the reconciling 110–140 mA estimate. (d) resolved this pass — owner assigned, see §3.
+   - **Owner:** Aaradhya
+   - **Status:** 2 of 4 confirmed already-resolved (stale items in the v35 recollection), 1 newly resolved (owner assignment), 1 improved but not closed (enclosure — see Action #36).
+
+3. **#34 — Electronics placement + closure mechanism locked: top-of-wrist, Velcro (UPDATED v30)**
    - **Item:** Enclosure electronics housing confirmed at top-of-wrist (dorsal side), not underside/palm-side. Fixes MPU6050 orientation reference for Layer 1 threshold calibration (Action #7) and rules out volar-side mounting.
    - **v30 addition — closure mechanism:** Hook-and-loop Velcro (not belt-buckle). Elderly-dexterity rationale: target population (healthy independent elderly, per proposal scope) needs one-handed, no-fine-motor-control fastening; Velcro tolerates daily wrist-swelling variance and doesn't require threading/pulling tension like a buckle. Skin protection is handled by the arm sleeve base layer (new BOM row, Action #34), not by the closure choice.
    - **v30 addition — arm sleeve base layer:** Compression arm sleeve (thumb-hole, stretchable) worn under the enclosure. Added to BOM at NPR 136 (Daraz, "BLUE BELL Let's Slim").
@@ -523,7 +531,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Material: 3D-printed TPU (KEC Makerspace, switched v34 — real KEC inventory only stocks TPU, not PLA; PLA lock v13 was never verified against actual makerspace stock)
    - Footprint: Himalayan board (vendor reverted v32) is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
-**Total BOM (§2.6):** **NPR 9,737** (v34 — battery sourced +NPR 550, enclosure TPU switch +~NPR 160 estimate, over v33's NPR 9,027. Funding: all lines departmental-ordered, no self-funded/lab-borrowed split.)
+**Total BOM (§2.6):** **NPR 9,667** (v38 — enclosure re-estimated NPR 160→90, −NPR 70, over v34's NPR 9,737. Funding: all lines departmental-ordered, no self-funded/lab-borrowed split.)
 
 ### §2.3 — Novelty Claims (5 total)
 
@@ -620,7 +628,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
    - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
    - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33, **§2.2 conflict resolved v36** — confirmed distinct from the enclosure's own built-in Velcro closure tab; this strap provides additional wearable retention/security, separate purchase)
-   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): ~NPR 160 (estimate, 40g × KEC rate NPR 4/g — rough figure, not a measured slice; supersedes v13's "negligible/in-house" PLA note now that TPU is confirmed gram-priced, not free)
+   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): ~NPR 90 (v38 geometric estimate, ~22g × KEC rate NPR 4/g — hand-computed two-zone volume from real forearm measurement + DI-01 component footprints, see §7 v38 entry; still not a measured slice, supersedes v34's unsourced 40g flat guess)
 
 2. **Gateway (laptop):**
    - Acer Swift Go 16 (already owned): NPR 0
@@ -637,11 +645,11 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
-**Total project cost:** **NPR 9,737** (v34 — battery sourced NPR 550, enclosure material switched PLA→TPU +~NPR 160 estimate, over v33's NPR 9,027).
+**Total project cost:** **NPR 9,667** (v38 — enclosure re-estimated NPR 160→90 via v38 geometric calc, −NPR 70, over v34's NPR 9,737).
 
 **Funding breakdown (v31 — all self-funded/lab-borrowed status dropped):**
 
-- Departmental ask: **NPR 9,737** (full BOM total — all lines now departmental-ordered, no self-funded or lab-borrowed split)
+- Departmental ask: **NPR 9,667** (full BOM total — all lines now departmental-ordered, no self-funded or lab-borrowed split)
 - Self-funded by Aaradhya: **None** (v31 — previously 1 × ESP32-S3 + USB-C cable, now departmental)
 - Lab-borrowed: **None** (v31 — previously MPU6050, now departmental-ordered)
 
