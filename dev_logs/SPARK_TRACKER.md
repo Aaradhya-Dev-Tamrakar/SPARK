@@ -1,4 +1,4 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v38)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v39)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
@@ -242,7 +242,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Still open: #3, #5, #32, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
-   - 🟢 36 action items logged total (#1–36)
+   - 🟢 37 action items logged total (#1–37)
    - Tiers rank open, actionable items by dependency/lead-time
    - Resolved items and Future-Work-only items (7, above) sit outside tier system by design
    - Tier 1 resolved v20 (defence outcome confirmed)
@@ -285,12 +285,19 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ## §1 — Action Items (Active & Resolved)
 
-**36 action items logged total. Ordered by item number (not priority tier); newest addition (#36) placed at top per convention, remaining items retain original recency ordering.**
+**37 action items logged total. Ordered by item number (not priority tier); newest addition (#37) placed at top per convention, remaining items retain original recency ordering.**
 
-1. **#36 — Enclosure cost: geometric estimate from real forearm measurement (NEW v38)**
+1. **#37 — Enclosure material sourcing: switched to bulk 1kg TPU roll purchase (NEW v39)**
+   - **Item:** Action #36's NPR 90 figure assumed KEC Makerspace's per-part print-service model (they supply filament, charge NPR 4/g of material used per print). Aaradhya opted instead to buy a 1kg TPU roll outright at the same NPR 4/g rate, owning the filament rather than paying per-print.
+   - **Cost:** 1000g × NPR 4/g = **NPR 4,000** (replaces the NPR 90 per-part line). Only ~22g is needed for one enclosure per Action #36's estimate — the rest of the roll is spare capacity for future prints/iterations, not consumed by this BOM line alone.
+   - **Status:** Open — roll vendor not yet sourced to a live listing (Order Form lists "KEC Makerspace / vendor TBD"). Confirm actual source before ordering. §2.6 and Order Form updated. BOM total revised **NPR 9,667 → NPR 13,577** (+NPR 3,910).
+   - **Owner:** Aaradhya
+   - **Note:** This is a genuine cost jump (roll is ~44x the per-part estimate) for what's still only a 22g part need — worth flagging to the team/department before ordering, since NPR 4,000 is now the single largest non-ESP32-S3 line on the BOM.
+
+2. **#36 — Enclosure cost: geometric estimate from real forearm measurement (v38)**
    - **Item:** Action #35 (below) left enclosure cost genuinely blocked — no CAD model existed to slice. Aaradhya provided real forearm measurements (12cm C-shaped band arc length, 16cm reference circumference, ~4cm tentative height, open end under forearm closed by Velcro strap) matching the `enclosure_concept_v1_two_zone_bracer.png` render's stated 75% wrap / 25–30% open-seam geometry — an independent cross-check that passed (12/16 = 75% exactly).
    - **Calculation:** Two-zone volume computed from the 270° arc (75% of 360°), split across wrist zone (slim, sensor-only, 3cm), spine (wiring bridge, 3cm), and forearm zone (wider/thicker electronics bay, 6cm) per the render's real component footprints logged in `CAD_PRACTICE_PART_WALKTHROUGH.md`/`DESIGN_IDEAS.md` (ESP32-S3 25×50×7mm, 1000mAh LiPo 32×52×7mm, TP4056 15×17×2mm). Wall thickness 2mm per the DI-01 spec already logged in `CAD_SOFTWARE_GUIDE.md`. TPU 95A density 1.21 g/cm³.
-   - **Result:** ~18.5 cm³ → ~22g → **~NPR 90** (was NPR 160). BOM total revised NPR 9,737 → **NPR 9,667** (−NPR 70). §2.6 and Order Form updated.
+   - **Result:** ~18.5 cm³ → ~22g → **~NPR 90** (was NPR 160). BOM total revised NPR 9,737 → **NPR 9,667** (−NPR 70). §2.6 and Order Form updated. **Superseded v39 by Action #37** — sourcing model changed from per-part print-service to bulk roll purchase, see below.
    - **Caveat — still not Action #17's resolution:** this is a hand-computed estimate from stated dimensions, not a CAD model or slicer output. No `.f3d`/`.step`/`.stl` file exists in the repo. Real slice still needed once the model is built; treat NPR 90 as a better-grounded placeholder, not a locked figure.
    - **Owner:** Aaradhya
    - **Status:** Open (placeholder improved, Action #17 itself unresolved).
@@ -531,7 +538,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Material: 3D-printed TPU (KEC Makerspace, switched v34 — real KEC inventory only stocks TPU, not PLA; PLA lock v13 was never verified against actual makerspace stock)
    - Footprint: Himalayan board (vendor reverted v32) is WROOM-1-CAM variant (has unused camera FPC); unconfirmed vs. §7 assumption (Action #17)
 
-**Total BOM (§2.6):** **NPR 9,667** (v38 — enclosure re-estimated NPR 160→90, −NPR 70, over v34's NPR 9,737. Funding: all lines departmental-ordered, no self-funded/lab-borrowed split.)
+**Total BOM (§2.6):** **NPR 13,577** (v39 — enclosure sourcing switched to 1kg TPU roll purchase, NPR 90→4,000, +NPR 3,910, over v38's NPR 9,667. Funding: all lines departmental-ordered, no self-funded/lab-borrowed split.)
 
 ### §2.3 — Novelty Claims (5 total)
 
@@ -628,7 +635,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
    - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
    - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33, **§2.2 conflict resolved v36** — confirmed distinct from the enclosure's own built-in Velcro closure tab; this strap provides additional wearable retention/security, separate purchase)
-   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): ~NPR 90 (v38 geometric estimate, ~22g × KEC rate NPR 4/g — hand-computed two-zone volume from real forearm measurement + DI-01 component footprints, see §7 v38 entry; still not a measured slice, supersedes v34's unsourced 40g flat guess)
+   - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): material sourced as **1kg roll purchase, NPR 4,000** (v39, Action #37 — supersedes v38's per-part NPR 90 estimate; sourcing model changed from KEC print-service to owning the filament, same NPR 4/g rate; only ~22g needed per Action #36's geometric estimate, rest is spare)
 
 2. **Gateway (laptop):**
    - Acer Swift Go 16 (already owned): NPR 0
@@ -645,11 +652,11 @@ Landed via three raw commits (see above note) — future edits must route throug
    - Breadboard + jumper wires, 2 sets: NPR 325/set × 2 = NPR 650 (baseline, legacy pricing)
    - Resistor/capacitor assortment, 1 lot: NPR 600 (baseline, legacy pricing)
 
-**Total project cost:** **NPR 9,667** (v38 — enclosure re-estimated NPR 160→90 via v38 geometric calc, −NPR 70, over v34's NPR 9,737).
+**Total project cost:** **NPR 13,577** (v39 — enclosure material sourcing switched from per-part TPU print-service to 1kg roll purchase, NPR 90→4,000, +NPR 3,910, over v38's NPR 9,667).
 
 **Funding breakdown (v31 — all self-funded/lab-borrowed status dropped):**
 
-- Departmental ask: **NPR 9,667** (full BOM total — all lines now departmental-ordered, no self-funded or lab-borrowed split)
+- Departmental ask: **NPR 13,577** (full BOM total — all lines now departmental-ordered, no self-funded or lab-borrowed split)
 - Self-funded by Aaradhya: **None** (v31 — previously 1 × ESP32-S3 + USB-C cable, now departmental)
 - Lab-borrowed: **None** (v31 — previously MPU6050, now departmental-ordered)
 
