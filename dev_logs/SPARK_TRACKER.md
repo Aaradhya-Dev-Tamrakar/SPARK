@@ -1,4 +1,4 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v39)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v40)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
@@ -239,7 +239,7 @@ Landed via three raw commits (see above note) — future edits must route throug
 5. **Not blocking, but decide soon**
    - 9 open items: #16, #17, #18, #19, #20, #21, #22, #23, #24
    - Resolved: #2, #4, #11, #12, #14, #15 (v22), legacy #6 (v22, repo created)
-   - Still open: #3, #5, #32, #33 (see §1 below)
+   - Still open: #3, #5, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
    - 🟢 37 action items logged total (#1–37)
@@ -315,10 +315,10 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **Owner:** Aaradhya
    - **Status:** Locked v29 (placement) + v30 (closure, base layer). §2.2/§2.6 updated. BOM cost impact: +NPR 136 (v30, arm sleeve only — placement/closure choice itself has no cost).
 
-2. **#32 — Source battery charge/protection circuit (NEW v28)**
+2. **#32 — Source battery charge/protection circuit [RESOLVED v40]**
    - **Item:** MPU6050→ESP32-S3 needs a physical wired link (breadboard-level, bring-up phase) and a raw 1000 mAh Li-ion/LiPo cell needs charge/overcharge/over-discharge protection (TP4056-class module) unless the sourced battery is already a protected pack. Neither was present in the ESP32-S3-era BOM (§2.6 had only 7 rows).
    - **Owner:** Aaradhya
-   - **Status:** Open. BOM row added v28 (unpriced placeholder, baseline NPR 90/unit from legacy proposal table). Confirm at battery-sourcing time whether the purchased cell is already protected — if so this line may be dropped.
+   - **Status:** **Resolved v40.** Giga Nepal's product listing/spec sheet for the sourced 1100mAh cell (v34) lists JST 2-pin connector, voltage, capacity, style — no BMS/PCM/protection-circuit line item, and description text ("safe and efficient power delivery," "durable outer casing") is generic pouch-casing language, not a protection claim vendors normally state explicitly when present. Confirmed raw/unprotected cell. TP4056 line (row 8) required, stays in BOM at NPR 90.
 
 3. **#33 — Bring-up consumables not yet in BOM (NEW v28)**
    - **Item:** Breadboard + jumper wires and a resistor/capacitor assortment are needed for wearable-node bring-up/prototyping but were never priced against the current ESP32-S3 design (only existed in the dead RPi-era cost table).
@@ -632,7 +632,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - 1 × MPU6050, Himalayan: NPR 350 (sourced v33, GY-251 module, live listing — Action #18's MPU6050 half resolved)
    - 1 × Lithium battery, 1100 mAh Li-ion/LiPo: NPR 550 (sourced v34, Giga Nepal — sourcing resolved; Action #21's R-05 draw-figure issue fixed v36, see §2.7)
    - 1 × USB-C cable, departmental-ordered: qty 3 × NPR 267 = NPR 801 (sourced v33, Daraz — Action #19 resolved)
-   - 1 × Charge/protection circuit (TP4056-class), required unless sourced battery is a protected pack (Action #32, NEW v28): NPR 90 (baseline, legacy pricing)
+   - 1 × Charge/protection circuit (TP4056-class), required — sourced cell confirmed unprotected (Action #32 resolved v40): NPR 90 (baseline, legacy pricing)
    - 1 × Compression arm sleeve, base layer, thumb-hole (locked v30, Action #34, departmental-ordered v31): NPR 136 (Daraz, "BLUE BELL Let's Slim," -32% off Rs.200, +Rs.100 delivery not included in line price)
    - 1 × Velcro wrist strap, RR-papers, qty 2: 2 × NPR 500 = NPR 1,000 (re-added v33, **§2.2 conflict resolved v36** — confirmed distinct from the enclosure's own built-in Velcro closure tab; this strap provides additional wearable retention/security, separate purchase)
    - Enclosure, wrist-worn (locked v28), Velcro closure (locked v30), 3D-printed TPU (switched v34): material sourced as **1kg roll purchase, NPR 4,000** (v39, Action #37 — supersedes v38's per-part NPR 90 estimate; sourcing model changed from KEC print-service to owning the filament, same NPR 4/g rate; only ~22g needed per Action #36's geometric estimate, rest is spare)
