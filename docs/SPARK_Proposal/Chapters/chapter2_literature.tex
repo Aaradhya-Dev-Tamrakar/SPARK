@@ -18,128 +18,82 @@ Fall detection using wearable inertial sensors has been an active research area 
 
 \textbf{Gap summary:} The existing literature leaves the following cluster of gaps unaddressed simultaneously: (a) on-device TFLite Micro CNN inference in a two-layer gated architecture on a sub-\$5 microcontroller; (b) SHAP-based per-event explainability surfaced to caregivers; (c) adaptive sensitivity profiles without firmware reflash; and (d) a dataset collected from Nepali subjects on locally procurable hardware. SPARK addresses all four gaps in a single open-source system.
 
-\begin{landscape}
-\begin{center}
+\begingroup
 \small
-\setlength{\tabcolsep}{3pt}
-\begin{longtable}{
-	>{\raggedright\arraybackslash}p{1.45in}
-	>{\raggedright\arraybackslash}p{0.95in}
-	>{\raggedright\arraybackslash}p{1.05in}
-	>{\raggedright\arraybackslash}p{0.85in}
-	>{\raggedright\arraybackslash}p{0.95in}
-	>{\raggedright\arraybackslash}p{1.05in}
-	>{\raggedright\arraybackslash}p{0.95in}
-	>{\raggedright\arraybackslash}p{1.05in}
-}
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{|p{0.7in}|p{1.4in}|p{1.5in}|p{1.5in}|}
 \caption{Literature Review Matrix} \label{tab:litreview} \\
-\toprule
-\textbf{Title / Author / Date} & \textbf{Conceptual Framework} & \textbf{Research Question(s) / Hypotheses} & \textbf{Datasets} & \textbf{Methodology} & \textbf{Analysis \& Results} & \textbf{Conclusions} & \textbf{Implications for Future Research} \\
-\midrule
+\hline
+\textbf{Authors} & \textbf{Paper Title (Year)} & \textbf{Key Contribution} & \textbf{Motivation / Adopted Concepts} \\
+\hline
 \endfirsthead
 
-\multicolumn{8}{c}{\tablename\ \thetable\ -- \textit{continued from previous page}} \\
-\toprule
-\textbf{Title / Author / Date} & \textbf{Conceptual Framework} & \textbf{Research Question(s) / Hypotheses} & \textbf{Datasets} & \textbf{Methodology} & \textbf{Analysis \& Results} & \textbf{Conclusions} & \textbf{Implications for Future Research} \\
-\midrule
+\multicolumn{4}{c}{\tablename\ \thetable\ -- \textit{continued from previous page}} \\
+\hline
+\textbf{Authors} & \textbf{Paper Title (Year)} & \textbf{Key Contribution} & \textbf{Motivation / Adopted Concepts} \\
+\hline
 \endhead
 
-\midrule
-\multicolumn{8}{r}{\textit{continued on next page}} \\
+\hline
+\multicolumn{4}{r}{\textit{continued on next page}} \\
 \endfoot
 
-\bottomrule
+\hline
 \endlastfoot
 
-\textbf{Comparison of Low-Complexity Fall Detection Algorithms for Body-Attached Accelerometers} \\ Kangas et al., 2008 \cite{kangas2008comparison} &
-Threshold-based fall detection via resultant-magnitude spike detection &
-How does sensor placement affect threshold-algorithm sensitivity/specificity trade-offs? &
-Hip and wrist IMU data &
-Empirical comparison of multiple threshold algorithms across placements &
-Sensitivity 73--95\% depending on placement; false-positive rate $>$30\% on vigorous ADLs &
-Single-stage threshold triggers on any rapid motion, not falls specifically &
-Motivates two-layer gating (Layer 1 threshold + Layer 2 CNN) instead of threshold-only detection \\
-\midrule
+Kangas et al.\ \cite{kangas2008comparison} &
+Comparison of Low-Complexity Fall Detection Algorithms for Body-Attached Accelerometers (2008) &
+Compares threshold algorithms on hip/wrist IMU data; 73--95\% sensitivity depending on placement, false-positive rate $>$30\% on vigorous ADLs. &
+Motivated Layer 1 threshold gating in SPARK's two-layer architecture, with awareness that threshold alone is insufficient. \\
+\hline
 
-\textbf{Evaluation of a Threshold-Based Tri-Axial Accelerometer Fall Detection Algorithm} \\ Bourke \& Lyons, 2008 \cite{bourke2008threshold} &
-Dual-axis threshold detection &
-Can a dual-axis threshold method improve on single-axis sensitivity? &
-Tri-axial accelerometer trial data &
-Threshold algorithm evaluation on axis-pair combinations &
-96\% sensitivity; specificity poor on sit-to-stand transitions &
-Even improved threshold methods cannot separate falls from similar-magnitude ADLs &
-Confirms need for a learned classifier stage beyond threshold gating \\
-\midrule
+Bourke \& Lyons \cite{bourke2008threshold} &
+Evaluation of a Threshold-Based Tri-Axial Accelerometer Fall Detection Algorithm (2008) &
+Dual-axis threshold method reaching 96\% sensitivity; specificity poor on sit-to-stand transitions. &
+Confirmed the need for a learned classifier stage beyond threshold gating alone. \\
+\hline
 
-\textbf{SisFall: A Fall and Movement Dataset} \\ Sucerquia et al., 2017 \cite{sucerquia2017sisfall} &
-Standardized benchmark dataset for fall-detection evaluation &
-Can a public, diverse fall/ADL dataset enable reproducible cross-study comparison? &
-SisFall: 15 fall types, 19 ADL types, 38 subjects &
-Dataset collection and public release protocol &
-Widely adopted as the standard feature-based classifier benchmark &
-A shared benchmark materially improves reproducibility across fall-detection literature &
-SPARK's primary training dataset (paired with self-collected Nepal-context data) \\
-\midrule
+Sucerquia et al.\ \cite{sucerquia2017sisfall} &
+SisFall: A Fall and Movement Dataset (2017) &
+Public benchmark: 15 fall types, 19 ADL types, 38 subjects. &
+Adopted as SPARK's primary training dataset, paired with self-collected Nepal-context data. \\
+\hline
 
-\textbf{Deep Convolutional Neural Network for Fall Detection Using Inertial Sensor Data from Wearable Devices} \\ Nho, Lim \& Kwon, 2021 \cite{nho2021cnn} &
-1D CNN on raw IMU time-series, no manual feature engineering &
-Can a compact CNN match or exceed feature-based classifier accuracy within an embeddable size budget? &
-UCI MHEALTH + SisFall combined &
-1D CNN architecture search, trained/evaluated on combined dataset &
-97.2\% sensitivity, 98.1\% specificity; model fits in 150\,KB &
-Deep learning on raw IMU streams outperforms hand-crafted-feature classifiers &
-Deployed on Raspberry Pi 3, not a resource-constrained MCU --- direct motivation for SPARK's on-device TFLite Micro target \\
-\midrule
+Nho, Lim \& Kwon \cite{nho2021cnn} &
+Deep Convolutional Neural Network for Fall Detection Using Inertial Sensor Data from Wearable Devices (2021) &
+1D CNN on UCI MHEALTH + SisFall; 97.2\% sensitivity, 98.1\% specificity, model fits in 150\,KB, but ran on Raspberry Pi 3. &
+Motivated SPARK's on-device TFLite Micro target instead of an SBC-class compute unit. \\
+\hline
 
-\textbf{LSTM-Based Fall Detection System Using Wearable Sensors} \\ Wang et al., 2020 \cite{wang2020lstm} &
-LSTM sequence model on continuous IMU streams &
-Does temporal-sequence modeling improve fall detection over frame-based CNN classification? &
-Continuous wearable IMU streams &
-LSTM architecture trained on time-series windows &
-Accuracy comparable to CNN approaches &
-Recurrent architectures capture temporal fall dynamics effectively &
-Inference latency unsuitable for real-time embedded detection --- informs SPARK's CNN-over-LSTM choice for the MCU stage \\
-\midrule
+Wang et al.\ \cite{wang2020lstm} &
+LSTM-Based Fall Detection System Using Wearable Sensors (2020) &
+LSTM on continuous IMU streams; accuracy comparable to CNN but with latency unsuitable for real-time embedded use. &
+Informed SPARK's choice of CNN over LSTM for the MCU inference stage. \\
+\hline
 
-\textbf{TensorFlow Lite Micro: Embedded Machine Learning for TinyML Systems} \\ David et al., 2021 \cite{david2021tensorflow} &
-TFLite Micro runtime for INT8-quantized inference on microcontrollers &
-Can CNN inference run reliably within sub-320\,KB RAM on Cortex-M4-class hardware? &
-Keyword-spotting and gesture-recognition task data &
-Runtime benchmarking of INT8-quantized models on constrained MCU hardware &
-Establishes feasibility of INT8-quantized CNN inference under 320\,KB RAM &
-TFLite Micro is a viable production path for on-device deep learning at MCU scale &
-Directly adopted as SPARK's inference runtime (ESP32-S3 + TFLite Micro CNN) \\
-\midrule
+David et al.\ \cite{david2021tensorflow} &
+TensorFlow Lite Micro: Embedded Machine Learning for TinyML Systems (2021) &
+Demonstrates INT8-quantized CNN inference under 320\,KB RAM on Cortex-M4-class hardware (keyword spotting, gesture recognition). &
+Directly adopted as SPARK's inference runtime (ESP32-S3 + TFLite Micro CNN). \\
+\hline
 
-\textbf{Microcontroller-Based Fall Detection for Elderly Monitoring Using a Threshold-Gated Classifier on Arduino Nano 33 BLE Sense} \\ Kumar, Sharma \& Singh, 2022 \cite{kumar2022fall} &
-Threshold-gated classifier deployed on real microcontroller hardware &
-Can a gated architecture run entirely on a low-cost MCU without server offload? &
-Self-collected IMU data on Nano 33 BLE Sense &
-Threshold-gate + classifier deployed and evaluated on-device &
-Demonstrates a working gated architecture on real MCU hardware &
-On-device gating is hardware-feasible on sub-\$5 microcontrollers &
-Did not combine on-device TFLite Micro CNN inference with gating or provide explainability --- the exact gap SPARK closes \\
-\midrule
+Kumar, Sharma \& Singh \cite{kumar2022fall} &
+Microcontroller-Based Fall Detection for Elderly Monitoring Using a Threshold-Gated Classifier on Arduino Nano 33 BLE Sense (2022) &
+Threshold-gated classifier deployed and evaluated entirely on-device, but without TFLite Micro CNN inference or explainability. &
+Motivated closing this exact gap: on-device CNN inference plus gating plus explainability, together. \\
+\hline
 
-\textbf{A Unified Approach to Interpreting Model Predictions (SHAP)} \\ Lundberg \& Lee, 2017 \cite{lundberg2017shap} &
-Cooperative game-theoretic feature-attribution framework &
-Can a single, theoretically consistent method attribute per-feature contribution across arbitrary model types? &
-N/A (framework, evaluated across multiple model/domain benchmarks) &
-Shapley-value derivation + unification of prior attribution methods (LIME, DeepLIFT, etc.) &
-SHAP values provide the only attribution method satisfying local accuracy, missingness, and consistency simultaneously &
-SHAP is the theoretically grounded standard for model explainability &
-Adopted as SPARK's explainability layer (per-event SHAP attribution surfaced to caregivers) \\
-\midrule
+Lundberg \& Lee \cite{lundberg2017shap} &
+A Unified Approach to Interpreting Model Predictions (2017) &
+Introduces SHAP, a cooperative game-theoretic framework for consistent per-feature attribution. &
+Adopted as SPARK's explainability layer for per-event attribution surfaced to caregivers. \\
+\hline
 
-\textbf{Interpretation of Electrocardiogram Heartbeat by CNN and GRU} \\ Yao et al., 2021 \cite{yao2021interpretation} &
-SHAP applied to a real clinical CNN+GRU classifier &
-Does SHAP attribution provide clinically meaningful interpretability for a health-AI CNN classifier? &
-ECG heartbeat classification dataset &
-CNN+GRU model trained, SHAP applied post-hoc to explain per-beat classification &
-SHAP attribution highlighted physiologically plausible waveform regions driving classification &
-SHAP generalizes usefully from generic ML benchmarks to real clinical deep-learning models &
-Confirms the explainability gap: no published wearable fall-detection system applies SHAP at the per-event level --- SPARK's specific contribution \\
+Yao et al.\ \cite{yao2021interpretation} &
+Interpretation of Electrocardiogram Heartbeat by CNN and GRU (2021) &
+Applies SHAP to a clinical CNN+GRU ECG classifier; attribution highlighted physiologically plausible regions. &
+Confirms SHAP generalizes to real clinical deep-learning models; no prior fall-detection work applies it at the per-event level. \\
+\hline
 
 \end{longtable}
-\end{center}
-\end{landscape}
+\endgroup
