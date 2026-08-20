@@ -6,6 +6,7 @@
 #include "comms/output.h"
 #include "drivers/mpu6050.h"
 #include "layer1/gate.h"
+#include "models/spark_cnn_int8.h"
 #include "tflite/inference.h"
 
 extern "C" void app_main(void) {
@@ -16,10 +17,8 @@ extern "C" void app_main(void) {
 
     imu.Init();
     transport.Init();
-    // model.LoadModel() intentionally not called here yet -- no placeholder
-    // model is flash-embedded into this build (tools/make_placeholder_model.py
-    // output is gitignored, local-only). Real embed step is future work
-    // once the actual quantized model exists (Action #3).
+    // Load the flash-resident INT8 quantized CNN model
+    model.LoadModel(spark_cnn_model, spark_cnn_model_len);
 
     // Real sample loop (200 Hz per §2.5) is NOT implemented -- would need
     // esp_timer periodic callback or FreeRTOS task with vTaskDelay, both
