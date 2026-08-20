@@ -28,7 +28,9 @@ import tensorflow as tf
 
 WINDOW_SAMPLES = 200
 CHANNELS = 6
-OUTPUT_PATH = Path(__file__).resolve().parent.parent / "main" / "models" / "spark_placeholder.tflite"
+OUTPUT_PATH = (
+    Path(__file__).resolve().parent.parent / "main" / "models" / "spark_placeholder.tflite"
+)
 
 
 def build_placeholder_model() -> tf.keras.Model:
@@ -53,8 +55,8 @@ def main() -> None:
 
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     # Float32 (not INT8) -- placeholder is for interface/load testing only;
-    # real quantization recipe is Action #3 (open, TBD) and belongs to the
-    # actual trained model from train_cnn.py, not this stub.
+    # real quantization is implemented in training/quantize_model.py (Action #3)
+    # for the trained model from train_cnn.py, not this stub.
     tflite_model = converter.convert()
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@
 test_quantize_model.py
 
 Unit tests for the quantization pipeline. Uses synthetic data and tiny
-models only — no dependency on SisFall dataset or real trained weights.
+models only -- no dependency on SisFall dataset or real trained weights.
 
 Tests verify:
     1. Representative dataset generator produces correct shapes
@@ -31,7 +31,7 @@ CHANNELS = 6
 
 def _build_tiny_model() -> tf.keras.Model:
     """Build a minimal model matching SPARK's I/O spec for testing.
-    NOT the real CNN architecture — deliberately trivial so tests run fast."""
+    NOT the real CNN architecture -- deliberately trivial so tests run fast."""
     inputs = tf.keras.Input(shape=(WINDOW_SAMPLES, CHANNELS))
     x = tf.keras.layers.GlobalAveragePooling1D()(inputs)
     outputs = tf.keras.layers.Dense(2, activation="softmax")(x)
