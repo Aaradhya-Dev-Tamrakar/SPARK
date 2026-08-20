@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
-    Automates Git pull, auto-commit message generation, changelog update, and push for the SPARK repo.
+    Automates Git pull, auto-commit message generation, changelog update, and multi-remote push for SPARK.
 
 .DESCRIPTION
-    1. Pulls with --autostash so local work is preserved.
+    1. Pulls with --autostash from origin main.
     2. Auto-updates dev_logs/SPARK_TRACKER.md's "Last updated" line if needed.
-    3. Appends sync records to docs/CHANGELOG.md.
-    4. Auto-generates a conventional commit message if none is provided.
-    5. Stages, commits, and pushes, retrying via rebase on push rejection.
+    3. Auto-generates a conventional commit message if none is provided.
+    4. Stages and commits changes.
+    5. Automatically pushes to both primary (Aaradhya-Dev-Tamrakar/SPARK) and mirror (AaradhyaDT/SPARK) repositories.
 
 .EXAMPLE
-    .\sync.ps1                               # Fully automated: commit & push
+    .\sync.ps1                               # Fully automated: commit & push to all remotes
     .\sync.ps1 -m "feat(training): message"  # Uses custom conventional commit message
     .\sync.ps1 -PullOnly                     # Only pull without committing/pushing
 #>
@@ -23,6 +23,22 @@ param (
 )
 
 $ErrorActionPreference = "Continue"
+
+# Remotes to synchronize
+$TargetRemotes = @(
+    @{ Name = "origin"; Url = "https://github.com/Aaradhya-Dev-Tamrakar/SPARK.git" },
+    @{ Name = "aaradhyadt"; Url = "https://github.com/AaradhyaDT/SPARK.git" }
+)
+
+function Ensure-RemotesConfigured {
+    $existingRemotes = git remote
+    foreach ($target in $TargetRemotes) {
+        if ($existingRemotes -notcontains $target.Name) {
+            Write-Host "[Git Sync] Adding missing remote '$($target.Name)' ($($target.Url))..." -ForegroundColor DarkCyan
+            git remote add $target.Name $target.Url
+        }
+    }
+}
 
 function Get-AutoCommitMessage {
     $statusLines = git status --porcelain
@@ -93,6 +109,8 @@ function Update-TrackerLog {
     }
 }
 
+Ensure-RemotesConfigured
+
 Write-Host "[Git Sync] Pulling latest changes from origin main..." -ForegroundColor Cyan
 git pull --autostash origin main
 
@@ -118,15 +136,17 @@ if ($Message) {
     Write-Host "[Git Sync] Committing: '$Message'..." -ForegroundColor Cyan
     git commit -m "$Message"
 
-    Write-Host "[Git Sync] Pushing to origin main..." -ForegroundColor Cyan
-    git push origin main
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[Git Sync] Push rejected. Re-pulling and retrying push..." -ForegroundColor Yellow
-        git pull --rebase --autostash origin main
-        git push origin main
+    foreach ($target in $TargetRemotes) {
+        Write-Host "[Git Sync] Pushing to $($target.Name) ($($target.Url))..." -ForegroundColor Cyan
+        git push $target.Name main
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[Git Sync] Push to $($target.Name) rejected. Re-pulling and retrying push..." -ForegroundColor Yellow
+            git pull --rebase --autostash $target.Name main
+            git push $target.Name main
+        }
     }
 } else {
     Write-Host "[Git Sync] No local changes detected to commit." -ForegroundColor Gray
 }
 
-Write-Host "[Git Sync] Workspace is clean and fully synchronized!" -ForegroundColor Green
+Write-Host "[Git Sync] All repositories are clean and fully synchronized!" -ForegroundColor Green
