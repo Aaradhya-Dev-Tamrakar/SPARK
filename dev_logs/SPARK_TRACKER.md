@@ -1,9 +1,20 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v48)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v49)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 11, 2026 (v48 — Action #39: international-availability check closed. Original v43 spec (A2 stainless/flanged button head) confirmed real and in-stock via UK/international sellers only — no Nepal match. v45-sourced Daraz kit remains the vendor, no further candidates pending. No cost change) ·
+**Last updated:** August 20, 2026 (v49 — Action #3: INT8 post-training quantization pipeline implemented & tested with 13 unit tests. Standalone quantize_model.py, C header generator, and FP32 vs INT8 metrics reporting completed) ·
+
+**v49 change log (August 20, 2026 — Action #3, INT8 quantization pipeline delivered & verified):**
+
+- **`training/quantize_model.py` implemented.** Standalone INT8 post-training quantization script using TensorFlow Lite Converter.
+  - Implements representative dataset calibration using 200 randomly sampled training windows per proposal §5 methodology.
+  - Produces full integer INT8 FlatBuffer (`spark_cnn_int8.tflite`) ensuring model size satisfies the $\le 120\text{ KB}$ flash budget.
+  - Generates 16-byte aligned C header array (`spark_cnn_int8.h`) with optional `--firmware-out` flag for direct firmware drop-in (`firmware/main/models/`).
+  - Computes and logs FP32 vs. INT8 accuracy comparison across Sensitivity, Specificity, F1-score, and AUC-ROC to quantify accuracy delta.
+- **`tests/test_quantize_model.py` added.** 13 comprehensive unit tests added using synthetic models and data (no SisFall dataset dependency for CI/testing). All 18 repository tests passing cleanly.
+- **`training/train_cnn.py` updated** with a next-step CLI pointer to `quantize_model.py`.
+- **Action #3 status updated to Resolved (quantization & export side).**
 
 **v48 change log (August 11, 2026 — Action #39, international-availability check, search closed):**
 
@@ -286,8 +297,8 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 5. **Not blocking, but decide soon**
    - 9 open items: #16, #17, #18, #19, #20, #21, #22, #23, #24
-   - Resolved: #2, #4, #11, #12, #14, #15 (v22), legacy #6 (v22, repo created)
-   - Still open: #3, #5, #33 (see §1 below)
+   - Resolved: #2, #3 (quantization/export v49), #4, #11, #12, #14, #15 (v22), legacy #6 (v22, repo created)
+   - Still open: #5, #33 (see §1 below)
 
 6. **Priority tiers (v16, re-scoped v19, Tier 1 resolved v20)**
    - 🟢 37 action items logged total (#1–37)
@@ -532,10 +543,10 @@ Landed via three raw commits (see above note) — future edits must route throug
     - **Owner:** Aaradhya
     - **Status:** **Resolved v22.** Full acronym expansion ("Signal Pattern Analysis & Real-time Kinetics") confirmed and recorded for the first time since the June 30 FallGuard→SPARK rename. No conflicts between §2.3 and this tracker. Action #26 (v18) identified prior art needing narrowing; that's a separate decision, not a cross-reference mismatch.
 
-19. **#3 — Quantization & deployment pipeline (Tier 2)**
+19. **#3 — Quantization & deployment pipeline (Tier 2) [RESOLVED v49 — Quantization & C Export]**
     - **Item:** Define the end-to-end flow from training notebooks → quantization → TFLite export → ESP32-S3 deployment. Staging posts: Colab training, Colab quantization, local testing on laptop, device testing on ESP32-S3.
     - **Owner:** Aaradhya + Rupesh
-    - **Status:** Open. Partially covered by existing training code (`prepare_sisfall.py`, notebooks); quantization recipe still TBD. Gates WP 2.0 gate (mid-September).
+    - **Status:** **Resolved v49 (Quantization & Export side).** `training/quantize_model.py` implemented and verified (13/13 unit tests in `tests/test_quantize_model.py`). Implements INT8 post-training quantization with 200-sample representative calibration dataset per proposal §5, outputs `spark_cnn_int8.tflite` (<120 KB flash limit check), generates C byte array header (`spark_cnn_int8.h`) with optional `--firmware-out` flag to drop directly into `firmware/main/models/`, and generates FP32 vs INT8 metrics comparison report. Firmware-side runtime integration remains in Rupesh's firmware scope.
 
 20. **#2 — Enclosure design finalization (Tier 2) [RESOLVED v13 — method only]**
     - **Item:** Decide enclosure manufacturing method (custom PCB vs. 3D print vs. off-the-shelf box).
@@ -780,7 +791,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **WBS items:**
      - WP 0: Proposal (completed)
      - WP 1: Literature review + dataset protocol (HOD discussion held, confirmation pending)
-     - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantization TBD; SHAP gateway TBD)
+     - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantize_model.py ✓ v49; SHAP gateway TBD)
      - WP 3: Integration testing (simulator + real falls, TBD); phone display-client implementation (owner assigned v38, Action tracker updated — read-only viewer against laptop's local-network report endpoint)
      - WP 4: Demo prep + thesis writing
 
@@ -788,7 +799,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **Role:** Firmware, Wearable Integration, Hardware Validation
    - **WBS items:**
      - WP 1: Layer 1 gated thresholding implementation
-     - WP 2: CNN quantization + TFLite export, MPU6050 firmware (driver reuse/rewrite, Action #24)
+     - WP 2: CNN quantization + TFLite export (✓ export delivered v49, firmware runtime TBD), MPU6050 firmware (driver reuse/rewrite, Action #24)
      - WP 3: Hardware integration + field testing
      - WP 4: Demo + thesis sections
 

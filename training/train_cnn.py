@@ -288,6 +288,10 @@ def main():
     (model_dir / "test_report.txt").write_text(report + "\n")
 
     print(f"\nModel and reports written to {model_dir}")
+    print(
+        "\nNext step: INT8 quantization for ESP32-S3 deployment:\n"
+        f"  python training/quantize_model.py --data {args.data}"
+    )
 
 
 if __name__ == "__main__":

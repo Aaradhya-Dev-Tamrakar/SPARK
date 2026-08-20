@@ -24,7 +24,7 @@ Overall Progress: [████████████████░░░░]
 ```
 
 - **Firmware & Layer 1 Gate**: `[████████████████████] 100%` (21/21 Unit Tests Passed, ESP-IDF Scaffold)
-- **Model Training (SisFall & ML)**: `[████████████████████] 100%` (Raw Ingestion, RF/XGBoost & CNN Pipelines)
+- **Model Training & Quantization**: `[████████████████████] 100%` (Raw Ingestion, RF/XGBoost, CNN & INT8 Quantizer)
 - **Wire Format & Schema**: `[████████████████████] 100%` (Locked in `docs/WIRE_FORMAT_v1.md`)
 - **BOM & Procurement**: `[████████████████████] 100%` (Locked in `docs/SPARK_Component_Order_Form.xlsx`)
 - **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Compiling)
@@ -117,7 +117,8 @@ SPARK/
 ├── training/                     # Machine Learning & Data Pipelines
 │   ├── data_prep/                # Dataset ingestion scripts (prepare_sisfall.py)
 │   ├── notebooks/                # ML exploration & classical baselines (RF / XGBoost)
-│   ├── train_cnn.py              # Primary CNN architecture & TFLite quantizer
+│   ├── train_cnn.py              # Primary 1D CNN training pipeline
+│   ├── quantize_model.py         # INT8 post-training quantizer & C header exporter
 │   └── requirements.txt          # ML training Python dependencies
 │
 ├── gateway/                      # Local Gateway & Explainability Pipeline
@@ -140,7 +141,7 @@ SPARK/
 │       └── ThesisReports/        # LaTeX report (thesis_report.tex, compiling to PDF)
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
-    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v48)
+    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v49)
     └── design-assets/            # 3D CAD references, renders, and walkthroughs
 ```
 
