@@ -65,6 +65,33 @@ Overall Progress: [████████████████░░░░]
 
 ---
 
+## 🌿 Branching & Workstreams
+
+| Branch | Lead / Assignee | Workstream Scope |
+| :--- | :--- | :--- |
+| `main` | Team | Production stable, integrated deliverables & LaTeX reports |
+| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 firmware, MPU6050 I2C driver, Layer 1 gate & TFLite Micro |
+| `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer |
+| `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report |
+| `feat/enclosure-cad` | `@SankalpaLamsal` | Two-zone TPU wrist bracer CAD 3D modeling, slicing & mounting |
+| `feat/gateway-dashboard` | `@SoniaThapa` | Local gateway web interface & mobile display client UI |
+
+---
+
+## 📌 Active Development Tracking (from `SPARK_TRACKER.md`)
+
+- [x] **#14**: Revert ESP32-S3 vendor to Himalayan Solutions (N16R8, in stock)
+- [x] **#25**: Proposal defence completion (Passed July 9, 2026)
+- [x] **#32**: TP4056 charge/protection circuit locked for unprotected LiPo
+- [x] **#38**: Charging panel safety interface locked (dual single-purpose USB-C, off-body only)
+- [x] **#39**: M2.5 fastener specification finalized & local Daraz kit selected
+- [ ] **#16 / #18**: Physical delivery & bench verification of departmental hardware order
+- [ ] **#17**: Finalize 3D CAD dimensions & TPU slicer profile for dorsal wrist bracer
+- [ ] **#23**: Finalize human-subject trial protocol for Nepal validation dataset
+- [ ] **#26**: Narrow Novelty Claims 1 & 3 in final thesis draft against related prior art
+
+---
+
 ## 📂 Repository Directory Layout
 
 ```
