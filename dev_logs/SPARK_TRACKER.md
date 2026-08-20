@@ -1,9 +1,29 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v52)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v53)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 20, 2026 (v52 — Action #27 resolved: Gateway NPU & Arc iGPU benchmarked with OpenVINO at 2,610–4,993 fps; Gateway end-to-end SHAP & clinical PDF generation verified live with trained CNN; Firmware app_main wired to flash-resident INT8 model) ·
+**Last updated:** August 20, 2026 (v53 — Lead/Gateway Scope: Real-Time BLE GATT Client Receiver implemented with bleak, Local Gateway REST & Dashboard Server delivered unblocking Layer 3 display client, Action #23 Human-Subject Protocol drafted in docs/, test suite expanded to 48 passing tests) ·
+
+**v53 change log (August 20, 2026 — BLE Receiver, Local Dashboard Server & Data Collection Protocol delivered):**
+
+- **`gateway/receiver/receiver.py` enhanced with `BleReceiver`:**
+  - Implemented asynchronous Bluetooth Low Energy (BLE) GATT client using `bleak`.
+  - Automatic peripheral discovery scanning for `SPARK-*` prefixes, GATT service (`6E400001-...`), and fall event notification characteristic (`6E400003-...`).
+  - Added notification callback handler with automatic packet unpacking, error handling, and pipeline forwarding.
+  - `BLEReceiver` alias preserved for full backward compatibility.
+- **`gateway/server.py` implemented (Local REST API & Web Dashboard):**
+  - Standalone, zero-heavy-dependency HTTP server with CORS support.
+  - Endpoints: `GET /` (embedded live dark-mode responsive dashboard), `GET /api/health`, `GET /api/events` (recent incidents list), `GET /api/events/<id>` (full JSON details with SHAP breakdown), and `GET /api/reports/<id>` (PDF report download).
+  - Unblocks Sonia Thapa's mobile/web Layer 3 display client work (Issue #5).
+- **`gateway/storage/json_store.py` updated:**
+  - Added `list_events(limit)` for rapid index summary queries and safe `load_event()` with `None` handling on missing records.
+- **`docs/DATA_COLLECTION_PROTOCOL.md` created (Action #23 / Issue #6):**
+  - Comprehensive clinical and kinematic data collection protocol for 8th-semester Nepal cohort at KEC.
+  - Standardized 34-activity matrix (15 falls across 8 mechanisms, 19 ADLs) with gymnastic crash mat safety standards, inclusion/exclusion criteria, dorsal wrist frame reference, and SisFall-compatible CSV schema.
+- **Test suite expanded:**
+  - Added `tests/test_ble_receiver.py` (5 tests) and `tests/test_gateway_server.py` (7 tests).
+  - All 48 repository tests passing cleanly (`uv run pytest`). All ruff checks passing.
 
 **v52 change log (August 20, 2026 — Action #27 resolved, Gateway live run verified, Firmware model embed wired):**
 

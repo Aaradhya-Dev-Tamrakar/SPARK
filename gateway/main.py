@@ -35,7 +35,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from gateway.receiver.receiver import NullReceiver, ReplayReceiver, SerialReceiver
+from gateway.receiver.receiver import BleReceiver, NullReceiver, ReplayReceiver, SerialReceiver
 from gateway.receiver.wire_format import EventPayload
 from gateway.report.pdf_report import ReportData, generate_report
 from gateway.shap_pipeline.explainer import ShapExplainer, get_explainer
@@ -119,7 +119,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="SPARK Gateway Incident Ingestion Service")
     ap.add_argument(
         "--mode",
-        choices=["null", "replay", "serial"],
+        choices=["null", "replay", "serial", "ble"],
         default="null",
         help="Receiver transport mode (default: null)",
     )
@@ -131,6 +131,11 @@ def main() -> None:
     )
     ap.add_argument("--port", default="COM3", help="Serial port for serial mode (default: COM3)")
     ap.add_argument("--baud", type=int, default=115200, help="Serial baud rate (default: 115200)")
+    ap.add_argument(
+        "--ble-addr",
+        default=None,
+        help="Target BLE device MAC/UUID address (optional, scans for SPARK-* by default)",
+    )
     ap.add_argument(
         "--model",
         type=Path,
@@ -185,6 +190,19 @@ def main() -> None:
             logger.info("Interrupted by user.")
         finally:
             serial_rx.close()
+
+    elif args.mode == "ble":
+        ble_rx = BleReceiver(
+            on_event=lambda e: handle_event(e, store, explainer, out_dir),
+            device_address=args.ble_addr,
+        )
+        try:
+            ble_rx.connect()
+            ble_rx.listen()
+        except KeyboardInterrupt:
+            logger.info("BLE receiver interrupted by user.")
+        finally:
+            ble_rx.close()
 
 
 if __name__ == "__main__":

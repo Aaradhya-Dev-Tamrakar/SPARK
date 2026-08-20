@@ -83,14 +83,38 @@ class JsonEventStore:
 
         return event_path
 
-    def load_event(self, event_id: str) -> dict[str, Any]:
+    def load_event(self, event_id: str) -> dict[str, Any] | None:
         event_path = self.store_dir / f"{event_id}.json"
+        if not event_path.is_file():
+            return None
         return json.loads(event_path.read_text())
 
     def recent_event_ids(self, limit: int = 50) -> list[str]:
-        """Mirrors proposal's 'most recent 50 events' framing, no dashboard."""
+        """Mirrors proposal's 'most recent 50 events' framing."""
         if not self.index_path.exists():
             return []
         lines = self.index_path.read_text().splitlines()
         ids = [json.loads(line)["event_id"] for line in lines if line.strip()]
         return ids[-limit:][::-1]
+
+    def list_events(self, limit: int = 50) -> list[dict[str, Any]]:
+        """List summary records for recent events."""
+        event_ids = self.recent_event_ids(limit=limit)
+        results = []
+        for eid in event_ids:
+            rec = self.load_event(eid)
+            if not rec:
+                continue
+            payload = rec.get("payload", {})
+            shap = rec.get("shap", {}) or {}
+            results.append(
+                {
+                    "event_id": eid,
+                    "device_id": payload.get("device_id", "UNKNOWN"),
+                    "timestamp_ms": payload.get("timestamp_ms", 0),
+                    "confidence": payload.get("confidence", 0.0),
+                    "shap_top_feature": shap.get("top_feature"),
+                    "report_path": rec.get("report_path"),
+                }
+            )
+        return results

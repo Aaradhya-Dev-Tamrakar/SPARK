@@ -199,22 +199,125 @@ class SerialReceiver(Receiver):
         logger.info("SerialReceiver closed.")
 
 
-class BLEReceiver(Receiver):
+class BleReceiver(Receiver):
     """
-    BLE GATT transport receiver stub.
+    Bluetooth Low Energy (BLE) GATT receiver for the SPARK wearable node.
+    Scans for the ESP32-S3 peripheral, connects, and subscribes to the fall event
+    notification characteristic, dispatching incoming JSON wire packets to the pipeline.
     """
 
-    def __init__(self, on_event: EventCallback, device_address: str | None = None):
+    DEFAULT_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+    DEFAULT_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
+
+    def __init__(
+        self,
+        on_event: EventCallback,
+        device_address: str | None = None,
+        service_uuid: str = DEFAULT_SERVICE_UUID,
+        char_uuid: str = DEFAULT_CHAR_UUID,
+        device_name_prefix: str = "SPARK",
+    ):
         super().__init__(on_event)
         self.device_address = device_address
+        self.service_uuid = service_uuid
+        self.char_uuid = char_uuid
+        self.device_name_prefix = device_name_prefix
+        self._client = None
+        self._loop = None
+        self._running = False
 
-    def connect(self) -> None:
-        raise NotImplementedError(
-            "BLEReceiver.connect(): blocked on live BLE pairing hardware integration."
-        )
+    def connect(self, timeout: float = 10.0) -> None:
+        """Scan and establish connection to the SPARK BLE wearable."""
+        try:
+            import asyncio
+
+            from bleak import BleakClient, BleakScanner
+
+            async def _do_connect() -> BleakClient:
+                target_address = self.device_address
+                if not target_address:
+                    logger.info(
+                        "Scanning for BLE devices matching prefix '%s'...", self.device_name_prefix
+                    )
+                    devices = await BleakScanner.discover(timeout=timeout)
+                    for d in devices:
+                        if d.name and d.name.startswith(self.device_name_prefix):
+                            target_address = d.address
+                            logger.info("Discovered SPARK device: %s (%s)", d.name, d.address)
+                            break
+                if not target_address:
+                    raise ConnectionError(
+                        f"No SPARK wearable device found (prefix: {self.device_name_prefix})"
+                    )
+
+                client = BleakClient(target_address)
+                await client.connect()
+                return client
+
+            self._loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self._loop)
+            self._client = self._loop.run_until_complete(_do_connect())
+            self._connected = True
+            logger.info("BleReceiver connected to %s", self._client.address)
+
+        except ImportError as err:
+            raise ImportError(
+                "bleak is required for BleReceiver. Install via `uv pip install bleak`."
+            ) from err
+        except Exception as e:
+            self._connected = False
+            raise ConnectionError(f"Failed to connect to BLE device: {e}") from e
+
+    def _notification_handler(self, _sender: int, data: bytearray) -> None:
+        """Handle incoming GATT notification chunk and forward to parser."""
+        try:
+            raw_bytes = bytes(data)
+            logger.debug("BLE notification received (%d bytes)", len(raw_bytes))
+            self._dispatch_raw(raw_bytes)
+        except Exception as e:
+            logger.warning("Error processing BLE notification packet: %s", e)
 
     def listen(self) -> None:
-        raise NotImplementedError("BLEReceiver.listen(): see connect().")
+        """Subscribe to GATT notifications and run event loop."""
+        if not self._connected or not self._client or not self._loop:
+            raise RuntimeError("Cannot listen on disconnected BleReceiver.")
+
+        self._running = True
+        logger.info(
+            "BleReceiver subscribed to %s. Listening for fall notifications...", self.char_uuid
+        )
+
+        async def _do_listen() -> None:
+            await self._client.start_notify(self.char_uuid, self._notification_handler)
+            while self._running and self._client.is_connected:
+                await asyncio.sleep(0.1)
+
+        import asyncio
+
+        try:
+            self._loop.run_until_complete(_do_listen())
+        except KeyboardInterrupt:
+            logger.info("BleReceiver listen loop interrupted.")
+        finally:
+            self.close()
 
     def close(self) -> None:
-        raise NotImplementedError("BLEReceiver.close(): see connect().")
+        """Stop notifications and disconnect BLE client cleanly."""
+        self._running = False
+        self._connected = False
+        if self._client and self._loop:
+            try:
+                if self._client.is_connected:
+                    self._loop.run_until_complete(self._client.disconnect())
+            except Exception as e:
+                logger.debug("Error during BLE disconnect: %s", e)
+            finally:
+                self._client = None
+        if self._loop and not self._loop.is_closed():
+            self._loop.close()
+            self._loop = None
+        logger.info("BleReceiver closed.")
+
+
+# Alias for backward compatibility
+BLEReceiver = BleReceiver
