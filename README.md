@@ -174,7 +174,7 @@ SPARK/
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
     ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v54)
-    └── design-assets/            # 3D CAD references, renders, and walkthroughs
+    └── design-assets/            # 3D CAD references, master design sheet (v2), and walkthroughs
 ```
 
 ---

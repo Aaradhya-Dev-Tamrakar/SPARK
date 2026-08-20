@@ -32,6 +32,23 @@ Single-piece open-back forearm enclosure, silhouette inspired by a bracer/vambra
 **Open questions carried forward:**
 - This is an aesthetic/form direction only — no dimensional validation against Action #8's locked wrist-worn/dorsal placement, no fit-check against WP 3.0 enclosure work (Sankalpa).
 - Single-cavity packaging variant (from the same prompt session, pre-two-zone) was explored but not rendered/adopted — two-zone is the carried-forward direction.
-- Not yet reconciled with actual PCB/battery vendor-confirmed footprints in BOM (`SPARK_BOM_Procurement.xlsx`) — dimensions used here are approximate placeholders from the prompt, not sourced from confirmed component datasheets.
+---
+
+## DI-02 — Master Composite Design Sheet (Two-Zone Ergonomic Dorsal Bracer)
+
+- **Status:** Canonical Design Concept & CAD Blueprint Reference.
+- **Date logged:** 2026-08-20
+- **Asset:** [`dev_logs/design-assets/SPARK_Two_Zone_Bracer_Design_Concept_v2.jpg`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/dev_logs/design-assets/SPARK_Two_Zone_Bracer_Design_Concept_v2.jpg)
+- **Visuals Included:**
+  1. **Hero Render (Panel 1)**: Dorsal forearm wearable worn over compression sleeve, demonstrating $75\%$ wrap geometry, $25\text{–}30\%$ continuous open ventilation seam, matte soft-touch TPU 95A finish, and ergonomic wrist curvature.
+  2. **Product Render (Panel 2)**: Single-piece ergonomic shell with seamless inner curvature and senior-friendly Velcro anchor slot.
+  3. **Closure Detail (Panel 3)**: Wide hook-and-loop Velcro strap with recessed, flush anchors for skin safety.
+  4. **Charging Port Detail (Panel 4)**: USB-C port with flexible hinged TPU dust/splash cover and hidden status LED indicator.
+  5. **Internal Two-Zone Layout (Panel 5)**:
+     - **Zone 1 (Slim Wrist Zone)**: Dedicated MPU6050 IMU bay ($\approx 15 \times 20 \times 3\text{ mm}$) anchored directly over the dorsal wrist reference.
+     - **Connecting Spine**: Flexible wiring bridge routing 4-conductor I2C harness without rigid components.
+     - **Zone 2 (Forearm Bay)**: Main electronics housing ESP32-S3 Dev Board ($\approx 25 \times 50 \times 7\text{ mm}$), $1000\text{–}1100\text{ mAh}$ LiPo battery ($\approx 32 \times 52 \times 7\text{ mm}$), and TP4056 charge/protect module ($\approx 15 \times 17 \times 2\text{ mm}$).
+  6. **Side Profile View (Panel 6)**: Tapered elevation showing ultra-slim wrist clearance and elevated electronics chamber.
 
 ---
+
