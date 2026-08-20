@@ -99,9 +99,7 @@ def load_data(data_dir: Path):
 
     # Binary collapse per architecture spec: Dense(2, Softmax).
     # F* -> 1 (FALL), D* -> 0 (NON_FALL).
-    labels_bin = np.where(np.char.startswith(labels_raw, "F"), 1, 0).astype(
-        np.int32
-    )
+    labels_bin = np.where(np.char.startswith(labels_raw, "F"), 1, 0).astype(np.int32)
 
     return windows, labels_bin, subjects, labels_raw
 
@@ -115,18 +113,14 @@ def subject_stratified_split(subjects: np.ndarray, labels: np.ndarray, seed: int
     proposal doesn't further specify and grouping is the standard
     reading of that phrase in this context.
     """
-    gss1 = GroupShuffleSplit(
-        n_splits=1, train_size=TRAIN_FRAC, random_state=seed
-    )
+    gss1 = GroupShuffleSplit(n_splits=1, train_size=TRAIN_FRAC, random_state=seed)
     trainval_idx, test_idx = next(gss1.split(subjects, labels, groups=subjects))
 
     # Split remaining 20% into 10/10 (i.e. half of the remainder each)
     remaining_subjects = subjects[trainval_idx]
     remaining_labels = labels[trainval_idx]
     val_frac_of_remaining = VAL_FRAC / (TRAIN_FRAC + VAL_FRAC) if (TRAIN_FRAC + VAL_FRAC) else 0
-    gss2 = GroupShuffleSplit(
-        n_splits=1, train_size=1 - (VAL_FRAC / (1 - TEST_FRAC)), random_state=seed
-    )
+    gss2 = GroupShuffleSplit(n_splits=1, train_size=1 - val_frac_of_remaining, random_state=seed)
     train_sub_idx, val_sub_idx = next(
         gss2.split(remaining_subjects, remaining_labels, groups=remaining_subjects)
     )
@@ -216,8 +210,7 @@ def main():
     for required_file in ("windows.npy", "labels.npy", "meta.csv"):
         if not (args.data / required_file).exists():
             print(
-                f"ERROR: {required_file} not found in {args.data} -- "
-                f"run prepare_sisfall.py first",
+                f"ERROR: {required_file} not found in {args.data} -- run prepare_sisfall.py first",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -231,9 +224,7 @@ def main():
     print(f"  {len(set(subjects))} unique subjects")
 
     print("Splitting (80/10/10, grouped by subject, no leakage)...")
-    train_idx, val_idx, test_idx = subject_stratified_split(
-        subjects, labels_bin, args.seed
-    )
+    train_idx, val_idx, test_idx = subject_stratified_split(subjects, labels_bin, args.seed)
     print(f"  train: {len(train_idx)} windows, {len(set(subjects[train_idx]))} subjects")
     print(f"  val:   {len(val_idx)} windows, {len(set(subjects[val_idx]))} subjects")
     print(f"  test:  {len(test_idx)} windows, {len(set(subjects[test_idx]))} subjects")
@@ -277,15 +268,13 @@ def main():
         writer = csv.writer(fh)
         writer.writerow(["epoch"] + fieldnames)
         for epoch_idx in range(len(history.history[fieldnames[0]])):
-            writer.writerow(
-                [epoch_idx] + [history.history[k][epoch_idx] for k in fieldnames]
-            )
+            writer.writerow([epoch_idx] + [history.history[k][epoch_idx] for k in fieldnames])
 
     print("Evaluating on held-out test set...")
     metrics = evaluate(model, X_test, y_test)
 
     report_lines = [
-        f"SPARK 1D CNN -- held-out test set evaluation",
+        "SPARK 1D CNN -- held-out test set evaluation",
         f"Test windows: {len(test_idx)} ({int(y_test.sum())} FALL, {int((1 - y_test).sum())} NON_FALL)",
         f"Test subjects: {len(set(subjects[test_idx]))}",
         "",

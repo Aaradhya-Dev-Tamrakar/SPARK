@@ -36,7 +36,6 @@ trained model.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict
 
 from gateway.receiver.wire_format import IMU_CHANNELS, EventPayload
 
@@ -55,7 +54,7 @@ class ShapAttribution:
         Stub uses 0.0; real value comes from the trained explainer.
     """
 
-    values: Dict[str, float]
+    values: dict[str, float]
     top_feature: str
     base_value: float = 0.0
 

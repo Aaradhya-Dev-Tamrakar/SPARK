@@ -32,7 +32,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -57,7 +56,7 @@ class ReportData:
     severity_score: float  # 0.0-1.0, placeholder scale -- not yet defined
     cnn_confidence: float  # Layer 2 P(FALL), 0.0-1.0
     shap_top_feature: str
-    shap_values: Dict[str, float]  # channel_name -> attribution
+    shap_values: dict[str, float]  # channel_name -> attribution
     device_id: str = "UNSET"
 
 

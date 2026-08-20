@@ -35,8 +35,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Optional
-
 
 # Placeholder channel ordering, matching MPU6050's 6-axis output as
 # used elsewhere in the repo (training/data_prep/prepare_sisfall.py):
@@ -63,7 +61,7 @@ class EventPayload:
     timestamp_ms: int  # device clock at trigger, per WIRE_FORMAT_v1.md
     confidence: float  # == firmware class_probs[1], P(FALL), 0.0-1.0
     peak_features: dict  # {channel_name: peak_value}, keys from IMU_CHANNELS
-    raw_window: Optional[list] = None  # NOT parsed in v1 -- reserved for v2
+    raw_window: list | None = None  # NOT parsed in v1 -- reserved for v2
     extra: dict = field(default_factory=dict)  # unrecognized fields, preserved
 
 

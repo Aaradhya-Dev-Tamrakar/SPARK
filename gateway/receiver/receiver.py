@@ -39,7 +39,7 @@ from __future__ import annotations
 
 import abc
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from gateway.receiver.wire_format import EventPayload, parse_event
 
@@ -140,7 +140,7 @@ class BLEReceiver(Receiver):
     Not installed, not a commitment -- placeholder name only.
     """
 
-    def __init__(self, on_event: EventCallback, device_address: Optional[str] = None):
+    def __init__(self, on_event: EventCallback, device_address: str | None = None):
         super().__init__(on_event)
         self.device_address = device_address
 
@@ -173,7 +173,7 @@ class SerialReceiver(Receiver):
     remaining gap, not the payload format.
     """
 
-    def __init__(self, on_event: EventCallback, port: Optional[str] = None, baud: int = 115200):
+    def __init__(self, on_event: EventCallback, port: str | None = None, baud: int = 115200):
         super().__init__(on_event)
         self.port = port
         self.baud = baud

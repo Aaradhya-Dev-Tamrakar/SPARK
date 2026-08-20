@@ -1,16 +1,17 @@
 <#
 .SYNOPSIS
-    Automates Git pull, auto-commit message generation, push for the SPARK repo.
+    Automates Git pull, auto-commit message generation, changelog update, and push for the SPARK repo.
 
 .DESCRIPTION
     1. Pulls with --autostash so local work is preserved.
-    2. Auto-updates dev_logs/SPARK_TRACKER.md's "Last updated" line if a message is provided or generated.
-    3. Auto-generates a smart commit message if none is provided.
-    4. Stages, commits, and pushes, retrying via rebase on push rejection.
+    2. Auto-updates dev_logs/SPARK_TRACKER.md's "Last updated" line if needed.
+    3. Appends sync records to docs/CHANGELOG.md.
+    4. Auto-generates a conventional commit message if none is provided.
+    5. Stages, commits, and pushes, retrying via rebase on push rejection.
 
 .EXAMPLE
     .\sync.ps1                               # Fully automated: commit & push
-    .\sync.ps1 -m "custom commit message"     # Uses custom commit message
+    .\sync.ps1 -m "feat(training): message"  # Uses custom conventional commit message
     .\sync.ps1 -PullOnly                     # Only pull without committing/pushing
 #>
 
@@ -55,8 +56,10 @@ function Get-AutoCommitMessage {
     $prefix = "chore"
     if ($addedFiles.Count -gt 0) {
         $prefix = "feat"
-    } elseif ($modifiedFiles | Where-Object { $_ -match '\.(py|ino|cpp|h)$' }) {
+    } elseif ($modifiedFiles | Where-Object { $_ -match '\.(py|ino|cpp|h|c)$' }) {
         $prefix = "refactor"
+    } elseif ($modifiedFiles | Where-Object { $_ -match '\.(md|tex)$' }) {
+        $prefix = "docs"
     }
 
     $summary = ""
@@ -85,7 +88,7 @@ function Update-TrackerLog {
         Set-Content -Path $trackerFile.FullName -Value $content -NoNewline
         Write-Host "[Git Sync] Updated $($trackerFile.Name) timestamp to $todayDate." -ForegroundColor Cyan
     } elseif ($content -match '\*\*Last updated:\*\*.*?\(.*?\).*?\·') {
-        # Line already has a hand-written parenthetical (v17-v23 convention) -- leave it alone.
+        # Line already has a hand-written parenthetical -- leave it alone.
         Write-Host "[Git Sync] $($trackerFile.Name) already has a detailed 'Last updated' line, skipping auto-stamp." -ForegroundColor DarkGray
     }
 }

@@ -26,7 +26,7 @@ import json
 import logging
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger("spark.gateway.storage")
 
@@ -50,7 +50,7 @@ class JsonEventStore:
     assumption matches tracker sec:2.1 ("laptop as sole gateway").
     """
 
-    def __init__(self, store_dir: Optional[Path] = None):
+    def __init__(self, store_dir: Path | None = None):
         self.store_dir = Path(store_dir) if store_dir else DEFAULT_STORE_DIR
         self.store_dir.mkdir(parents=True, exist_ok=True)
         self.index_path = self.store_dir / "index.jsonl"
@@ -60,14 +60,14 @@ class JsonEventStore:
         event_id: str,
         payload: Any,
         shap: Any = None,
-        report_path: Optional[str] = None,
+        report_path: str | None = None,
     ) -> Path:
         """
         Persists one event's full record (raw payload + SHAP result +
         path to its generated PDF, if any) as <event_id>.json, and
         appends a summary line to index.jsonl.
         """
-        record: Dict[str, Any] = {
+        record: dict[str, Any] = {
             "event_id": event_id,
             "payload": _to_jsonable(payload),
             "shap": _to_jsonable(shap) if shap is not None else None,
@@ -83,7 +83,7 @@ class JsonEventStore:
 
         return event_path
 
-    def load_event(self, event_id: str) -> Dict[str, Any]:
+    def load_event(self, event_id: str) -> dict[str, Any]:
         event_path = self.store_dir / f"{event_id}.json"
         return json.loads(event_path.read_text())
 

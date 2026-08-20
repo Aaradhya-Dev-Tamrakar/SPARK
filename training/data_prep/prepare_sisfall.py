@@ -80,14 +80,12 @@ def parse_trial_file(path: Path) -> np.ndarray:
             continue
         try:
             values = [int(v) for v in row.split(",")]
-        except ValueError:
+        except ValueError as err:
             # A malformed row in raw sensor dumps is a data-quality
             # signal, not something to silently drop -- surface it.
-            raise ValueError(f"Malformed row in {path}: {row!r}")
+            raise ValueError(f"Malformed row in {path}: {row!r}") from err
         if len(values) != 9:
-            raise ValueError(
-                f"Expected 9 columns in {path}, got {len(values)}: {row!r}"
-            )
+            raise ValueError(f"Expected 9 columns in {path}, got {len(values)}: {row!r}")
         parsed.append(values)
     if not parsed:
         raise ValueError(f"No data rows parsed from {path}")
@@ -115,9 +113,7 @@ def downsample_200_to_100(arr: np.ndarray) -> np.ndarray:
     return out
 
 
-def window_trial(
-    arr_100hz: np.ndarray, window: int, stride: int
-) -> list[np.ndarray]:
+def window_trial(arr_100hz: np.ndarray, window: int, stride: int) -> list[np.ndarray]:
     """Slice a (T, 6) 100Hz array into fixed-length windows."""
     windows = []
     n = arr_100hz.shape[0]
