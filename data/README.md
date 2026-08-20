@@ -29,9 +29,9 @@ data/
   python training/data_prep/prepare_sisfall.py --input data/raw/SisFall --output data/processed/
   ```
 
-### 2. Local Nepal Elderly Fall Validation Dataset
-- **Protocol**: Under evaluation with HOD (see `SPARK_TRACKER.md` Action #23).
-- **Target**: Complementary validation subset recorded under realistic dorsal wrist placement.
+### 2. Local Nepal Fall Validation Dataset
+- **Protocol**: Fully specified in [`docs/DATA_COLLECTION_PROTOCOL.md`](../docs/DATA_COLLECTION_PROTOCOL.md) (Action #23 / Issue #6).
+- **Target**: Complementary validation subset recorded under realistic dorsal wrist placement using 34 standardized activity trials (15 falls, 19 ADLs).
 
 ---
 

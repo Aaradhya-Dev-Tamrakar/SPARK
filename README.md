@@ -23,12 +23,12 @@
 Overall Progress: [████████████████░░░░] 80% (Mid-Term Complete / Procurement Locked)
 ```
 
-- **Firmware & Layer 1 Gate**: `[████████████████████] 100%` (21/21 Unit Tests Passed, ESP-IDF Scaffold)
-- **Model Training & Quantization**: `[████████████████████] 100%` (Raw Ingestion, RF/XGBoost, CNN & INT8 Quantizer)
+- **Firmware & Layer 1 Gate**: `[████████████████████] 100%` (21/21 Host Unit Tests Passed, ESP-IDF Scaffold, INT8 Model Embedded)
+- **Model Training & Quantization**: `[████████████████████] 100%` (SisFall Ingestion, 1D CNN with 93.58% AUC-ROC, INT8 Quantizer & C Header Export)
 - **Wire Format & Schema**: `[████████████████████] 100%` (Locked in `docs/WIRE_FORMAT_v1.md`)
 - **BOM & Procurement**: `[████████████████████] 100%` (Locked in `docs/SPARK_Component_Order_Form.xlsx`)
 - **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Compiling)
-- **Gateway & SHAP Engine**: `[████████████████████] 100%` (Replay/Serial Receivers, SHAP Explainer, PDF Reports & JSON Store)
+- **Gateway & SHAP Engine**: `[████████████████████] 100%` (BLE/Replay/Serial Receivers, SHAP Explainer, Clinical PDF Reports, REST & Web Dashboard Server)
 - **Hardware Assembly & CAD**: `[██████████░░░░░░░░░░] 50%` (Concept Locked; Pending Sliced TPU Model & S3 Boards)
 
 ---
@@ -44,22 +44,26 @@ Overall Progress: [████████████████░░░░]
                                                            │ (Triggered: Motion Window)
                                ┌───────────────────────────▼────────────────────────────┐
                                │  [Layer 2: Edge ML Classifier]                         │
-                               │  Quantized 1D/2D CNN on TFLite Micro                   │
+                               │  Quantized 1D CNN on TFLite Micro (spark_cnn_int8.h)   │
                                └───────────────────────────┬────────────────────────────┘
                                                            │ BLE Notification (WIRE_FORMAT_v1)
                                                            ▼
                                   LOCAL GATEWAY (Laptop / Local Server)
    ┌────────────────────────────────────────────────────────────────────────────────────┐
-   │  [Gateway Receiver] ──> [JSON Local Store] ──> [SHAP Attribution Engine]           │
-   │                                                         │                          │
-   │                                                         ▼                          │
-   │                                           [ReportLab Clinical PDF Report]          │
+   │  [BleReceiver / Replay / Serial] ──> [JSON Store] ──> [SHAP Attribution Engine]    │
+   │                                                                 │                  │
+   │                                                                 ▼                  │
+   │                                                   [ReportLab Clinical PDF Report]  │
+   │                                                                 │                  │
+   │                                 ┌───────────────────────────────┘                  │
+   │                                 ▼                                                  │
+   │  [Gateway REST API & Embedded Web Dashboard Server] (gateway/server.py)           │
    └───────────────────────────────────────────────────────┬────────────────────────────┘
-                                                           │ Local Network (HTTP/WS)
+                                                           │ Local Network (HTTP / REST)
                                                            ▼
                                   DISPLAY CLIENT (Smartphone / Web UI)
    ┌────────────────────────────────────────────────────────────────────────────────────┐
-   │  Read-Only Responsive Dashboard (Alerts, Event Log & PDF Report Viewer)            │
+   │  Layer 3 Read-Only Responsive Dashboard (Live Alert Feed & Clinical PDF Viewer)    │
    └────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -67,27 +71,28 @@ Overall Progress: [████████████████░░░░]
 
 ## 🌿 Branching & Workstreams
 
-| Branch | Lead / Assignee | Workstream Scope |
-| :--- | :--- | :--- |
-| `main` | Team | Production stable, integrated deliverables & LaTeX reports |
-| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 firmware, MPU6050 I2C driver, Layer 1 gate & TFLite Micro |
-| `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer |
-| `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report |
-| `feat/enclosure-cad` | `@SankalpaLamsal` | Two-zone TPU wrist bracer CAD 3D modeling, slicing & mounting |
-| `feat/gateway-dashboard` | `@SoniaThapa` | Local gateway web interface & mobile display client UI |
+| Branch | Lead / Assignee | Workstream Scope | Status |
+| :--- | :--- | :--- | :---: |
+| `main` | Team | Production stable, integrated deliverables & LaTeX reports | **STABLE** 🟢 |
+| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 firmware, MPU6050 I2C driver, Layer 1 gate & TFLite Micro | **ACTIVE** 🟡 |
+| `feat/gateway-dashboard` | `@SoniaThapa` | Local gateway web interface & mobile display client UI | **ACTIVE** 🟡 |
+| `feat/enclosure-cad` | `@SankalpaLamsal` | Two-zone TPU wrist bracer CAD 3D modeling, slicing & mounting | **ACTIVE** 🟡 |
+| `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer | **MERGED** ✅ |
+| `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report | **MERGED** ✅ |
 
 ---
 
 ## 📌 Active Development Tracking (from `SPARK_TRACKER.md`)
 
 - [x] **#14**: Revert ESP32-S3 vendor to Himalayan Solutions (N16R8, in stock)
+- [x] **#23**: Finalize human-subject trial protocol for Nepal validation dataset (`docs/DATA_COLLECTION_PROTOCOL.md`)
 - [x] **#25**: Proposal defence completion (Passed July 9, 2026)
+- [x] **#27**: Gateway NPU & Arc iGPU capability assessment (Benchmarked via OpenVINO)
 - [x] **#32**: TP4056 charge/protection circuit locked for unprotected LiPo
 - [x] **#38**: Charging panel safety interface locked (dual single-purpose USB-C, off-body only)
 - [x] **#39**: M2.5 fastener specification finalized & local Daraz kit selected
 - [ ] **#16 / #18**: Physical delivery & bench verification of departmental hardware order
 - [ ] **#17**: Finalize 3D CAD dimensions & TPU slicer profile for dorsal wrist bracer
-- [ ] **#23**: Finalize human-subject trial protocol for Nepal validation dataset
 - [ ] **#26**: Narrow Novelty Claims 1 & 3 in final thesis draft against related prior art
 
 ---
@@ -112,28 +117,42 @@ SPARK/
 │   ├── CMakeLists.txt            # ESP-IDF build configuration
 │   ├── sdkconfig.defaults        # ESP32-S3 default hardware configuration
 │   ├── main/                     # Application entry, sensor drivers, Layer 1 filter
+│   │   └── models/               # Flash-resident INT8 model array (spark_cnn_int8.h)
 │   └── test/                     # Host-executable unit tests (21/21 passed)
 │
 ├── training/                     # Machine Learning & Data Pipelines
 │   ├── data_prep/                # Dataset ingestion scripts (prepare_sisfall.py)
 │   ├── notebooks/                # ML exploration & classical baselines (RF / XGBoost)
-│   ├── train_cnn.py              # Primary 1D CNN training pipeline
+│   ├── train_cnn.py              # Primary 1D CNN training pipeline (93.58% AUC-ROC)
 │   ├── quantize_model.py         # INT8 post-training quantizer & C header exporter
 │   └── requirements.txt          # ML training Python dependencies
 │
 ├── gateway/                      # Local Gateway & Explainability Pipeline
-│   ├── main.py                   # Gateway service entry point
-│   ├── receiver/                 # BLE and Serial receiver handlers
-│   ├── shap_pipeline/            # SHAP feature attribution engine
+│   ├── main.py                   # Gateway service entry point (BLE, Replay, Serial)
+│   ├── server.py                 # Local REST API & Web Dashboard server
+│   ├── receiver/                 # BleReceiver (bleak), ReplayReceiver, SerialReceiver
+│   ├── shap_pipeline/            # CnnShapExplainer & PeakFeatureExplainer
 │   ├── report/                   # ReportLab clinical PDF generator
-│   └── storage/                  # Local JSON event record storage
+│   └── storage/                  # JsonEventStore local JSON record archiving
+│
+├── tests/                        # Repository Python Test Suite (48/48 Passing)
+│   ├── test_ble_receiver.py
+│   ├── test_gateway_pipeline.py
+│   ├── test_gateway_server.py
+│   ├── test_json_store.py
+│   ├── test_pdf_report.py
+│   ├── test_quantize_model.py
+│   ├── test_shap_pipeline.py
+│   ├── test_train_cnn.py
+│   └── test_wire_format.py
 │
 ├── data/                         # Datasets & Trial Recordings (Gitignored)
 │   ├── README.md                 # SisFall setup & Nepal trial dataset instructions
 │   └── .gitkeep
 │
 ├── docs/                         # Specifications & Academic Reports
-│   ├── CHANGELOG.md              # Project change log
+│   ├── CHANGELOG.md              # Project change log (v53)
+│   ├── DATA_COLLECTION_PROTOCOL.md # Nepal cohort human-subject trial protocol
 │   ├── WIRE_FORMAT_v1.md         # Locked BLE event protocol schema
 │   ├── SPARK_Component_Order_Form.xlsx # Canonical hardware BOM procurement spreadsheet
 │   ├── SPARK_Presentation_Mid_Term_Defense_v6.pptx # Mid-term defense slide deck
@@ -141,7 +160,7 @@ SPARK/
 │       └── ThesisReports/        # LaTeX report (thesis_report.tex, compiling to PDF)
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
-    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v50)
+    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v53)
     └── design-assets/            # 3D CAD references, renders, and walkthroughs
 ```
 
