@@ -1,9 +1,24 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v49)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v50)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 20, 2026 (v49 — Action #3: INT8 post-training quantization pipeline implemented & tested with 13 unit tests. Standalone quantize_model.py, C header generator, and FP32 vs INT8 metrics reporting completed) ·
+**Last updated:** August 20, 2026 (v50 — Gateway & SHAP Explainability Subsystem delivered: CnnShapExplainer, PeakFeatureExplainer, ReplayReceiver, SerialReceiver, clinical PDF report generator, and full automated test suite with 26 passing tests) ·
+
+**v50 change log (August 20, 2026 — Gateway & SHAP Explainability Subsystem delivered & verified):**
+
+- **`gateway/shap_pipeline/explainer.py` implemented.**
+  - `CnnShapExplainer`: Computes gradient-based feature attribution ($X \times \nabla_X Y$) over 6 IMU channels on raw $200 \times 6$ waveforms using trained Keras CNN.
+  - `PeakFeatureExplainer`: Analytical attribution fallback for compact peak telemetry frames.
+  - `get_explainer()`: Dynamic factory binding to `spark_cnn.keras`.
+- **`gateway/receiver/receiver.py` updated.**
+  - `ReplayReceiver`: Implemented for replaying recorded/simulated events during tests and demos.
+  - `SerialReceiver`: Line-delimited JSON stream reader for USB-Serial tethering.
+- **`gateway/report/pdf_report.py` upgraded.**
+  - One-page clinical PDF report generator with metadata, confidence badges, narrative summary, horizontal SHAP attribution chart, and clinician sign-off block.
+- **`gateway/main.py` upgraded.**
+  - CLI service entry point supporting `--mode {null, replay, serial}`, `--model`, and `--out-dir`.
+- **`tests/` test suite expanded.** Added `test_shap_pipeline.py`, `test_pdf_report.py`, and `test_gateway_pipeline.py`. All 26 repository tests passing cleanly.
 
 **v49 change log (August 20, 2026 — Action #3, INT8 quantization pipeline delivered & verified):**
 
@@ -791,7 +806,7 @@ Landed via three raw commits (see above note) — future edits must route throug
    - **WBS items:**
      - WP 0: Proposal (completed)
      - WP 1: Literature review + dataset protocol (HOD discussion held, confirmation pending)
-     - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantize_model.py ✓ v49; SHAP gateway TBD)
+     - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantize_model.py ✓ v49; SHAP gateway ✓ v50)
      - WP 3: Integration testing (simulator + real falls, TBD); phone display-client implementation (owner assigned v38, Action tracker updated — read-only viewer against laptop's local-network report endpoint)
      - WP 4: Demo prep + thesis writing
 

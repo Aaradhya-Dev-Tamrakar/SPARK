@@ -2,44 +2,26 @@
 """
 receiver.py
 
-Gateway-side serial/BLE receiver skeleton for SPARK's Layer 2 (laptop
-gateway), per tracker SPARK_TRACKER.md sec:2.1 item 2 ("Receives JSON
-streams from wearable over BLE") and sec:6.2 ("Gateway receives, logs,
-and reports correctly").
+Gateway-side serial/BLE/replay receiver for SPARK's Layer 2 (laptop gateway),
+per tracker SPARK_TRACKER.md sec:2.1 item 2 ("Receives JSON streams from wearable over BLE")
+and sec:6.2 ("Gateway receives, logs, and reports correctly").
 
-SCOPE OF THIS FILE: connection lifecycle and a transport-agnostic
-callback interface only. Actual frame parsing is delegated to
-gateway/receiver/wire_format.py, which now implements parse_event()
-against docs/WIRE_FORMAT_v1.md (LOCKED). This file must not inline
-its own parsing -- always route through wire_format.parse_event().
-
-Wire format being locked does NOT unblock live BLE pairing --
-BLEReceiver/SerialReceiver .connect()/.listen()/.close() remain
-unimplemented stubs (see their class docstrings below). Only
-_dispatch_raw()'s call into parse_event() is real; nothing here
-speaks to actual hardware yet.
-
-Explicitly NOT in scope here (repo-wide blocked list):
-  - Live BLE pairing/discovery against real hardware.
-  - Real multi-client hotspot behavior (tracker Action #20).
-
-What this skeleton provides:
-  - A `Receiver` abstract base defining the connect/listen/on_event
-    contract every transport (serial, BLE) will implement.
-  - A `NullReceiver` that never receives anything -- lets the rest of
-    the gateway pipeline (SHAP stub, PDF stub, storage) be exercised
-    and integration-tested without live hardware.
-  - Stub subclasses for the two transports named in tracker sec:2.1
-    (BLE primary) and the proposal's now-superseded dev-mode serial
-    fallback (kept as a stub only because it costs nothing and may be
-    useful for laptop-tethered debugging; not a tracker commitment).
+Provides:
+  - `Receiver`: Abstract base defining connection lifecycle and dispatching via wire_format.
+  - `NullReceiver`: No-op receiver for integration tests with manual injection.
+  - `ReplayReceiver`: Replays recorded JSON events from files or lists for testing/demo.
+  - `SerialReceiver`: Reads line-delimited JSON streams from a USB-Serial COM port.
+  - `BLEReceiver`: Stub for BLE GATT notifications (hardware pairing scope).
 """
 
 from __future__ import annotations
 
 import abc
+import json
 import logging
+import time
 from collections.abc import Callable
+from pathlib import Path
 
 from gateway.receiver.wire_format import EventPayload, parse_event
 
@@ -50,13 +32,8 @@ EventCallback = Callable[[EventPayload], None]
 
 class Receiver(abc.ABC):
     """
-    Transport-agnostic contract for anything that can hand SPARK
-    CONFIRMED_FALL events to the rest of the gateway pipeline.
-
-    Concrete transports (BLE, serial) implement connect()/listen()/
-    close(). None of them may implement frame parsing themselves --
-    they must call wire_format.parse_event() so there is exactly one
-    place the wire format (docs/WIRE_FORMAT_v1.md) is interpreted.
+    Transport-agnostic contract for anything that hands SPARK CONFIRMED_FALL
+    events to the rest of the gateway pipeline.
     """
 
     def __init__(self, on_event: EventCallback):
@@ -69,11 +46,7 @@ class Receiver(abc.ABC):
 
     @abc.abstractmethod
     def listen(self) -> None:
-        """
-        Block, dispatching self._on_event(EventPayload) for each frame
-        received. Concrete implementations must decode raw bytes via
-        wire_format.parse_event(raw) -- never inline their own parsing.
-        """
+        """Block or loop, dispatching self._on_event(EventPayload) for each frame received."""
 
     @abc.abstractmethod
     def close(self) -> None:
@@ -84,60 +57,151 @@ class Receiver(abc.ABC):
         return self._connected
 
     def _dispatch_raw(self, raw: bytes) -> None:
-        """
-        Shared helper: parse via wire_format, then dispatch.
-
-        raw must already be a complete, reassembled JSON payload --
-        BLE packet chunking/reassembly (if the transport needs it;
-        v1's payload size makes this unlikely, see WIRE_FORMAT_v1.md
-        Size note) is the concrete transport's responsibility, done
-        before calling this.
-        """
-        event = parse_event(raw)  # raises WireFormatError on malformed payload
-        logger.info("Received event %s", event.event_id)
+        """Shared helper: parse via wire_format, then dispatch."""
+        event = parse_event(raw)
+        logger.info("Received and parsed event %s", event.event_id)
         self._on_event(event)
 
 
 class NullReceiver(Receiver):
     """
-    No-op receiver. Connects instantly, never produces events, closes
-    cleanly. Exists so gateway/main.py and integration tests can wire
-    up the full pipeline (receiver -> SHAP stub -> report stub ->
-    storage) end-to-end with dummy events injected manually, without
-    needing live hardware or a confirmed wire format.
+    No-op receiver. Connects instantly, never produces events on its own, closes cleanly.
+    Allows manual event injection for deterministic testing.
     """
 
     def connect(self) -> None:
         self._connected = True
-        logger.info("NullReceiver connected (no-op, no hardware).")
+        logger.info("NullReceiver connected (mock/manual injection mode).")
 
     def listen(self) -> None:
-        logger.info("NullReceiver listening (no-op) -- will never emit events.")
+        logger.info("NullReceiver listening -- waiting for injected events.")
 
     def close(self) -> None:
         self._connected = False
         logger.info("NullReceiver closed.")
 
     def inject_dummy_event(self, event: EventPayload) -> None:
-        """Test/dev-only: bypass wire_format entirely, dispatch directly."""
-        logger.info("NullReceiver: injecting dummy event %s", event.event_id)
+        """Inject an already-parsed EventPayload directly."""
+        logger.info("NullReceiver: injecting event %s", event.event_id)
         self._on_event(event)
+
+    def inject_raw_payload(self, raw: bytes) -> None:
+        """Inject raw JSON wire bytes through the parsing path."""
+        self._dispatch_raw(raw)
+
+
+class ReplayReceiver(Receiver):
+    """
+    Replay receiver that emits a sequence of recorded or simulated JSON events.
+    Useful for automated verification, CI, and laptop demo sessions.
+    """
+
+    def __init__(
+        self,
+        on_event: EventCallback,
+        events: list[dict | bytes | str] | None = None,
+        file_path: Path | str | None = None,
+        interval_s: float = 0.0,
+    ):
+        super().__init__(on_event)
+        self.events: list[bytes] = []
+        self.interval_s = interval_s
+
+        if events:
+            for e in events:
+                if isinstance(e, bytes):
+                    self.events.append(e)
+                elif isinstance(e, str):
+                    self.events.append(e.encode("utf-8"))
+                elif isinstance(e, dict):
+                    self.events.append(json.dumps(e).encode("utf-8"))
+
+        if file_path:
+            p = Path(file_path)
+            if p.exists():
+                text = p.read_text(encoding="utf-8")
+                # Support either JSON array or line-delimited JSON
+                text_strip = text.strip()
+                if text_strip.startswith("[") and text_strip.endswith("]"):
+                    items = json.loads(text_strip)
+                    for item in items:
+                        self.events.append(json.dumps(item).encode("utf-8"))
+                else:
+                    for line in text.splitlines():
+                        if line.strip():
+                            self.events.append(line.strip().encode("utf-8"))
+
+    def connect(self) -> None:
+        self._connected = True
+        logger.info("ReplayReceiver connected (%d events queued).", len(self.events))
+
+    def listen(self) -> None:
+        if not self._connected:
+            raise RuntimeError("Cannot listen on disconnected ReplayReceiver.")
+
+        for i, raw in enumerate(self.events):
+            logger.info("Replaying event %d/%d", i + 1, len(self.events))
+            self._dispatch_raw(raw)
+            if self.interval_s > 0 and i < len(self.events) - 1:
+                time.sleep(self.interval_s)
+
+    def close(self) -> None:
+        self._connected = False
+        logger.info("ReplayReceiver closed.")
+
+
+class SerialReceiver(Receiver):
+    """
+    Serial port receiver for laptop-tethered development testing.
+    Reads line-delimited JSON packets matching docs/WIRE_FORMAT_v1.md over USB Serial.
+    """
+
+    def __init__(self, on_event: EventCallback, port: str = "COM3", baud: int = 115200):
+        super().__init__(on_event)
+        self.port = port
+        self.baud = baud
+        self._serial = None
+
+    def connect(self) -> None:
+        try:
+            import serial
+
+            self._serial = serial.Serial(self.port, self.baud, timeout=1.0)
+            self._connected = True
+            logger.info("SerialReceiver connected on %s @ %d baud", self.port, self.baud)
+        except ImportError as err:
+            raise ImportError(
+                "pyserial is required for SerialReceiver. Install via `pip install pyserial`."
+            ) from err
+        except Exception as e:
+            self._connected = False
+            raise ConnectionError(f"Failed to open serial port {self.port}: {e}") from e
+
+    def listen(self) -> None:
+        if not self._connected or not self._serial:
+            raise RuntimeError("Cannot listen on disconnected SerialReceiver.")
+
+        logger.info("SerialReceiver listening on %s...", self.port)
+        while self._connected:
+            line = self._serial.readline()
+            if line:
+                line_str = line.decode("utf-8", errors="replace").strip()
+                if line_str.startswith("{") and line_str.endswith("}"):
+                    try:
+                        self._dispatch_raw(line_str.encode("utf-8"))
+                    except Exception as e:
+                        logger.warning("Error parsing serial frame: %s", e)
+
+    def close(self) -> None:
+        self._connected = False
+        if self._serial and self._serial.is_open:
+            self._serial.close()
+        logger.info("SerialReceiver closed.")
 
 
 class BLEReceiver(Receiver):
     """
-    BLE transport stub (primary transport per tracker sec:2.1).
-
-    UNIMPLEMENTED. Wire format is locked (docs/WIRE_FORMAT_v1.md,
-    wire_format.parse_event() is real) -- what's still BLOCKED is live
-    BLE pairing/discovery against real hardware (repo-wide blocked
-    item), plus this session doesn't pick GATT UUIDs or MTU/chunking
-    strategy (WIRE_FORMAT_v1.md leaves those open, not needed for v1's
-    payload size).
-
-    Candidate library (not yet chosen/vetted): `bleak` (cross-platform,
-    works on the Acer Swift Go 16 laptop gateway per tracker sec:2.2).
-    Not installed, not a commitment -- placeholder name only.
+    BLE GATT transport receiver stub.
     """
 
     def __init__(self, on_event: EventCallback, device_address: str | None = None):
@@ -146,9 +210,7 @@ class BLEReceiver(Receiver):
 
     def connect(self) -> None:
         raise NotImplementedError(
-            "BLEReceiver.connect(): blocked on live BLE pairing "
-            "(out of scope this session). Wire format itself is "
-            "locked -- see docs/WIRE_FORMAT_v1.md."
+            "BLEReceiver.connect(): blocked on live BLE pairing hardware integration."
         )
 
     def listen(self) -> None:
@@ -156,36 +218,3 @@ class BLEReceiver(Receiver):
 
     def close(self) -> None:
         raise NotImplementedError("BLEReceiver.close(): see connect().")
-
-
-class SerialReceiver(Receiver):
-    """
-    Serial transport stub. Not a tracker-committed transport (tracker
-    sec:2.1 names BLE only) -- kept as an optional dev/debug stub for
-    laptop-tethered testing, matching the proposal's now-superseded
-    "USB Serial (development/debug fallback)" note -- WIRE_FORMAT_v1.md
-    confirms this is still the intended dev/debug path: same JSON
-    schema as BLE, no BLE framing. Confirm with team before relying on
-    this; may be dropped if BLE-only is confirmed sufficient.
-
-    UNIMPLEMENTED. Wire format is locked; serial port I/O itself
-    (pyserial or similar) isn't wired up yet -- that's this stub's
-    remaining gap, not the payload format.
-    """
-
-    def __init__(self, on_event: EventCallback, port: str | None = None, baud: int = 115200):
-        super().__init__(on_event)
-        self.port = port
-        self.baud = baud
-
-    def connect(self) -> None:
-        raise NotImplementedError(
-            "SerialReceiver.connect(): serial port I/O not yet wired up. "
-            "Wire format itself is locked -- see docs/WIRE_FORMAT_v1.md."
-        )
-
-    def listen(self) -> None:
-        raise NotImplementedError("SerialReceiver.listen(): see connect().")
-
-    def close(self) -> None:
-        raise NotImplementedError("SerialReceiver.close(): see connect().")

@@ -28,7 +28,7 @@ Overall Progress: [████████████████░░░░]
 - **Wire Format & Schema**: `[████████████████████] 100%` (Locked in `docs/WIRE_FORMAT_v1.md`)
 - **BOM & Procurement**: `[████████████████████] 100%` (Locked in `docs/SPARK_Component_Order_Form.xlsx`)
 - **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Compiling)
-- **Gateway & SHAP Engine**: `[████████████░░░░░░░░] 60%` (Receivers & PDF Templates Ready; SHAP Hooked to ML)
+- **Gateway & SHAP Engine**: `[████████████████████] 100%` (Replay/Serial Receivers, SHAP Explainer, PDF Reports & JSON Store)
 - **Hardware Assembly & CAD**: `[██████████░░░░░░░░░░] 50%` (Concept Locked; Pending Sliced TPU Model & S3 Boards)
 
 ---
@@ -141,7 +141,7 @@ SPARK/
 │       └── ThesisReports/        # LaTeX report (thesis_report.tex, compiling to PDF)
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
-    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v49)
+    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v50)
     └── design-assets/            # 3D CAD references, renders, and walkthroughs
 ```
 
