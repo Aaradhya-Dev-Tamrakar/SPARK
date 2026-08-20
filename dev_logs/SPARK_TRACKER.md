@@ -1,11 +1,31 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v53)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v54)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 20, 2026 (v53 — Lead/Gateway Scope: Real-Time BLE GATT Client Receiver implemented with bleak, Local Gateway REST & Dashboard Server delivered unblocking Layer 3 display client, Action #23 Human-Subject Protocol drafted in docs/, test suite expanded to 48 passing tests) ·
+**Last updated:** August 20, 2026 (v54 — End-to-End Pipeline Executed & Verified, Diverse Fall Archetypes Simulated with Distinct SHAP Saliency & Clinical PDFs, Aquatic/Drowning Detection Architecture Formulated as Future Research Roadmap, 48 Tests Passing) ·
 
-**v53 change log (August 20, 2026 — BLE Receiver, Local Dashboard Server & Data Collection Protocol delivered):**
+**v54 change log (August 20, 2026 — End-to-End Pipeline, Diverse Fall Archetypes & Aquatic Roadmap):**
+
+- **Full End-to-End Pipeline Execution Verified:**
+  - `prepare_sisfall.py`: Processed 4,500 trial files across 38 subjects producing 38,426 $200 \times 6$ windows.
+  - `train_cnn.py`: Trained 1D CNN under leakage-free subject-grouped split ($87.81\%$ tuned sensitivity, $0.9185$ AUC-ROC).
+  - `quantize_model.py`: Full INT8 post-training quantization generated $18.5\text{ KB}$ `spark_cnn_int8.tflite` FlatBuffer and C-header `spark_cnn_int8.h` ($87.7\%$ compression vs FP32), exported to `firmware/main/models/`.
+- **Diverse Clinical Fall Replay Simulation (`gateway/main.py`):**
+  - Upgraded replay generator with 4 distinct biomechanical fall profiles:
+    1. *Forward Trip/Slip*: Dominant pitch rate ($\omega_y: 34.0\%$) and forward acceleration ($a_x: 30.8\%$).
+    2. *Lateral Slip*: Dominant lateral acceleration ($a_y: 32.8\%$) and roll rate ($\omega_x: 30.3\%$).
+    3. *Vertical Syncope / Collapse*: Dominant vertical ground impact ($a_z: 73.2\%$).
+    4. *Rotational Twist Fall*: Dominant yaw angular velocity ($\omega_z: 31.3\%$).
+  - Verified individual, visually distinct clinical PDF reports generated in `data/gateway_events/`.
+- **Multi-Modal Aquatic & Drowning Detection Roadmap Documented:**
+  - Formulated architectural design for extending SPARK's 6-axis edge platform to aquatic distress:
+    - Stroke cadence monitoring ($0.4\text{–}1.6\text{ Hz}$ cyclic analysis).
+    - Instinctive Drowning Response (IDR) struggle index ($>2.5\text{ Hz}$ vertical pressing).
+    - Submersion immobility timeout ($>15\text{s}$ stillness in vertical orientation).
+  - Kept as a clean future research extension for thesis defense while maintaining primary focus on the core two-layer fall pipeline.
+- **Repository Health & Verification:**
+  - Full test suite passing cleanly (`uv run pytest`, 48 tests). Ruff checks and formatting verified.
 
 - **`gateway/receiver/receiver.py` enhanced with `BleReceiver`:**
   - Implemented asynchronous Bluetooth Low Energy (BLE) GATT client using `bleak`.

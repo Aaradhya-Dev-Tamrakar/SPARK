@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Data architecture guide: `data/README.md`.
 - Licensing: `LICENSE` (MIT).
 
+## [v54] - 2026-08-20
+### Pipeline Execution & Explainability
+- **Full Workflow Execution**: End-to-end pipeline run from SisFall dataset extraction (38,426 windows), subject-grouped 1D CNN training ($0.9185$ AUC-ROC), and INT8 quantization ($18.5\text{ KB}$ flash) to firmware C-header export.
+- **Diverse Fall Replay Simulation (`gateway/main.py`)**: Generated 4 distinct clinical fall archetypes (Forward Trip, Lateral Slip, Syncope Collapse, Rotational Twist) verifying differentiated SHAP saliency bars and ReportLab clinical PDFs.
+- **Aquatic & Drowning Detection Roadmap**: Formulated and documented secondary modular aquatic safety architecture (stroke cadence, IDR struggle index, submersion timer) as a future research expansion.
+
 ---
 
 ## [v53] - 2026-08-20

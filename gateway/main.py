@@ -49,24 +49,93 @@ logging.basicConfig(
 logger = logging.getLogger("spark.gateway")
 
 
-def build_dummy_payload(device_id: str = "SPARK-NODE-01") -> bytes:
+def build_dummy_payload(
+    device_id: str = "SPARK-NODE-01",
+    confidence: float = 0.94,
+    peak_features: dict[str, float] | None = None,
+) -> bytes:
     """Build a realistic wire format JSON payload matching docs/WIRE_FORMAT_v1.md."""
-    payload = {
-        "event_id": str(uuid.uuid4())[:8].upper(),
-        "device_id": device_id,
-        "firmware_version": "v1.0.0-s3",
-        "timestamp_ms": int(time.time() * 1000),
-        "confidence": 0.94,
-        "peak_features": {
+    if peak_features is None:
+        peak_features = {
             "a_x": 0.45,
             "a_y": 0.62,
             "a_z": 3.85,
             "w_x": 0.85,
             "w_y": 1.42,
             "w_z": 0.70,
-        },
+        }
+
+    payload = {
+        "event_id": str(uuid.uuid4())[:8].upper(),
+        "device_id": device_id,
+        "firmware_version": "v1.0.0-s3",
+        "timestamp_ms": int(time.time() * 1000),
+        "confidence": confidence,
+        "peak_features": peak_features,
     }
     return json.dumps(payload).encode("utf-8")
+
+
+def build_diverse_sample_events() -> list[bytes]:
+    """Generate diverse clinical fall incident profiles simulating distinct biomechanical kinematics."""
+    scenarios = [
+        {
+            "device_id": "SPARK-NODE-01 (Forward Trip)",
+            "confidence": 0.96,
+            "peak_features": {
+                "a_x": 3.80,  # Dominant forward inertia & hand impact
+                "a_y": 0.65,
+                "a_z": 2.10,
+                "w_x": 0.75,
+                "w_y": 4.20,  # Dominant pitch rotation
+                "w_z": 0.85,
+            },
+        },
+        {
+            "device_id": "SPARK-NODE-02 (Lateral Slip)",
+            "confidence": 0.92,
+            "peak_features": {
+                "a_x": 0.85,
+                "a_y": 4.45,  # Dominant lateral/side acceleration
+                "a_z": 1.95,
+                "w_x": 4.10,  # Dominant roll rotation
+                "w_y": 0.90,
+                "w_z": 1.30,
+            },
+        },
+        {
+            "device_id": "SPARK-NODE-03 (Vertical Collapse / Syncope)",
+            "confidence": 0.98,
+            "peak_features": {
+                "a_x": 0.35,
+                "a_y": 0.40,
+                "a_z": 5.75,  # Dominant vertical ground strike
+                "w_x": 0.45,
+                "w_y": 0.60,
+                "w_z": 0.30,
+            },
+        },
+        {
+            "device_id": "SPARK-NODE-04 (Rotational Twist Fall)",
+            "confidence": 0.89,
+            "peak_features": {
+                "a_x": 1.80,
+                "a_y": 2.30,
+                "a_z": 2.85,
+                "w_x": 2.20,
+                "w_y": 1.60,
+                "w_z": 4.90,  # Dominant yaw spin
+            },
+        },
+    ]
+    return [
+        build_dummy_payload(
+            device_id=s["device_id"],
+            confidence=s["confidence"],
+            peak_features=s["peak_features"],
+        )
+        for s in scenarios
+    ]
 
 
 def handle_event(
@@ -166,7 +235,7 @@ def main() -> None:
         null_rx.close()
 
     elif args.mode == "replay":
-        sample_events = [build_dummy_payload(f"SPARK-NODE-0{i + 1}") for i in range(3)]
+        sample_events = build_diverse_sample_events()
         replay_rx = ReplayReceiver(
             on_event=lambda e: handle_event(e, store, explainer, out_dir),
             events=sample_events if not args.replay_file else None,

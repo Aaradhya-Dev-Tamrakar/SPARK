@@ -151,7 +151,7 @@ SPARK/
 │   └── .gitkeep
 │
 ├── docs/                         # Specifications & Academic Reports
-│   ├── CHANGELOG.md              # Project change log (v53)
+│   ├── CHANGELOG.md              # Project change log (v54)
 │   ├── DATA_COLLECTION_PROTOCOL.md # Nepal cohort human-subject trial protocol
 │   ├── WIRE_FORMAT_v1.md         # Locked BLE event protocol schema
 │   ├── SPARK_Component_Order_Form.xlsx # Canonical hardware BOM procurement spreadsheet
@@ -160,7 +160,7 @@ SPARK/
 │       └── ThesisReports/        # LaTeX report (thesis_report.tex, compiling to PDF)
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
-    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v53)
+    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v54)
     └── design-assets/            # 3D CAD references, renders, and walkthroughs
 ```
 
