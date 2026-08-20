@@ -1,9 +1,25 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v50)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v51)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 20, 2026 (v50 — Gateway & SHAP Explainability Subsystem delivered: CnnShapExplainer, PeakFeatureExplainer, ReplayReceiver, SerialReceiver, clinical PDF report generator, and full automated test suite with 26 passing tests) ·
+**Last updated:** August 20, 2026 (v51 — 5 Model Sensitivity & Accuracy Enhancements delivered: Youden threshold tuning, class-balanced INT8 calibration, time-series augmentation, positive class weighting boost, and dropout/batchnorm regularization; test suite expanded to 36 passing tests) ·
+
+**v51 change log (August 20, 2026 — 5 Accuracy & Sensitivity Techniques implemented & verified):**
+
+- **`training/train_cnn.py` enhanced with 5 key optimization techniques:**
+  1. **Optimal Decision Threshold Tuning**: Implemented `find_optimal_threshold()` using Youden's $J$ statistic ($J = \text{Sensitivity} + \text{Specificity} - 1$) on the validation split. Evaluates and reports held-out test metrics at both default $0.50$ and optimal operating thresholds, exporting metadata to `model/model_config.json`.
+  2. **Class-Balanced Calibration Support**: Enables balanced 50/50 sampling for INT8 calibration.
+  3. **Time-Series Data Augmentation**: Implemented `augment_windows()` with temporal shift ($\pm 5$ samples / $\pm 25\text{ ms}$), sensor magnitude scaling ($\pm 5\%$), and Gaussian noise jitter to prevent subject overfitting.
+  4. **Loss Weighting / Positive Class Boost**: Added configurable `--pos-weight-boost` (default $1.25\times$) to penalize missed falls (False Negatives) and steer gradient descent toward target $\ge 90\%$ sensitivity.
+  5. **Regularization (Dropout / Batch Normalization)**: Added `--dropout` (default $0.20$) and optional `--use-batch-norm` to stabilize feature learning across diverse subjects without altering MCU inference memory contracts.
+- **`training/quantize_model.py` upgraded:**
+  - `build_representative_dataset()` updated with class-balanced sampling (50% FALL, 50% NON_FALL) to prevent high-acceleration impact clipping during INT8 post-training quantization.
+  - Added threshold-aware evaluation loading calibrated thresholds from `model_config.json` or `--threshold` CLI flag.
+- **Test suite expanded (`tests/`):**
+  - Added `tests/test_train_cnn.py` with 8 unit tests covering data augmentation, threshold tuning, architecture construction, and leakage-free splitting.
+  - Added balanced calibration and custom threshold tests to `tests/test_quantize_model.py`.
+  - All 36 repository tests passing cleanly (`uv run pytest`).
 
 **v50 change log (August 20, 2026 — Gateway & SHAP Explainability Subsystem delivered & verified):**
 

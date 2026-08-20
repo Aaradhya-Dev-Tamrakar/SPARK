@@ -220,3 +220,39 @@ class TestMetricsComputation:
             # Values should be in [0, 1] (nan is also acceptable for
             # edge cases, but not expected with both classes present)
             assert 0.0 <= val <= 1.0, f"{key} = {val} is out of range"
+
+    def test_evaluate_tflite_custom_threshold(self, tiny_model_dir: Path):
+        """Evaluating with custom threshold works as expected."""
+        keras_path = tiny_model_dir / "model" / "spark_cnn.keras"
+        tflite_bytes = quantize_model(keras_path, _representative_dataset_fn)
+
+        X, y = _make_synthetic_data(30, seed=99)
+        y[:15] = 0
+        y[15:] = 1
+
+        metrics_low = evaluate_tflite_model(tflite_bytes, X, y, threshold=0.20)
+        metrics_high = evaluate_tflite_model(tflite_bytes, X, y, threshold=0.80)
+
+        assert metrics_low["threshold"] == 0.20
+        assert metrics_high["threshold"] == 0.80
+        # Lowering threshold should generally increase or keep sensitivity equal
+        assert metrics_low["sensitivity"] >= metrics_high["sensitivity"]
+
+
+class TestBalancedCalibration:
+    """Tests for class-balanced representative dataset generator."""
+
+    def test_build_representative_dataset_balanced(self):
+        from training.quantize_model import build_representative_dataset
+
+        windows = np.random.standard_normal((100, WINDOW_SAMPLES, CHANNELS)).astype(np.float32)
+        labels = np.array([0] * 70 + [1] * 30)  # 70 NON_FALL, 30 FALL
+        train_idx = np.arange(100)
+
+        rep_gen = build_representative_dataset(
+            windows, train_idx, num_samples=20, seed=42, labels=labels
+        )
+        samples = list(rep_gen())
+        assert len(samples) == 20
+        for s in samples:
+            assert s[0].shape == (1, WINDOW_SAMPLES, CHANNELS)

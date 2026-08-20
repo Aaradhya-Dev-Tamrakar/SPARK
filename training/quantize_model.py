@@ -10,6 +10,12 @@ Takes the trained Keras model from train_cnn.py and produces:
     2. spark_cnn_int8.h        -- C header byte array for firmware #include
     3. quantization_report.txt -- size, tensor details, FP32-vs-INT8 metrics
 
+Enhanced with:
+    - Class-Balanced Calibration (50% FALL / 50% NON_FALL) to preserve
+      high-acceleration dynamic range in INT8 scale and zero-point parameters.
+    - Optimal Threshold Support (Youden's Index loaded from model_config.json
+      or CLI) for evaluated FP32 and INT8 metrics.
+
 Quantization recipe per proposal sec.5 (methodology, verbatim):
     Post-training INT8 quantization via TFLite Converter with a
     representative calibration dataset (200 randomly sampled training
@@ -40,10 +46,14 @@ Optional:
     --num-calibration 200
         Number of training windows for representative dataset (default
         200, matching the proposal spec).
+
+    --threshold 0.38
+        Custom decision threshold (overrides model_config.json if specified).
 """
 
 import argparse
 import csv
+import json
 import shutil
 import sys
 import textwrap
@@ -120,13 +130,45 @@ def reconstruct_splits(subjects: np.ndarray, labels: np.ndarray, seed: int):
 
 
 def build_representative_dataset(
-    windows: np.ndarray, train_idx: np.ndarray, num_samples: int, seed: int
+    windows: np.ndarray,
+    train_idx: np.ndarray,
+    num_samples: int = NUM_CALIBRATION_WINDOWS,
+    seed: int = RANDOM_SEED,
+    labels: np.ndarray | None = None,
 ):
     """Returns a generator function for the TFLite Converter's
-    representative_dataset parameter. Yields `num_samples` randomly
-    sampled training windows as float32 batches of shape (1, 200, 6)."""
+    representative_dataset parameter.
+
+    If labels are provided, performs class-balanced sampling (50% FALL,
+    50% NON_FALL) to preserve dynamic range across high-acceleration impact
+    peaks in the quantization scale/zero-point parameters.
+    """
     rng = np.random.default_rng(seed)
-    chosen = rng.choice(train_idx, size=min(num_samples, len(train_idx)), replace=False)
+
+    if labels is not None:
+        train_labels = labels[train_idx]
+        fall_idx = train_idx[train_labels == 1]
+        nonfall_idx = train_idx[train_labels == 0]
+
+        n_fall = min(num_samples // 2, len(fall_idx))
+        n_nonfall = min(num_samples - n_fall, len(nonfall_idx))
+
+        chosen_fall = (
+            rng.choice(fall_idx, size=n_fall, replace=False)
+            if len(fall_idx) >= n_fall
+            else fall_idx
+        )
+        chosen_nonfall = (
+            rng.choice(nonfall_idx, size=n_nonfall, replace=False)
+            if len(nonfall_idx) >= n_nonfall
+            else nonfall_idx
+        )
+
+        chosen = np.concatenate([chosen_fall, chosen_nonfall])
+        rng.shuffle(chosen)
+    else:
+        chosen = rng.choice(train_idx, size=min(num_samples, len(train_idx)), replace=False)
+
     calibration_windows = windows[chosen].astype(np.float32)
 
     def generator():
@@ -180,15 +222,19 @@ def generate_c_header(tflite_bytes: bytes) -> str:
     )
 
 
-def evaluate_keras_model(model, X_test: np.ndarray, y_test: np.ndarray) -> dict:
+def evaluate_keras_model(
+    model, X_test: np.ndarray, y_test: np.ndarray, threshold: float = 0.5
+) -> dict:
     """Evaluate the FP32 Keras model -- same metrics as train_cnn.py."""
     y_prob = model.predict(X_test, verbose=0)
-    y_pred = np.argmax(y_prob, axis=1)
     y_prob_fall = y_prob[:, 1]
-    return _compute_metrics(y_test, y_pred, y_prob_fall)
+    y_pred = (y_prob_fall >= threshold).astype(np.int32)
+    return _compute_metrics(y_test, y_pred, y_prob_fall, threshold=threshold)
 
 
-def evaluate_tflite_model(tflite_bytes: bytes, X_test: np.ndarray, y_test: np.ndarray) -> dict:
+def evaluate_tflite_model(
+    tflite_bytes: bytes, X_test: np.ndarray, y_test: np.ndarray, threshold: float = 0.5
+) -> dict:
     """Evaluate the INT8 TFLite model using the TFLite interpreter.
 
     Handles int8 input/output quantization transparently:
@@ -232,33 +278,49 @@ def evaluate_tflite_model(tflite_bytes: bytes, X_test: np.ndarray, y_test: np.nd
         all_probs.append(probs[0])
 
     all_probs = np.array(all_probs)  # (N, 2)
-    y_pred = np.argmax(all_probs, axis=1)
     y_prob_fall = all_probs[:, 1]
+    y_pred = (y_prob_fall >= threshold).astype(np.int32)
 
-    return _compute_metrics(y_test, y_pred, y_prob_fall)
+    return _compute_metrics(y_test, y_pred, y_prob_fall, threshold=threshold)
 
 
-def _compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob_fall: np.ndarray) -> dict:
+def _compute_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray | None = None,
+    y_prob_fall: np.ndarray | None = None,
+    threshold: float = 0.5,
+) -> dict:
     """Shared metric computation: Sensitivity, Specificity, F1, AUC-ROC."""
+    if y_prob_fall is None and y_pred is not None:
+        y_prob_fall = y_pred
+        y_pred = (y_prob_fall >= threshold).astype(np.int32)
+    elif y_prob_fall is not None and y_pred is None:
+        y_pred = (y_prob_fall >= threshold).astype(np.int32)
+    elif y_prob_fall is not None and y_pred is not None and threshold != 0.5:
+        y_pred = (y_prob_fall >= threshold).astype(np.int32)
+
     fall_mask = y_true == 1
     nonfall_mask = y_true == 0
 
     sensitivity = (
-        (y_pred[fall_mask] == 1).sum() / fall_mask.sum() if fall_mask.sum() else float("nan")
+        float((y_pred[fall_mask] == 1).sum() / fall_mask.sum()) if fall_mask.sum() else float("nan")
     )
     specificity = (
-        (y_pred[nonfall_mask] == 0).sum() / nonfall_mask.sum()
+        float((y_pred[nonfall_mask] == 0).sum() / nonfall_mask.sum())
         if nonfall_mask.sum()
         else float("nan")
     )
-    f1 = f1_score(y_true, y_pred)
+    f1 = float(f1_score(y_true, y_pred, zero_division=0))
     try:
-        auc_roc = roc_auc_score(y_true, y_prob_fall)
+        auc_roc = (
+            float(roc_auc_score(y_true, y_prob_fall)) if y_prob_fall is not None else float("nan")
+        )
     except ValueError as e:
         auc_roc = float("nan")
         print(f"WARNING: AUC-ROC undefined ({e})", file=sys.stderr)
 
     return {
+        "threshold": threshold,
         "sensitivity": sensitivity,
         "specificity": specificity,
         "f1": f1,
@@ -288,6 +350,7 @@ def format_report(
     int8_metrics: dict | None,
     num_test_windows: int,
     num_calibration: int,
+    threshold: float = 0.50,
 ) -> str:
     """Format the quantization report."""
     keras_size = keras_model_path.stat().st_size
@@ -306,8 +369,9 @@ def format_report(
         f" (<= 120 KB, actual {tflite_size / 1024:.1f} KB)",
         "",
         "Quantization Configuration:",
-        f"  Calibration windows: {num_calibration}",
+        f"  Calibration windows: {num_calibration} (Class-balanced 50% FALL / 50% NON_FALL)",
         "  Optimization: INT8 full-integer quantization",
+        f"  Decision Threshold:  {threshold:.4f}",
         "",
         "Input Tensor:",
         f"  Shape: {tensor_info['input_shape']}",
@@ -324,7 +388,7 @@ def format_report(
         lines.extend(
             [
                 "",
-                f"Accuracy Comparison (test set: {num_test_windows} windows):",
+                f"Accuracy Comparison (test set: {num_test_windows} windows @ threshold {threshold:.2f}):",
                 "=" * 50,
                 "",
                 f"{'Metric':<30} {'FP32':>10} {'INT8':>10} {'Delta':>10}",
@@ -367,6 +431,12 @@ def main():
         help="Number of training windows for representative calibration dataset (default: 200)",
     )
     ap.add_argument(
+        "--threshold",
+        type=float,
+        default=None,
+        help="Custom fall decision threshold (default: loaded from model_config.json or 0.50)",
+    )
+    ap.add_argument(
         "--firmware-out",
         type=Path,
         default=None,
@@ -392,6 +462,19 @@ def main():
         )
         sys.exit(1)
 
+    # Determine decision threshold
+    threshold = 0.50
+    config_path = args.data / "model" / "model_config.json"
+    if args.threshold is not None:
+        threshold = args.threshold
+    elif config_path.exists():
+        try:
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+            threshold = float(config.get("optimal_threshold", 0.50))
+            print(f"Loaded optimal decision threshold from model_config.json: {threshold:.4f}")
+        except Exception:
+            threshold = 0.50
+
     tf.keras.utils.set_random_seed(args.seed)
 
     # --- Load data and reconstruct splits ---
@@ -407,10 +490,12 @@ def main():
     print(f"  train: {len(train_idx)} windows")
     print(f"  test:  {len(test_idx)} windows")
 
-    # --- Build representative dataset ---
-    print(f"Building representative calibration dataset ({args.num_calibration} windows)...")
+    # --- Build representative dataset with class balancing ---
+    print(
+        f"Building class-balanced calibration dataset ({args.num_calibration} windows: 50% FALL, 50% NON_FALL)..."
+    )
     rep_dataset_fn = build_representative_dataset(
-        windows, train_idx, args.num_calibration, args.seed
+        windows, train_idx, args.num_calibration, args.seed, labels=labels_bin
     )
 
     # --- Quantize ---
@@ -444,13 +529,13 @@ def main():
         shutil.copy2(header_path, fw_header_path)
         print(f"  Copied to firmware: {fw_header_path}")
 
-    # --- Evaluate FP32 vs INT8 ---
-    print("Evaluating FP32 Keras model on test set...")
+    # --- Evaluate FP32 vs INT8 at decision threshold ---
+    print(f"Evaluating FP32 Keras model on test set (threshold = {threshold:.4f})...")
     keras_model = tf.keras.models.load_model(keras_path)
-    fp32_metrics = evaluate_keras_model(keras_model, X_test, y_test)
+    fp32_metrics = evaluate_keras_model(keras_model, X_test, y_test, threshold=threshold)
 
-    print("Evaluating INT8 TFLite model on test set...")
-    int8_metrics = evaluate_tflite_model(tflite_bytes, X_test, y_test)
+    print(f"Evaluating INT8 TFLite model on test set (threshold = {threshold:.4f})...")
+    int8_metrics = evaluate_tflite_model(tflite_bytes, X_test, y_test, threshold=threshold)
 
     # --- Get tensor info ---
     interpreter = tf.lite.Interpreter(model_content=tflite_bytes)
@@ -466,6 +551,7 @@ def main():
         int8_metrics=int8_metrics,
         num_test_windows=len(test_idx),
         num_calibration=args.num_calibration,
+        threshold=threshold,
     )
     report_path = model_dir / "quantization_report.txt"
     report_path.write_text(report + "\n", encoding="utf-8")

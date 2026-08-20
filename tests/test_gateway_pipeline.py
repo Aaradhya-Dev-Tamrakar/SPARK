@@ -8,7 +8,6 @@ Tests verify:
     3. JSON store accurately retrieves saved events and reports.
 """
 
-import json
 from pathlib import Path
 
 from gateway.main import build_dummy_payload, handle_event
