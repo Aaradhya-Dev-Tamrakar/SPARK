@@ -873,37 +873,31 @@ Landed via three raw commits (see above note) — future edits must route throug
 **Ordered list format (was table in v25). Primary team + roles + WBS items.**
 
 1. **Aaradhya Dev Tamrakar (Supervisor: Er. Dipen Manandhar)**
-   - **Role:** Project Lead, ML Training, SHAP Integration, Gateway, Reporting
-   - **WBS items:**
-     - WP 0: Proposal (completed)
-     - WP 1: Literature review + dataset protocol (HOD discussion held, confirmation pending)
-     - WP 2: Training pipeline (prepare_sisfall.py ✓; notebooks v24–v25 ✓; quantize_model.py ✓ v49; SHAP gateway ✓ v50)
-     - WP 3: Integration testing (simulator + real falls, TBD); phone display-client implementation (owner assigned v38, Action tracker updated — read-only viewer against laptop's local-network report endpoint)
-     - WP 4: Demo prep + thesis writing
+   - **Role:** Project Lead, ML Training, SHAP Integration, Gateway Pipeline, Protocol Architecture
+   - **WBS status:**
+     - WP 0: Proposal & mid-term defense (✅ Completed July 9, 2026)
+     - WP 1: Literature review, wire format specification (`WIRE_FORMAT_v1.md`), and Nepal data collection protocol (`DATA_COLLECTION_PROTOCOL.md` ✓ v53)
+     - WP 2: Training & Quantization pipeline (`prepare_sisfall.py` ✓, `train_cnn.py` ✓, `quantize_model.py` ✓ v49, C-header export ✓)
+     - WP 3: Gateway ingestion, BLE GATT client (`BleReceiver` ✓), multi-scenario SHAP explainer (`explainer.py` ✓), clinical PDF generator (`pdf_report.py` ✓), and local REST & web dashboard server (`server.py` ✓ v53)
+     - WP 4: Hardware acceleration benchmark (Intel Core Ultra 7 155H NPU/iGPU OpenVINO ✓ v52), demo pipelines, and thesis architecture
 
 2. **Rupesh Kadel (ID: 79034)**
    - **Role:** Firmware, Wearable Integration, Hardware Validation
-   - **WBS items:**
-     - WP 1: Layer 1 gated thresholding implementation
-     - WP 2: CNN quantization + TFLite export (✓ export delivered v49, firmware runtime TBD), MPU6050 firmware (driver reuse/rewrite, Action #24)
-     - WP 3: Hardware integration + field testing
-     - WP 4: Demo + thesis sections
+   - **WBS status:**
+     - WP 1 / WP 2 (Scaffold): Host C++ unit tests (21/21 passed ✓) and INT8 model header integration (`spark_cnn_int8.h` ✓)
+     - WP 2 / WP 3 (Physical Hardware Bring-Up): **0% / Not Started (Pending Board Delivery)** — on-device MPU6050 I2C communication, real-time Layer 1 threshold triggering on silicon, on-chip BLE advertising/notification stack, and battery power profiling.
 
 3. **Sankalpa Lamsal (ID: 79039)**
    - **Role:** Enclosure Design, Hardware Assembly, BOM Sourcing
-   - **WBS items:**
-     - WP 1: Enclosure form factor decision (Action #8)
-     - WP 2: 3D-print enclosure, source remaining BOM items (ESP32-S3, MPU6050)
-     - WP 3: Hardware assembly + durability testing
-     - WP 4: Demo logistics
+   - **WBS status:**
+     - WP 1: Concept render and geometric wrist measurement estimate (✓ v38)
+     - WP 2 / WP 3 (3D CAD & Manufacturing): **0% / Not Started (Pending Model Build)** — parametric CAD design (`.step`/`.stl`), M2.5 screw boss wall thickness verification, TPU 95A slicer tuning, physical 3D printing at KEC Makerspace, and wearable strap assembly.
 
 4. **Sonia Thapa (ID: 79043)**
-   - **Role:** Data Collection, Clinical Requirement Gathering, Report Design
-   - **WBS items:**
-     - WP 1: Fall type/ADL type taxonomy definition (Action #23 dataset protocol)
-     - WP 2: Volunteer recruitment + data collection
-     - WP 3: Clinical PDF report design + feedback iteration
-     - WP 4: Demo + thesis sections
+   - **Role:** Data Collection, Clinical Requirement Gathering, Mobile Display Client
+   - **WBS status:**
+     - WP 1: Clinical fall taxonomy input (✓ documented in protocol)
+     - WP 2 / WP 3 (Mobile Client & Clinical Trials): **0% / Not Started** — Layer 3 smartphone/web display client UI (to consume `gateway/server.py` REST API) and physical volunteer crash-mat fall data recording runs at KEC.
 
 ---
 

@@ -20,17 +20,20 @@
 ## 📊 Project Progress & Roadmap
 
 ```
-Overall Progress: [████████████████░░░░] 82% (Mid-Term Defended / Pipeline Verified / Hardware Delivery Pending)
+Overall Integrated Progress: [█████████░░░░░░░░░░░] 45% (Core ML/Gateway Complete; Hardware, CAD & Mobile UI Pending)
 ```
 
-- **Firmware & Layer 1 Gate**: `[██████████████████░░] 90%` (21/21 Host Unit Tests Passed, ESP-IDF Scaffold, INT8 Model Embedded; Pending Physical Hardware Bench Test)
-- **Model Training & Quantization**: `[████████████████████] 100%` (SisFall Ingestion, 1D CNN with 91.85% AUC-ROC, INT8 Quantizer & C Header Export)
-- **Gateway & SHAP Engine**: `[████████████████████] 100%` (BLE/Replay/Serial Receivers, SHAP Explainer, Multi-Scenario PDF Reports, REST & Web Dashboard Server)
-- **Wire Format & Schema**: `[████████████████████] 100%` (Locked in `docs/WIRE_FORMAT_v1.md`)
-- **BOM & Procurement**: `[████████████████████] 100%` (Locked in `docs/SPARK_Component_Order_Form.xlsx`)
-- **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Structure Compiling)
-- **Hardware Assembly & CAD**: `[██████████░░░░░░░░░░] 50%` (Two-Zone Concept & Footprints Locked; Pending Parametric CAD Model & TPU Slicing)
-- **Nepal Cohort Validation Dataset**: `[████████░░░░░░░░░░░░] 40%` (Protocol Drafted in `docs/DATA_COLLECTION_PROTOCOL.md`; Pending Crash-Mat Trials)
+### Module Breakdown by Assignee
+
+| Module / Workstream | Assignee | Status / Progress | Deliverable Reality |
+| :--- | :--- | :---: | :--- |
+| **ML Modeling & Quantization** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | SisFall ingestion, 1D CNN ($0.9185$ AUC-ROC), $18.5\text{ KB}$ INT8 quantizer & C-header export. |
+| **Gateway & SHAP Subsystem** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | BLE client, multi-scenario SHAP explainer, PDF reports, and local REST server. |
+| **Protocol & BOM Architecture** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | `WIRE_FORMAT_v1.md`, `DATA_COLLECTION_PROTOCOL.md`, and order form locked. |
+| **Physical ESP32-S3 Firmware** | **Rupesh Kadel** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Host C++ tests pass, but **0% physical progress** (awaiting board delivery for on-chip I2C/BLE & silicon inference). |
+| **Enclosure CAD & 3D Printing** | **Sankalpa Lamsal** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Concept art only; **0% CAD progress** (no `.step`/`.stl` parametric model, no TPU slicer profile, no prints). |
+| **Layer 3 Mobile Display Client** | **Sonia Thapa** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Gateway backend REST API ready; **0% mobile UI progress** (no mobile app or frontend client built yet). |
+| **Physical Nepal Trial Collection** | **Team (KEC Cohort)** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Protocol drafted; **0% trial data recorded** (pending physical hardware assembly & crash-mat sessions). |
 
 ---
 
@@ -75,11 +78,13 @@ Overall Progress: [████████████████░░░░]
 | Branch | Lead / Assignee | Workstream Scope | Status |
 | :--- | :--- | :--- | :---: |
 | `main` | Team | Production stable, integrated deliverables & LaTeX reports | **STABLE** 🟢 |
-| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 firmware, MPU6050 I2C driver, Layer 1 gate & TFLite Micro | **ACTIVE** 🟡 |
-| `feat/gateway-dashboard` | `@SoniaThapa` | Local gateway web interface & mobile display client UI | **ACTIVE** 🟡 |
-| `feat/enclosure-cad` | `@SankalpaLamsal` | Two-zone TPU wrist bracer CAD 3D modeling, slicing & mounting | **ACTIVE** 🟡 |
+| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 physical firmware, MPU6050 I2C driver & on-device TFLite Micro | **NOT STARTED / 0%** 🔴 |
+| `feat/enclosure-cad` | `@SankalpaLamsal` | Parametric 3D CAD modeling, TPU 95A slicer tuning & physical print | **NOT STARTED / 0%** 🔴 |
+| `feat/gateway-dashboard` | `@SoniaThapa` | Mobile display client UI & live gateway frontend | **NOT STARTED / 0%** 🔴 |
 | `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer | **MERGED** ✅ |
 | `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report | **MERGED** ✅ |
+
+---
 
 ---
 
