@@ -20,16 +20,17 @@
 ## 📊 Project Progress & Roadmap
 
 ```
-Overall Progress: [████████████████░░░░] 80% (Mid-Term Complete / Procurement Locked)
+Overall Progress: [████████████████░░░░] 82% (Mid-Term Defended / Pipeline Verified / Hardware Delivery Pending)
 ```
 
-- **Firmware & Layer 1 Gate**: `[████████████████████] 100%` (21/21 Host Unit Tests Passed, ESP-IDF Scaffold, INT8 Model Embedded)
-- **Model Training & Quantization**: `[████████████████████] 100%` (SisFall Ingestion, 1D CNN with 93.58% AUC-ROC, INT8 Quantizer & C Header Export)
+- **Firmware & Layer 1 Gate**: `[██████████████████░░] 90%` (21/21 Host Unit Tests Passed, ESP-IDF Scaffold, INT8 Model Embedded; Pending Physical Hardware Bench Test)
+- **Model Training & Quantization**: `[████████████████████] 100%` (SisFall Ingestion, 1D CNN with 91.85% AUC-ROC, INT8 Quantizer & C Header Export)
+- **Gateway & SHAP Engine**: `[████████████████████] 100%` (BLE/Replay/Serial Receivers, SHAP Explainer, Multi-Scenario PDF Reports, REST & Web Dashboard Server)
 - **Wire Format & Schema**: `[████████████████████] 100%` (Locked in `docs/WIRE_FORMAT_v1.md`)
 - **BOM & Procurement**: `[████████████████████] 100%` (Locked in `docs/SPARK_Component_Order_Form.xlsx`)
-- **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Compiling)
-- **Gateway & SHAP Engine**: `[████████████████████] 100%` (BLE/Replay/Serial Receivers, SHAP Explainer, Clinical PDF Reports, REST & Web Dashboard Server)
-- **Hardware Assembly & CAD**: `[██████████░░░░░░░░░░] 50%` (Concept Locked; Pending Sliced TPU Model & S3 Boards)
+- **Proposal & Academic Reports**: `[████████████████████] 100%` (Proposal Defended, LaTeX Thesis Structure Compiling)
+- **Hardware Assembly & CAD**: `[██████████░░░░░░░░░░] 50%` (Two-Zone Concept & Footprints Locked; Pending Parametric CAD Model & TPU Slicing)
+- **Nepal Cohort Validation Dataset**: `[████████░░░░░░░░░░░░] 40%` (Protocol Drafted in `docs/DATA_COLLECTION_PROTOCOL.md`; Pending Crash-Mat Trials)
 
 ---
 
@@ -82,18 +83,25 @@ Overall Progress: [████████████████░░░░]
 
 ---
 
-## 📌 Active Development Tracking (from `SPARK_TRACKER.md`)
+## 📌 Active Development Tracking & Remaining Works
 
-- [x] **#14**: Revert ESP32-S3 vendor to Himalayan Solutions (N16R8, in stock)
-- [x] **#23**: Finalize human-subject trial protocol for Nepal validation dataset (`docs/DATA_COLLECTION_PROTOCOL.md`)
-- [x] **#25**: Proposal defence completion (Passed July 9, 2026)
-- [x] **#27**: Gateway NPU & Arc iGPU capability assessment (Benchmarked via OpenVINO)
-- [x] **#32**: TP4056 charge/protection circuit locked for unprotected LiPo
-- [x] **#38**: Charging panel safety interface locked (dual single-purpose USB-C, off-body only)
-- [x] **#39**: M2.5 fastener specification finalized & local Daraz kit selected
-- [ ] **#16 / #18**: Physical delivery & bench verification of departmental hardware order
-- [ ] **#17**: Finalize 3D CAD dimensions & TPU slicer profile for dorsal wrist bracer
-- [ ] **#26**: Narrow Novelty Claims 1 & 3 in final thesis draft against related prior art
+### ✅ Completed Milestones
+- [x] **Proposal Defense**: Successfully defended mid-term proposal (Passed July 9, 2026).
+- [x] **BOM & Procurement Lock**: Component order form finalized (`docs/SPARK_Component_Order_Form.xlsx`, Daraz/Himalayan Solution/Giga Nepal).
+- [x] **Electrical Safety & Charging Architecture**: Dual single-purpose USB-C ports locked (Action #38, off-body charging only).
+- [x] **Two-Layer ML Pipeline**: 1D CNN trained on SisFall with subject-grouped isolation ($0.9185$ AUC-ROC, $87.81\%$ sensitivity) and quantized to $18.5\text{ KB}$ INT8 (`spark_cnn_int8.tflite`).
+- [x] **Firmware Model Embedding**: INT8 model byte array generated and wired into `firmware/main/models/spark_cnn_int8.h`.
+- [x] **Gateway & Explainability**: BLE GATT client (`BleReceiver`), diverse clinical SHAP explainer, automated ReportLab PDF generator, and local REST API (`gateway/server.py`) delivered.
+- [x] **Gateway Hardware Acceleration**: Intel Core Ultra 7 155H NPU and Arc iGPU benchmarked via OpenVINO (Action #27 resolved).
+- [x] **Nepal Cohort Protocol**: 34-activity standardized trial protocol drafted (`docs/DATA_COLLECTION_PROTOCOL.md`, Action #23).
+
+### ⏳ Remaining Works to Final Deployment
+- [ ] **Physical Hardware Delivery & Bench Verification (Action #16 / #18)**: Receive departmental ESP32-S3 N16R8 boards, MPU6050 breakout, 1100mAh LiPo cells, and TP4056 modules for electrical bring-up.
+- [ ] **Parametric 3D CAD & Slicing (Action #17)**: Finalize two-zone dorsal wrist bracer in CAD (`.step`/`.stl`), verify M2.5 screw boss wall thicknesses, and tune TPU 95A 3D print profile.
+- [ ] **Nepal Cohort Data Collection Execution (Issue #6)**: Execute controlled crash-mat fall simulations and ADL recordings at KEC to fine-tune the CNN on real dorsal-wrist kinematics.
+- [ ] **On-Hardware BLE & Layer 1 Validation**: Flash firmware to physical ESP32-S3, verify real-time Layer 1 threshold triggering on wrist motion, and validate end-to-end BLE event reception.
+- [ ] **Layer 3 Mobile Display Client Integration (Issue #5)**: Connect mobile web dashboard to gateway REST endpoints (`GET /api/events`).
+- [ ] **Thesis Draft & Defense Prep (Action #26)**: Narrow Novelty Claims 1 & 3 against recent 2024–2025 literature and finalize LaTeX thesis report (`thesis_report.tex`).
 
 ---
 
