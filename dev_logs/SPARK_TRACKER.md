@@ -306,9 +306,9 @@ Landed via three raw commits (see above note) — future edits must route throug
 - #20: Mobile hotspot max-client cap (need known demo device)
 - #6: C3 benchmark (need C3 unit)
 
-**Future work only (7 items, Ch.6):**
+**Future work (Ch.6):**
 
-- #27: Gateway on-die NPU capability assessment (laptop-specific)
+- #27: [RESOLVED v52] Gateway on-die NPU & Arc iGPU capability assessment (benchmarked: NPU 383 µs, GPU 200 µs via OpenVINO)
 - #28: Camera-based confirmation modality (vision-based 2nd opinion)
 - #29: Cloud integration as opt-in (cold-storage archival)
 - #30: Battery management firmware (wearable duty cycle optimization)
