@@ -8,31 +8,31 @@
 
 \subsection{ESP32-S3 Microcontroller}
 
-The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtensa LX7 microcontroller operating at up to 240\,MHz, featuring 512\,KB internal SRAM, 16\,MB external quad-SPI flash, vector instructions for neural network acceleration, and integrated Bluetooth~5 (LE). For SPARK, only the BLE subsystem is used for gateway communication, while the Wi-Fi radio is disabled to minimize energy consumption. The ESP32-S3 executes both the sensor acquisition ISR at 200\,Hz and the two-layer fall detection pipeline (including TFLite Micro CNN inference) within the on-chip SRAM envelope. Full INT8 post-training quantization compresses the 1D CNN model footprint to \textbf{18.5\,KB} of flash ($87.7\%$ compression vs.\ FP32), leaving extensive headroom for the Arduino/ESP-IDF framework, BLE stack, and circular sliding-window buffers.
+The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtensa LX7 microcontroller operating at up to 240\,MHz, featuring 512\,KB internal SRAM, 16\,MB external quad-SPI flash, vector instructions for neural network acceleration, and integrated Bluetooth~5 (LE). For SPARK, only the BLE subsystem is used for gateway communication, while the Wi-Fi radio is disabled to minimize energy consumption. The ESP32-S3 executes both the sensor acquisition ISR at 200\,Hz and the two-layer fall detection pipeline (including TFLite Micro CNN inference) within the on-chip SRAM envelope. Full INT8 post-training quantization compresses the 1D CNN model footprint to \textbf{18.5\,KB} of flash (\(87.7\%\) compression vs.\ FP32), leaving extensive headroom for the Arduino/ESP-IDF framework, BLE stack, and circular sliding-window buffers.
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.32\textwidth]{esp32_devkit.png}
-	\caption{ESP32-S3 Microcontroller Node}\label{fig:esp32_devkit}
+    \centering
+    \includegraphics[width=0.32\textwidth]{esp32_devkit.png}
+    \caption{ESP32-S3 Microcontroller Node}\label{fig:esp32_devkit}
 \end{figure}
 
 \subsection{MPU6050 6-Axis IMU}
 
-The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer ($\pm$2/$\pm$4/$\pm$8/$\pm$16\,g selectable) and a 3-axis MEMS gyroscope ($\pm$250/$\pm$500/$\pm$1000/$\pm$2000$^\circ$/s selectable) on a single die, communicating over I$^2$C at 400\,kHz. For SPARK, the accelerometer is configured at $\pm$8\,g full-scale (capturing peak fall impacts without saturation) and the gyroscope at $\pm$500$^\circ$/s. Direct register reads are executed in a 200\,Hz hardware timer ISR (bypassing the internal DMP), ensuring deterministic time-series windowing aligned with the dorsal wrist anatomic coordinate frame ($x$: distal/radial, $y$: anterior/ulnar, $z$: dorsal normal).
+The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer (\(\pm\)2/\(\pm\)4/\(\pm\)8/\(\pm\)16\,g selectable) and a 3-axis MEMS gyroscope (\(\pm\)250/\(\pm\)500/\(\pm\)1000/\(\pm\)2000\(^\circ\)/s selectable) on a single die, communicating over I\(^2\)C at 400\,kHz. For SPARK, the accelerometer is configured at \(\pm\)8\,g full-scale (capturing peak fall impacts without saturation) and the gyroscope at \(\pm\)500\(^\circ\)/s. Direct register reads are executed in a 200\,Hz hardware timer ISR (bypassing the internal DMP), ensuring deterministic time-series windowing aligned with the dorsal wrist anatomic coordinate frame (\(x\): distal/radial, \(y\): anterior/ulnar, \(z\): dorsal normal).
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.28\textwidth]{mpu6050.png}
-	\caption{MPU6050 6-Axis IMU}\label{fig:mpu6050}
+    \centering
+    \includegraphics[width=0.28\textwidth]{mpu6050.png}
+    \caption{MPU6050 6-Axis IMU}\label{fig:mpu6050}
 \end{figure}
 
 \subsection{Laptop Companion Gateway \& Hardware Acceleration}
 
 A local companion laptop (Acer Swift Go 16, equipped with an Intel Core Ultra 7 155H processor) serves as the primary gateway: BLE GATT receiver, SHAP explainability engine, and PDF report generator. To ensure responsive real-time auditability without cloud latency, the gateway leverages Intel OpenVINO 2026.3 hardware acceleration. Empirical benchmarking across 5,000 INT8 inference passes established:
 \begin{itemize}
-    \item \textbf{Intel CPU (AVX-VNNI)}: $0.131$\,ms per window ($7{,}618$\,windows/s).
-    \item \textbf{Intel Arc GPU (DirectX 12)}: $0.200$\,ms per window ($4{,}993$\,windows/s).
-    \item \textbf{Intel AI Boost NPU}: $0.383$\,ms per window ($2{,}610$\,windows/s) for ultra-low-power continuous background monitoring.
+    \item \textbf{Intel CPU (AVX-VNNI)}: \(0.131\)\,ms per window (\(7{,}618\)\,windows/s).
+    \item \textbf{Intel Arc GPU (DirectX 12)}: \(0.200\)\,ms per window (\(4{,}993\)\,windows/s).
+    \item \textbf{Intel AI Boost NPU}: \(0.383\)\,ms per window (\(2{,}610\)\,windows/s) for ultra-low-power continuous background monitoring.
 \end{itemize}
 
 \subsection{Phone Display Client \& Local Server}
@@ -41,26 +41,32 @@ A caregiver or clinician's smartphone functions as a read-only Layer~3 client. T
 
 \subsection{Power System \& Enclosure DFM}
 
-The wearable node is powered by a 3.7\,V nominal 1100\,mAh Li-ion pouch cell paired with a TP4056-class constant-current/constant-voltage (CC/CV) charge controller module with USB-C input. 
+The wearable node is powered by a 3.7\,V nominal 1100\,mAh Li-ion pouch cell paired with a TP4056-class constant-current/constant-voltage (CC/CV) charge controller module with USB-C input.
 
 \begin{itemize}
-    \item \textbf{Power Profile}: Continuous active sampling with un-gated BLE streaming draws $90\text{--}130$\,mA ($8\text{--}11$\,hours endurance). Under SPARK's event-gated BLE architecture (advertising only on confirmed falls), average current drops to $35\text{--}60$\,mA, extending operational battery life to $16\text{--}28$\,hours on a single charge.
-    \item \textbf{Mechanical DFM}: The enclosure is 3D-printed in Thermoplastic Polyurethane (TPU 95A) at KEC Makerspace. To prevent thread stripping inherent in self-tapping screws driven into flexible elastomers, the enclosure incorporates $3\text{--}4$\,mm solid wall sections with brass heat-set threaded inserts (M2/M2.5), secured to the wrist via an ergonomic two-zone dorsal bracer strap.
+    \item \textbf{Power Profile}: Continuous active sampling with un-gated BLE streaming draws \(90\text{--}130\)\,mA (\(8\text{--}11\)\,hours endurance). Under SPARK's event-gated BLE architecture (advertising only on confirmed falls), average current drops to \(35\text{--}60\)\,mA, extending operational battery life to \(16\text{--}28\)\,hours on a single charge.
+    \item \textbf{Mechanical DFM}: The enclosure is 3D-printed in Thermoplastic Polyurethane (TPU 95A) at KEC Makerspace. To prevent thread stripping inherent in self-tapping screws driven into flexible elastomers, the enclosure incorporates \(3\text{--}4\)\,mm solid wall sections with brass heat-set threaded inserts (M2/M2.5), secured to the wrist via an ergonomic two-zone dorsal bracer strap.
 \end{itemize}
 
 \begin{figure}[H]
-	\centering
-	\begin{minipage}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=2.5cm,keepaspectratio]{cell_18650.png}
-		\caption{Li-ion Cell}\label{fig:pwr_cell}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=2.5cm,keepaspectratio]{tp4056.png}
-		\caption{Charge Controller}\label{fig:pwr_tp4056}
-	\end{minipage}
+    \centering
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=2.5cm,keepaspectratio]{battery_1100mah_lipo.png}
+        \caption{3.7V 1100mAh Li-Po Cell}\label{fig:pwr_cell}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=2.5cm,keepaspectratio]{tp4056.png}
+        \caption{Charge Controller}\label{fig:pwr_tp4056}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{compression_arm_sleeve.png}
+    \caption{Compression Arm Sleeve (Base Layer, Thumb-Hole)}\label{fig:arm_sleeve}
 \end{figure}
 
 \section{Software Description}
@@ -69,34 +75,34 @@ The wearable node is powered by a 3.7\,V nominal 1100\,mAh Li-ion pouch cell pai
 
 \begin{enumerate}
     \item \textbf{Layer 1 (Deterministic Threshold Pre-filter)}: Continuously executes within the 200\,Hz ISR. It computes the resultant acceleration magnitude:
-    \begin{equation}
-        |a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
-    \end{equation}
-    A candidate fall is latched (\texttt{PRE\_FALL}) when $|a| > 2.5$\,g for $>300$\,ms. Normal ADLs (sitting, walking) remain below threshold, bypassing CNN inference entirely and eliminating unnecessary computational power drain.
-    \item \textbf{Layer 2 (Quantized 1D CNN Inference)}: Triggered solely upon \texttt{PRE\_FALL}. The 200-sample ($1.0$\,s) 6-axis sliding window is normalized via pre-computed StandardScaler coefficients and classified by the on-device TFLite Micro CNN. If the fall probability $P(\text{FALL}) \ge 0.85$ (or calibrated threshold), a \texttt{CONFIRMED\_FALL} telemetry event is dispatched.
+          \begin{equation}
+              |a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
+          \end{equation}
+          A candidate fall is latched (\texttt{PRE\_FALL}) when \(|a| > 2.5\)\,g for \(>300\)\,ms. Normal ADLs (sitting, walking) remain below threshold, bypassing CNN inference entirely and eliminating unnecessary computational power drain.
+    \item \textbf{Layer 2 (Quantized 1D CNN Inference)}: Triggered solely upon \texttt{PRE\_FALL}. The 200-sample (\(1.0\)\,s) 6-axis sliding window is normalized via pre-computed StandardScaler coefficients and classified by the on-device TFLite Micro CNN. If the fall probability \(P(\text{FALL}) \ge 0.85\) (or calibrated threshold), a \texttt{CONFIRMED\_FALL} telemetry event is dispatched.
 \end{enumerate}
 
 \subsection{1D CNN Architecture \& INT8 Quantization}
 
 \begin{itemize}
-    \item \textbf{Input Layer}: $200 \times 6$ tensor (200 time steps across $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$).
-    \item \textbf{Block 1}: Conv1D (32 filters, kernel size 5, stride 1) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D (pool size 2, stride 2) $\rightarrow$ Dropout (0.20).
-    \item \textbf{Block 2}: Conv1D (64 filters, kernel size 3, stride 1) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D.
-    \item \textbf{Head}: Dense (32 units, ReLU) $\rightarrow$ Dense (2 units, Softmax).
+    \item \textbf{Input Layer}: \(200 \times 6\) tensor (200 time steps across \(a_x, a_y, a_z, \omega_x, \omega_y, \omega_z\)).
+    \item \textbf{Block 1}: Conv1D (32 filters, kernel size 5, stride 1) \(\rightarrow\) ReLU \(\rightarrow\) MaxPool1D (pool size 2, stride 2) \(\rightarrow\) Dropout (0.20).
+    \item \textbf{Block 2}: Conv1D (64 filters, kernel size 3, stride 1) \(\rightarrow\) ReLU \(\rightarrow\) GlobalAveragePooling1D.
+    \item \textbf{Head}: Dense (32 units, ReLU) \(\rightarrow\) Dense (2 units, Softmax).
 \end{itemize}
 Full INT8 post-training quantization using representative class-balanced calibration yields an \textbf{18.5\,KB} FlatBuffer array exported as \texttt{spark\_cnn\_int8.h} for direct compilation into ESP-IDF/PlatformIO firmware.
 
 \subsection{Gradient-Based SHAP Explainability Pipeline}
 
-To provide clinicians with transparent, auditable decision rationale without cloud reliance, the companion gateway implements gradient-based feature attribution ($X \times \nabla_X Y$):
+To provide clinicians with transparent, auditable decision rationale without cloud reliance, the companion gateway implements gradient-based feature attribution (\(X \times \nabla_X Y\)):
 \begin{equation}
     \phi_c(t) = x_c(t) \cdot \frac{\partial P(\text{FALL})}{\partial x_c(t)}
 \end{equation}
-where $x_c(t)$ represents the normalized input signal at time $t$ for IMU channel $c \in \{a_x, a_y, a_z,$ $\omega_x, \omega_y, \omega_z\}$. Summing channel attributions yields relative kinetic importance:
+where \(x_c(t)\) represents the normalized input signal at time \(t\) for IMU channel \(c \in \{a_x, a_y, a_z,\) \(\omega_x, \omega_y, \omega_z\}\). Summing channel attributions yields relative kinetic importance:
 \begin{equation}
     \Phi_c = \frac{\sum_{t=1}^{T} |\phi_c(t)|}{\sum_{k=1}^{6} \sum_{t=1}^{T} |\phi_k(t)|} \times 100\%
 \end{equation}
-This allows the gateway to automatically identify biomechanical fall archetypes (e.g., forward trip dominated by pitch rate $\omega_y$ vs.\ lateral slip dominated by roll rate $\omega_x$ and $a_y$, or vertical collapse dominated by $a_z$), rendering attribution bar charts into automated PDF clinical incident reports.
+This allows the gateway to automatically identify biomechanical fall archetypes (e.g., forward trip dominated by pitch rate \(\omega_y\) vs.\ lateral slip dominated by roll rate \(\omega_x\) and \(a_y\), or vertical collapse dominated by \(a_z\)), rendering attribution bar charts into automated PDF clinical incident reports.
 
 \subsection{Gateway Software Architecture Patterns}
 

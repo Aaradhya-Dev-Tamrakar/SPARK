@@ -7,10 +7,10 @@
 \section{System Block Diagram}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{fig_system_flow.png}
-	\caption{System Block Diagram}
-	\label{fig:system_flow}
+    \centering
+    \includegraphics[width=\textwidth]{fig_system_flow.png}
+    \caption{System Block Diagram}
+    \label{fig:system_flow}
 \end{figure}
 
 
@@ -23,21 +23,21 @@ Figure~\ref{fig:system_flow} is organized into three zones connected by two link
 
 \textbf{Sensor zone (wearable node, solid fill hatch)}
 \begin{itemize}
-	\item \textbf{MPU6050 IMU} : reads all six raw accelerometer and gyroscope axes over I$^2$C at 200\,Hz (Section~\ref{sec:imu_acquisition}).
-	\item \textbf{Sliding window} : buffers the raw stream in a circular ring buffer, continuously overwritten until a candidate fall window is latched by Layer~1.
+    \item \textbf{MPU6050 IMU} : reads all six raw accelerometer and gyroscope axes over I\(^2\)C at 200\,Hz (Section~\ref{sec:imu_acquisition}).
+    \item \textbf{Sliding window} : buffers the raw stream in a circular ring buffer, continuously overwritten until a candidate fall window is latched by Layer~1.
 \end{itemize}
 
 \textbf{Edge inference zone (wearable node, grid fill)}
 \begin{itemize}
-	\item \textbf{Two-layer detection} : Layer~1 threshold pre-filter gates Layer~2 TFLite Micro CNN inference, exactly as formalized in Algorithm 5.4.
-	\item \textbf{BLE transmit} : on \texttt{CONFIRMED\_FALL}, serializes the event as JSON per the locked wire format and transmits it over Bluetooth Low Energy, crossing the BLE boundary to the laptop gateway.
+    \item \textbf{Two-layer detection} : Layer~1 threshold pre-filter gates Layer~2 TFLite Micro CNN inference, exactly as formalized in Algorithm 5.4.
+    \item \textbf{BLE transmit} : on \texttt{CONFIRMED\_FALL}, serializes the event as JSON per the locked wire format and transmits it over Bluetooth Low Energy, crossing the BLE boundary to the laptop gateway.
 \end{itemize}
 
 \textbf{Gateway zone (laptop, dot fill)}
 \begin{itemize}
-	\item \textbf{BLE receiver} : the sole receiver of \texttt{CONFIRMED\_FALL} events from the wearable node, running locally on the laptop.
-	\item \textbf{SHAP attribution} : computes per-feature attributions on the six peak IMU channels, identifying which channel most contributed to the fall classification.
-	\item \textbf{PDF incident report} : auto-generates a one-page clinical report containing the SHAP attribution chart and a care-staff signature block, readable by the phone display client over the local network.
+    \item \textbf{BLE receiver} : the sole receiver of \texttt{CONFIRMED\_FALL} events from the wearable node, running locally on the laptop.
+    \item \textbf{SHAP attribution} : computes per-feature attributions on the six peak IMU channels, identifying which channel most contributed to the fall classification.
+    \item \textbf{PDF incident report} : auto-generates a one-page clinical report containing the SHAP attribution chart and a care-staff signature block, readable by the phone display client over the local network.
 \end{itemize}
 
 
@@ -47,12 +47,33 @@ Figure~\ref{fig:system_flow} is organized into three zones connected by two link
 
 The wearable node is assembled on a breadboard for the prototype phase, transitioning to a compact perfboard layout prior to the March 2027 demonstration.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{breadboard.png}
+    \caption{Prototype Breadboard}\label{fig:breadboard}
+\end{figure}
+
 \begin{enumerate}
-	\item Connect the MPU6050 to the ESP32-S3 via I$^2$C: SDA to GPIO~21, SCL to GPIO~22, operating at 400\,kHz.
-	\item Power the MPU6050 from the ESP32-S3 3.3\,V rail (onboard regulation; no separate LDO required).
-	\item Connect the 1100\,mAh Li-ion/LiPo cell output to the TP4056-class charge/protection circuit (required unless the sourced pack is already protected), then to the ESP32-S3 devboard's battery input.
-	\item House the assembly in a 3D-printed TPU enclosure (KEC Makerspace) with a Velcro wrist strap, the enclosure's own built-in Velcro closure tab, and a flush-mounted USB-C charging port.
+    \item Connect the MPU6050 to the ESP32-S3 via I\(^2\)C: SDA to GPIO~21, SCL to GPIO~22, operating at 400\,kHz.
+    \item Power the MPU6050 from the ESP32-S3 3.3\,V rail (onboard regulation; no separate LDO required).
+    \item Connect the 1100\,mAh Li-ion/LiPo cell output to the TP4056-class charge/protection circuit (required unless the sourced pack is already protected), then to the ESP32-S3 devboard's battery input.
+    \item House the assembly in a 3D-printed TPU enclosure (KEC Makerspace) with a Velcro wrist strap, the enclosure's own built-in Velcro closure tab, and a flush-mounted USB-C charging port.
 \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=3cm,keepaspectratio]{enclosure_concept_v1_two_zone_bracer.png}
+        \caption{Two-Zone Bracer Enclosure Concept}\label{fig:enclosure_concept}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=3cm,keepaspectratio]{usb_c_cable.png}
+        \caption{USB-C Charging Cable}\label{fig:usb_c_cable}
+    \end{minipage}
+\end{figure}
 
 \subsection{Power Budget Verification}
 
@@ -61,30 +82,30 @@ No power-rail telemetry sensor is used in this design. Target metrics: active cu
 \section{Firmware Implementation (ESP32 PlatformIO)}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{fig_two_layer_flow.png}
-	\caption{Two-layer fall detection flowchart: Layer~1 threshold pre-filter (top zone) gates Layer~2 TFLite Micro CNN inference (bottom zone). Sensitivity profile thresholds are shown in the callout.}
-	\label{fig:two_layer_flow}
+    \centering
+    \includegraphics[width=0.55\textwidth]{fig_two_layer_flow.png}
+    \caption{Two-layer fall detection flowchart: Layer~1 threshold pre-filter (top zone) gates Layer~2 TFLite Micro CNN inference (bottom zone). Sensitivity profile thresholds are shown in the callout.}
+    \label{fig:two_layer_flow}
 \end{figure}
 
 \subsection{IMU Acquisition and Filtering}
 \label{sec:imu_acquisition}
 
-The MPU6050 is configured via I$^2$C at startup: accelerometer full-scale $\pm$8\,g, gyroscope full-scale $\pm$500$^\circ$/s. A timer interrupt service routine (ISR) fires at 200\,Hz and reads all six raw axes via direct register access (bypassing the DMP), feeding the resultant-magnitude computation directly with no intermediate sensor-fusion filtering stage.
+The MPU6050 is configured via I\(^2\)C at startup: accelerometer full-scale \(\pm\)8\,g, gyroscope full-scale \(\pm\)500\(^\circ\)/s. A timer interrupt service routine (ISR) fires at 200\,Hz and reads all six raw axes via direct register access (bypassing the DMP), feeding the resultant-magnitude computation directly with no intermediate sensor-fusion filtering stage.
 
 \subsection{Sliding Window Buffer}
 
-A circular ring buffer stores the most recent samples of all six channels ($a_x$, $a_y$, $a_z$, $\omega_x$, $\omega_y$, $\omega_z$) in SRAM, continuously overwritten. When Layer~1 fires a \texttt{PRE\_FALL} flag, the gate-triggered window is copied to a local array, normalized using Standard\-Scaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
+A circular ring buffer stores the most recent samples of all six channels (\(a_x\), \(a_y\), \(a_z\), \(\omega_x\), \(\omega_y\), \(\omega_z\)) in SRAM, continuously overwritten. When Layer~1 fires a \texttt{PRE\_FALL} flag, the gate-triggered window is copied to a local array, normalized using Standard\-Scaler parameters (mean and standard deviation per channel) baked into the firmware as constant arrays at training time, and passed to the TFLite Micro interpreter.
 
 \subsection{Layer 1 - Threshold Pre-filter}
 
 The resultant acceleration magnitude is computed every ISR tick:
 
 \begin{equation}
-	|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
+    |a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
 \end{equation}
 
-The \texttt{PRE\_FALL} flag is set when $|a|$ exceeds 2.5\,g for more than 300\,ms; the queue is cleared if no new peak acceleration occurs within a 10\,s timeout. These threshold values are currently fixed design parameters, pending empirical calibration against self-collected fall simulations, and are adjustable via the Strategy Pattern sensitivity profiles (Section~\ref{sec:strategy}).
+The \texttt{PRE\_FALL} flag is set when \(|a|\) exceeds 2.5\,g for more than 300\,ms; the queue is cleared if no new peak acceleration occurs within a 10\,s timeout. These threshold values are currently fixed design parameters, pending empirical calibration against self-collected fall simulations, and are adjustable via the Strategy Pattern sensitivity profiles (Section~\ref{sec:strategy}).
 
 \subsection{Layer 2 - TFLite Micro CNN Inference}
 
@@ -97,55 +118,55 @@ The \texttt{PRE\_FALL} flag is set when $|a|$ exceeds 2.5\,g for more than 300\,
     \item START
 
     \item Initialize all hardware components:
-    \begin{itemize}
-        \item MPU6050 IMU (6-axis accelerometer + gyroscope)
-        \item ESP32-S3 microcontroller
-        \item Bluetooth Low Energy (BLE) radio
-        \item Laptop gateway (sole BLE receiver and sole SHAP/PDF compute)
-    \end{itemize}
+          \begin{itemize}
+              \item MPU6050 IMU (6-axis accelerometer + gyroscope)
+              \item ESP32-S3 microcontroller
+              \item Bluetooth Low Energy (BLE) radio
+              \item Laptop gateway (sole BLE receiver and sole SHAP/PDF compute)
+          \end{itemize}
 
     \item Calibrate the sensor:
-    \begin{itemize}
-        \item Read raw accelerometer and gyroscope values at rest.
-        \item Compute sensor bias/offset for calibration.
-        \item Store calibration constants for runtime correction.
-    \end{itemize}
+          \begin{itemize}
+              \item Read raw accelerometer and gyroscope values at rest.
+              \item Compute sensor bias/offset for calibration.
+              \item Store calibration constants for runtime correction.
+          \end{itemize}
 
     \item Continuous sensor sampling loop:
-    \begin{itemize}
-        \item Sample MPU6050 at 200\,Hz over I\textsuperscript{2}C via direct register access.
-        \item Push the raw sample into a circular sliding window buffer, continuously overwritten.
-    \end{itemize}
+          \begin{itemize}
+              \item Sample MPU6050 at 200\,Hz over I\textsuperscript{2}C via direct register access.
+              \item Push the raw sample into a circular sliding window buffer, continuously overwritten.
+          \end{itemize}
 
     \item Fall detection loop:
-    \begin{enumerate}
-        \item Compute resultant acceleration magnitude $|a|$ on every ISR tick.
-        \item Apply Layer~1 threshold check: $|a| > 2.5$\,g sustained for $>$300\,ms latches \texttt{PRE\_FALL}.
-        \item If threshold is not exceeded: discard, return to Step~4.
-        \item If threshold is exceeded: copy the latched window, normalize, pass to Layer~2 (1D CNN classifier).
-        \item CNN outputs $P(\text{fall})$ and $P(\text{ADL})$ via softmax.
-        \item If $P(\text{fall}) > 0.85$: mark event as \texttt{CONFIRMED\_FALL}.
-        \item Else: mark as ADL (Activity of Daily Living) and return to Step~4.
-        \item Log detection result with timestamp on-device.
-    \end{enumerate}
+          \begin{enumerate}
+              \item Compute resultant acceleration magnitude \(|a|\) on every ISR tick.
+              \item Apply Layer~1 threshold check: \(|a| > 2.5\)\,g sustained for \(>\)300\,ms latches \texttt{PRE\_FALL}.
+              \item If threshold is not exceeded: discard, return to Step~4.
+              \item If threshold is exceeded: copy the latched window, normalize, pass to Layer~2 (1D CNN classifier).
+              \item CNN outputs \(P(\text{fall})\) and \(P(\text{ADL})\) via softmax.
+              \item If \(P(\text{fall}) > 0.85\): mark event as \texttt{CONFIRMED\_FALL}.
+              \item Else: mark as ADL (Activity of Daily Living) and return to Step~4.
+              \item Log detection result with timestamp on-device.
+          \end{enumerate}
 
     \item Event publishing and transmission:
-    \begin{itemize}
-        \item Serialize the \texttt{CONFIRMED\_FALL} event as JSON per the locked wire format (Section~\ref{sec:ble_transmission}).
-        \item Transmit over BLE directly to the laptop gateway --- no broker or intermediate network hop.
-    \end{itemize}
+          \begin{itemize}
+              \item Serialize the \texttt{CONFIRMED\_FALL} event as JSON per the locked wire format (Section~\ref{sec:ble_transmission}).
+              \item Transmit over BLE directly to the laptop gateway --- no broker or intermediate network hop.
+          \end{itemize}
 
     \item Gateway event processing:
-    \begin{itemize}
-        \item The gateway's BLE receiver ingests the incoming event, running locally on the laptop.
-        \item Run SHAP attribution on the six peak IMU features to identify which channels drove the CNN's decision.
-    \end{itemize}
+          \begin{itemize}
+              \item The gateway's BLE receiver ingests the incoming event, running locally on the laptop.
+              \item Run SHAP attribution on the six peak IMU features to identify which channels drove the CNN's decision.
+          \end{itemize}
 
     \item Incident report generation:
-    \begin{itemize}
-        \item Compile PDF report containing: timestamp, CNN confidence score, SHAP attribution chart, and signature block.
-        \item Save the report locally on the gateway, readable by the phone display client over the local network.
-    \end{itemize}
+          \begin{itemize}
+              \item Compile PDF report containing: timestamp, CNN confidence score, SHAP attribution chart, and signature block.
+              \item Save the report locally on the gateway, readable by the phone display client over the local network.
+          \end{itemize}
 
     \item Return to Step~4 and continue continuous monitoring.
 
@@ -166,9 +187,9 @@ On \texttt{CONFIRMED\_FALL}, the ESP32-S3 serializes the event as a JSON payload
 Three sensitivity profiles are implemented as configurable parameter sets, adjustable without a firmware reflash:
 
 \begin{itemize}
-	\item \textbf{HighSensitivity} (elderly, bed-ridden): Layer 1 threshold $|a|_{\text{spike}} = 2.0$\,g, rest duration 200\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.75$.
-	\item \textbf{Standard} (default): $|a|_{\text{spike}} = 2.5$\,g, rest duration 300\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.85$.
-	\item \textbf{SportMode} (active ADL): $|a|_{\text{spike}} = 3.0$\,g, rest duration 400\,ms; \allowbreak Layer 2 threshold $P(\text{FALL}) \allowbreak > 0.90$.
+    \item \textbf{HighSensitivity} (elderly, bed-ridden): Layer 1 threshold \(|a|_{\text{spike}} = 2.0\)\,g, rest duration 200\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.75\).
+    \item \textbf{Standard} (default): \(|a|_{\text{spike}} = 2.5\)\,g, rest duration 300\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.85\).
+    \item \textbf{SportMode} (active ADL): \(|a|_{\text{spike}} = 3.0\)\,g, rest duration 400\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.90\).
 \end{itemize}
 
 \section{Machine Learning Pipeline}
@@ -177,43 +198,43 @@ Three sensitivity profiles are implemented as configurable parameter sets, adjus
 
 Training data is sourced from two complementary datasets:
 \begin{itemize}
-	\item \textbf{SisFall Benchmark Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types across 38 subjects (23 young adults, 15 older adults) recorded at 200\,Hz. Processed via \path{training/data_prep/prepare_sisfall.py} into \textbf{38,426 standardized $200 \times 6$ sliding windows} ($1.0$\,s duration, 50\% overlap during impact intervals).
-	\item \textbf{Nepal Cohort Dataset (KEC Protocol)}: Standardized 34-activity protocol (15 fall types across 8 biomechanical mechanisms and 19 diverse ADLs) recorded with the SPARK wearable node at 200\,Hz dorsal wrist placement across $N=12\text{--}20$ volunteers at Kathmandu Engineering College.
+    \item \textbf{SisFall Benchmark Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types across 38 subjects (23 young adults, 15 older adults) recorded at 200\,Hz. Processed via \path{training/data_prep/prepare_sisfall.py} into \textbf{38,426 standardized \(200 \times 6\) sliding windows} (\(1.0\)\,s duration, 50\% overlap during impact intervals).
+    \item \textbf{Nepal Cohort Dataset (KEC Protocol)}: Standardized 34-activity protocol (15 fall types across 8 biomechanical mechanisms and 19 diverse ADLs) recorded with the SPARK wearable node at 200\,Hz dorsal wrist placement across \(N=12\text{--}20\) volunteers at Kathmandu Engineering College.
 \end{itemize}
 Per-channel StandardScaler normalization coefficients (mean and standard deviation per axis) are computed on the training fold and baked into the embedded firmware as constant arrays.
 
 \subsection{5-Point Sensitivity \& Generalization Optimization Suite}
 
-To maximize fall detection sensitivity ($\ge 90\%$) while preventing overfitting and impact clipping, the training pipeline incorporates five systematic enhancements:
+To maximize fall detection sensitivity (\(\ge 90\%\)) while preventing overfitting and impact clipping, the training pipeline incorporates five systematic enhancements:
 \begin{enumerate}
-    \item \textbf{Optimal Decision Threshold Calibration}: Rather than using a fixed 0.50 cutoff, the operating threshold is dynamically calibrated on the validation split using Youden's $J$ statistic:
-    \begin{equation}
-        J(\tau) = \operatorname{Sens}(\tau) + \operatorname{Spec}(\tau) - 1
-    \end{equation}
-    The optimal operating threshold $\tau^* \in [0.35, 0.45]$ is saved to \texttt{model\_config.json} and flashed to the runtime firmware.
-    \item \textbf{Class-Balanced Calibration Sampling}: The representative dataset for INT8 post-training quantization samples exactly 50\% FALL and 50\% NON\_FALL windows to prevent high-$g$ impact peak clipping during integer scale/zero-point quantization.
-    \item \textbf{Time-Series Data Augmentation}: Synthetic kinematic variance is introduced during training: temporal shifts ($\pm 5$ samples / $\pm 25$\,ms), sensor magnitude scaling ($\pm 5\%$), and Gaussian noise jitter, improving generalization across different subject wrist dynamics.
-    \item \textbf{Positive Class Loss Weighting \& Focal Loss}: False negatives (missed falls) carry severe clinical consequences compared to false alarms. Positive class loss weighting ($1.25\times\text{--}1.5\times$) and Focal Loss ($\gamma=2.0, \alpha=0.75$) penalize hard-to-classify fall examples.
-    \item \textbf{Regularization (Dropout \& Batch Normalization)}: Spatial dropout ($p=0.20$) stabilizes convolutional filter representations without altering MCU inference memory contracts.
+    \item \textbf{Optimal Decision Threshold Calibration}: Rather than using a fixed 0.50 cutoff, the operating threshold is dynamically calibrated on the validation split using Youden's \(J\) statistic:
+          \begin{equation}
+              J(\tau) = \operatorname{Sens}(\tau) + \operatorname{Spec}(\tau) - 1
+          \end{equation}
+          The optimal operating threshold \(\tau^* \in [0.35, 0.45]\) is saved to \texttt{model\_config.json} and flashed to the runtime firmware.
+    \item \textbf{Class-Balanced Calibration Sampling}: The representative dataset for INT8 post-training quantization samples exactly 50\% FALL and 50\% NON\_FALL windows to prevent high-\(g\) impact peak clipping during integer scale/zero-point quantization.
+    \item \textbf{Time-Series Data Augmentation}: Synthetic kinematic variance is introduced during training: temporal shifts (\(\pm 5\) samples / \(\pm 25\)\,ms), sensor magnitude scaling (\(\pm 5\%\)), and Gaussian noise jitter, improving generalization across different subject wrist dynamics.
+    \item \textbf{Positive Class Loss Weighting \& Focal Loss}: False negatives (missed falls) carry severe clinical consequences compared to false alarms. Positive class loss weighting (\(1.25\times\text{--}1.5\times\)) and Focal Loss (\(\gamma=2.0, \alpha=0.75\)) penalize hard-to-classify fall examples.
+    \item \textbf{Regularization (Dropout \& Batch Normalization)}: Spatial dropout (\(p=0.20\)) stabilizes convolutional filter representations without altering MCU inference memory contracts.
 \end{enumerate}
 
 \subsection{1D CNN Training \& Leakage-Free Evaluation}
 
-The 1D CNN is trained using a strict subject-grouped split ($80\%$ train, $10\%$ validation, $10\%$ test) ensuring all trials from any given subject reside exclusively in one split. On the 38,426 SisFall windows, the baseline model achieves \textbf{87.81\% tuned sensitivity} and \textbf{0.9185 AUC-ROC} on unseen subjects. 
+The 1D CNN is trained using a strict subject-grouped split (\(80\%\) train, \(10\%\) validation, \(10\%\) test) ensuring all trials from any given subject reside exclusively in one split. On the 38,426 SisFall windows, the baseline model achieves \textbf{87.81\% tuned sensitivity} and \textbf{0.9185 AUC-ROC} on unseen subjects.
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{fig_cnn_architecture.png}
-	\caption{SPARK 1D CNN architecture: two Conv1D+MaxPool blocks compress the 200-sample IMU window to a 12-step feature map, which is flattened and classified by a Dense+Softmax head. INT8 quantized for TFLite Micro deployment.}
-	\label{fig:cnn_arch}
+    \centering
+    \includegraphics[width=\textwidth]{fig_cnn_architecture.png}
+    \caption{SPARK 1D CNN architecture: two Conv1D+MaxPool blocks compress the 200-sample IMU window to a 12-step feature map, which is flattened and classified by a Dense+Softmax head. INT8 quantized for TFLite Micro deployment.}
+    \label{fig:cnn_arch}
 \end{figure}
 
 \subsection{Partial-Freeze Transfer Learning for Nepal Cohort}
 
-To adapt the model to the Nepali cohort while bridging the elderly kinematic gap ($8\text{--}12$\,g youth vs.\ $3.5\text{--}6$\,g elderly impact spikes), SPARK utilizes a \textbf{Partial-Freeze Fine-Tuning} strategy:
+To adapt the model to the Nepali cohort while bridging the elderly kinematic gap (\(8\text{--}12\)\,g youth vs.\ \(3.5\text{--}6\)\,g elderly impact spikes), SPARK utilizes a \textbf{Partial-Freeze Fine-Tuning} strategy:
 \begin{itemize}
     \item The low-level convolutional feature extractors (Conv1D Blocks 1 \& 2) pre-trained on SisFall are frozen.
-    \item The dense classification head is fine-tuned on the local dorsal wrist dataset ($N=12\text{--}20$).
+    \item The dense classification head is fine-tuned on the local dorsal wrist dataset (\(N=12\text{--}20\)).
 \end{itemize}
 This prevents catastrophic forgetting and avoids overfitting on small regional sample sizes.
 
@@ -223,7 +244,7 @@ Post-training quantization converts the trained TensorFlow model into an integer
 \begin{equation}
     q = \text{round}\left(\frac{r}{S}\right) + Z
 \end{equation}
-The quantized model occupies \textbf{18.5\,KB} in flash ($87.7\%$ compression vs.\ FP32) and is exported as a 16-byte aligned C array (\texttt{spark\_cnn\_int8.h}), integrated directly into \texttt{firmware/main/app\_main.cpp}.
+The quantized model occupies \textbf{18.5\,KB} in flash (\(87.7\%\) compression vs.\ FP32) and is exported as a 16-byte aligned C array (\texttt{spark\_cnn\_int8.h}), integrated directly into \texttt{firmware/main/app\_main.cpp}.
 
 \section{Gateway Software Implementation}
 
@@ -233,7 +254,7 @@ The gateway BLE receiver (\texttt{gateway/receiver/receiver.py}) is implemented 
 
 \subsection{Local Companion SHAP Explainability Engine}
 
-The gateway executes gradient-based feature attribution ($X \times \nabla_X Y$, \texttt{CnnShapExplainer}) against the trained Keras model, producing relative percentage attributions across all six kinetic channels within $<1$\,ms via OpenVINO.
+The gateway executes gradient-based feature attribution (\(X \times \nabla_X Y\), \texttt{CnnShapExplainer}) against the trained Keras model, producing relative percentage attributions across all six kinetic channels within \(<1\)\,ms via OpenVINO.
 
 \subsection{Automated Clinical PDF Incident Report Generation}
 
@@ -267,7 +288,7 @@ The codebase maintains 48 comprehensive automated unit tests (\texttt{uv run pyt
 \subsection{On-Hardware Latency \& Power Profiling}
 
 \begin{itemize}
-    \item \textbf{End-to-End Latency}: Verified via GPIO toggles on ESP32-S3 (Layer~1 trigger to BLE dispatch $<200$\,ms).
-    \item \textbf{Power Consumption}: On-bench measurement across continuous active vs.\ event-gated BLE modes ($35\text{--}60$\,mA target).
-    \item \textbf{ADL False-Positive Rejection}: 100-trial ADL battery to guarantee false-positive rate $\le 10\%$.
+    \item \textbf{End-to-End Latency}: Verified via GPIO toggles on ESP32-S3 (Layer~1 trigger to BLE dispatch \(<200\)\,ms).
+    \item \textbf{Power Consumption}: On-bench measurement across continuous active vs.\ event-gated BLE modes (\(35\text{--}60\)\,mA target).
+    \item \textbf{ADL False-Positive Rejection}: 100-trial ADL battery to guarantee false-positive rate \(\le 10\%\).
 \end{itemize}

@@ -12,7 +12,7 @@
 .EXAMPLE
     .\sync.ps1                               # Fully automated: commit & push to all remotes
     .\sync.ps1 -m "feat(training): message"  # Uses custom conventional commit message
-    .\sync.ps1 -SkipBuild                    # Sync but skip LaTeX PDF compilation
+    .\sync.ps1 -Build                        # Build thesis_report.tex PDF first, then sync
     .\sync.ps1 -PullOnly                     # Only pull without committing/pushing
 #>
 
@@ -21,9 +21,6 @@ param (
     [string]$Message,
 
     [switch]$PullOnly,
-
-    [Alias("Skip", "NoBuild", "SkipPdf")]
-    [switch]$SkipBuild,
 
     [switch]$Build
 )
@@ -295,13 +292,8 @@ if (-not $currentBranch) {
     $currentBranch = "main"
 }
 
-# Determine whether to build PDF
-$shouldBuild = -not $SkipBuild
-if ($PSBoundParameters.ContainsKey('Build') -and -not $Build) {
-    $shouldBuild = $false
-}
-
-if ($shouldBuild) {
+# Build PDF only when -Build is explicitly requested
+if ($Build) {
     Invoke-ThesisPdfBuild
     $pdfPath = "docs/SPARK_Proposal/ThesisReports/thesis_report.pdf"
     if (-not (Test-Path $pdfPath)) {
@@ -310,7 +302,7 @@ if ($shouldBuild) {
     }
     Clear-IgnoredArtifacts
 } else {
-    Write-Host "[Git Sync] Skipping thesis PDF build." -ForegroundColor DarkGray
+    Write-Host "[Git Sync] Skipping thesis PDF build (use -Build to compile)." -ForegroundColor DarkGray
 }
 
 Write-Host "[Git Sync] Pulling latest changes from origin $currentBranch..." -ForegroundColor Cyan
