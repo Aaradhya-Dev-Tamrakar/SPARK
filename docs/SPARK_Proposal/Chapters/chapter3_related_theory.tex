@@ -34,7 +34,6 @@ A local companion laptop (Acer Swift Go 16, equipped with an Intel Core Ultra 7 
     \item \textbf{Intel Arc GPU (DirectX 12)}: $0.200$\,ms per window ($4{,}993$\,windows/s).
     \item \textbf{Intel AI Boost NPU}: $0.383$\,ms per window ($2{,}610$\,windows/s) for ultra-low-power continuous background monitoring.
 \end{itemize}
-This guarantees sub-millisecond companion inference and rapid PDF incident generation entirely on local premises.
 
 \subsection{Phone Display Client \& Local Server}
 
@@ -68,7 +67,6 @@ The wearable node is powered by a 3.7\,V nominal 1100\,mAh Li-ion pouch cell pai
 
 \subsection{Two-Layer Gated Detection Architecture}
 
-The detection pipeline implements a deterministic, gated dual-layer architecture:
 \begin{enumerate}
     \item \textbf{Layer 1 (Deterministic Threshold Pre-filter)}: Continuously executes within the 200\,Hz ISR. It computes the resultant acceleration magnitude:
     \begin{equation}
@@ -80,7 +78,6 @@ The detection pipeline implements a deterministic, gated dual-layer architecture
 
 \subsection{1D CNN Architecture \& INT8 Quantization}
 
-The 1D CNN architecture comprises two convolutional feature-extraction blocks followed by a compact classification head:
 \begin{itemize}
     \item \textbf{Input Layer}: $200 \times 6$ tensor (200 time steps across $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$).
     \item \textbf{Block 1}: Conv1D (32 filters, kernel size 5, stride 1) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D (pool size 2, stride 2) $\rightarrow$ Dropout (0.20).
