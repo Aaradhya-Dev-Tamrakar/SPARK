@@ -54,5 +54,6 @@ Thumbs.db
 *.lot
 *.out
 *.synctex.gz
+*.synctex(busy)
 *.toc
 !docs/SPARK_Proposal/ThesisReports/thesis_report.pdf
