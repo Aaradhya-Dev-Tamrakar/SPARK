@@ -52,3 +52,33 @@ Single-piece open-back forearm enclosure, silhouette inspired by a bracer/vambra
 
 ---
 
+## DI-03 — Canonical 270° C-Shell Enclosure (Merged ChatGPT + Gemini)
+
+- **Status:** **Canonical Engineering Reference** — supersedes DI-01 and DI-02.
+- **Date logged:** 2026-08-22
+- **Primary asset:** [`dev_logs/design-assets/SPARK_270deg_C_Shell_Design_DI03.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/dev_logs/design-assets/SPARK_270deg_C_Shell_Design_DI03.md)
+- **Render assets:**
+  - [`enclosure_concept_v2_gemini_270deg.jpg`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/dev_logs/design-assets/enclosure_concept_v2_gemini_270deg.jpg) — Gemini exploded/assembly render
+  - [`enclosure_concept_v2_chatgpt_270deg.jpg`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/dev_logs/design-assets/enclosure_concept_v2_chatgpt_270deg.jpg) — ChatGPT orthographic design sheet
+- **Source:** Parallel ChatGPT + Gemini design explorations from the same engineering prompt, best elements merged and validated against Track 10 DFM research.
+
+**Concept summary:**
+270° C-shaped cross-section (NOT full wraparound bracer). Three-quarter forearm coverage with 90° open ventral gap bridged by a single wide Velcro strap. Three-part mechanical architecture: main C-shell + removable Zone 2 dorsal lid + replaceable proximal USB port insert.
+
+**Key design decisions resolved:**
+- **Zone 1 IMU mounting:** Friction-fit pocket with 0.2–0.4 mm interference ribs — no screws (too thin for bosses per Track 10).
+- **Zone 2 component layout:** Lateral distribution using 270° arc width, not vertical stacking, to minimize profile height.
+- **Screw bosses:** 4–6× M2.5 in Zone 2 only. 9 mm OD, 6–7 mm blind standoff. Heat-set insert contingency designed in.
+- **USB panel:** Replaceable modular insert (two versions: dual USB-C or USB-C + Micro-USB) resolving TP4056 connector TBD.
+- **LED visibility:** Locally thinned TPU (3.5 → 0.8 mm) as diffuser — no separate light pipe.
+- **Print orientation:** Vertical (Z-axis along forearm axis), support-free design with 45° chamfers.
+
+**Updated cost estimate (3.5 mm walls):** ~70–75 cm³, ~85–91 g, NPR 360–400 (8–11 hr print). Previous 18.5 cm³ / NPR 90 estimate invalidated.
+
+**Open blockers before Fusion 360:**
+1. ⚠ ESP32-S3 power input path (TP4056 outputs raw 3.0–4.2V, not regulated 5V).
+2. TP4056 connector type confirmation.
+3. Exact ESP32-S3 board caliper measurements.
+4. TPU 95A screw test coupon.
+
+---
