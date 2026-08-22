@@ -27,6 +27,7 @@ This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetic
 4. **Single Sources of Truth (SSOT)**:
    - **Procurement & BOM**: [`docs/SPARK_Component_Order_Form.xlsx`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_Component_Order_Form.xlsx).
    - **Project Decisions & Status**: [`dev_logs/SPARK_TRACKER.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/dev_logs/SPARK_TRACKER.md).
+   - **Thesis Figures & Assets (Google Drive)**: [SPARK Figures Drive](https://drive.google.com/drive/u/0/folders/1kOiDLc77xED4q5rOCQgz22sy2Uml5lAG).
    - **Deep-Research Evidence Base (19 Tracks)**: [`docs/SPARK_research_board_merged.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_research_board_merged.md).
    - **Post-Boards Resumption Roadmap**: [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
 

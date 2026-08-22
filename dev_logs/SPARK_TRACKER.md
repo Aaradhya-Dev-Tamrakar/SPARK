@@ -1,12 +1,24 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v55)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v56)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 22, 2026 (v55 — Nepal Cohort Data Collection Setup, Firmware Logger, CLI Ingestion & Transfer Learning Pipeline Completed) ·
+**Last updated:** August 22, 2026 (v56 — Thesis Figures Verified, Draw.io XML Sources Added & Google Drive Asset Repository Linked) ·
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+
+**v56 change log (August 22, 2026 — Thesis Figures Redesigned, Draw.io Integration & Drive Link):**
+
+- **Thesis Diagram Audit & Redesign Completed:**
+  - `fig_system_flow.png` (Fig 5.1): Redesigned with orthogonal, non-overlapping straight lines reflecting locked ESP32-S3 + BLE GATT + Laptop (OpenVINO) architecture.
+  - `fig_two_layer_flow.png` (Fig 5.2): Redesigned with 200 Hz ISR rate, dual-phase Layer 1 threshold pre-filter, and dedicated outer loopback return to eliminate line crossings.
+  - `fig_cnn_architecture.png` (Fig 5.3): Redesigned with exact Conv1D ($k=5, k=3$) + GlobalAveragePooling1D + Dense(32) layers matching `train_cnn.py`.
+  - Added editable `.drawio.xml` sources alongside images in `docs/SPARK_Proposal/Figures/`.
+- **Project Assets & Google Drive Link Registered:**
+  - Cloud Figures & Design Assets Folder: [SPARK Figures Google Drive](https://drive.google.com/drive/u/0/folders/1kOiDLc77xED4q5rOCQgz22sy2Uml5lAG)
+- **Automated Thesis PDF Compilation in Sync Routine:**
+  - `sync.ps1`: Integrated automatic `pdflatex` compilation (2 passes) before sync cleanup and git push.
 
 **v55 change log (August 22, 2026 — Nepal Cohort Data Collection Setup, Transfer Learning & LaTeX Sync):**
 
