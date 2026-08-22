@@ -217,6 +217,9 @@ function Invoke-ThesisPdfBuild {
                 $null = & pdflatex -interaction=nonstopmode $thesisTex 2>&1
                 $null = & pdflatex -interaction=nonstopmode $thesisTex 2>&1
 
+                # Brief pause so Windows releases file handles on .aux/.log/.toc etc.
+                Start-Sleep -Seconds 2
+
                 if (Test-Path "thesis_report.pdf") {
                     Write-Host "[Git Sync] Thesis PDF compiled successfully." -ForegroundColor Green
                 } else {
@@ -240,10 +243,36 @@ function Clear-IgnoredArtifacts {
     $cleanupPaths = @(
         "docs/SPARK_Proposal/ThesisReports"
     )
+    # LaTeX auxiliary extensions to remove (thesis_report.pdf is kept)
+    $auxExtensions = @("*.aux","*.bbl","*.blg","*.fdb_latexmk","*.fls","*.idx",
+                       "*.ilg","*.ind","*.lof","*.log","*.lot","*.out",
+                       "*.synctex.gz","*.synctex(busy)","*.toc")
+
     foreach ($path in $cleanupPaths) {
         if (Test-Path $path) {
-            Write-Host "[Git Sync] Cleaning gitignored build artifacts in $path..." -ForegroundColor DarkCyan
-            git clean -fdX $path
+            Write-Host "[Git Sync] Cleaning LaTeX build artifacts in $path..." -ForegroundColor DarkCyan
+            $removed = 0
+            foreach ($ext in $auxExtensions) {
+                $files = Get-ChildItem -Path $path -Filter $ext -File -ErrorAction SilentlyContinue
+                foreach ($f in $files) {
+                    # Retry up to 3 times in case Windows still holds a file lock
+                    for ($attempt = 1; $attempt -le 3; $attempt++) {
+                        try {
+                            Remove-Item -Path $f.FullName -Force -ErrorAction Stop
+                            $removed++
+                            break
+                        } catch {
+                            if ($attempt -lt 3) {
+                                Start-Sleep -Milliseconds 500
+                            }
+                            # Silently skip on final attempt — file is gitignored anyway
+                        }
+                    }
+                }
+            }
+            if ($removed -gt 0) {
+                Write-Host "[Git Sync] Removed $removed build artifact(s)." -ForegroundColor DarkCyan
+            }
         }
     }
 }
@@ -325,4 +354,13 @@ foreach ($target in $TargetRemotes) {
     }
 }
 
-Write-Host "[Git Sync] All repositories are clean and fully synchronized!" -ForegroundColor Green
+# Post-sync verification
+$remaining = @(git status --porcelain 2>$null | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+if ($remaining.Count -gt 0) {
+    Write-Host "[Git Sync] Warning: $($remaining.Count) file(s) still have uncommitted changes:" -ForegroundColor Yellow
+    foreach ($r in $remaining) {
+        Write-Host "           $r" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "[Git Sync] All repositories are clean and fully synchronized!" -ForegroundColor Green
+}
