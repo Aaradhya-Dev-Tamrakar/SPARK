@@ -295,9 +295,6 @@ if (-not $currentBranch) {
     $currentBranch = "main"
 }
 
-Write-Host "[Git Sync] Pulling latest changes from origin $currentBranch..." -ForegroundColor Cyan
-git pull --autostash origin $currentBranch
-
 # Determine whether to build PDF
 $shouldBuild = -not $SkipBuild
 if ($PSBoundParameters.ContainsKey('Build') -and -not $Build) {
@@ -306,10 +303,18 @@ if ($PSBoundParameters.ContainsKey('Build') -and -not $Build) {
 
 if ($shouldBuild) {
     Invoke-ThesisPdfBuild
+    $pdfPath = "docs/SPARK_Proposal/ThesisReports/thesis_report.pdf"
+    if (-not (Test-Path $pdfPath)) {
+        Write-Host "[Git Sync] Error: Thesis PDF build failed or thesis_report.pdf is missing. Aborting sync." -ForegroundColor Red
+        exit 1
+    }
     Clear-IgnoredArtifacts
 } else {
     Write-Host "[Git Sync] Skipping thesis PDF build." -ForegroundColor DarkGray
 }
+
+Write-Host "[Git Sync] Pulling latest changes from origin $currentBranch..." -ForegroundColor Cyan
+git pull --autostash origin $currentBranch
 
 if ($PullOnly) {
     Write-Host "[Git Sync] Pull complete (PullOnly flag set)." -ForegroundColor Green
