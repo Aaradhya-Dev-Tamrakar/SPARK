@@ -331,14 +331,16 @@ if ([string]::IsNullOrWhiteSpace($Message)) {
     }
 }
 
-# Check if there are local uncommitted changes
+# Check if there are local uncommitted changes (staging everything first ensures binary/modified files like the PDF are captured)
+Write-Host "[Git Sync] Staging changes..." -ForegroundColor Cyan
+git add -A
+
 $hasLocalChanges = [bool](git status --porcelain 2>$null)
 
 if ($hasLocalChanges -and -not [string]::IsNullOrWhiteSpace($Message)) {
     Update-TrackerLog -CommitMsg $Message
-
-    Write-Host "[Git Sync] Staging changes..." -ForegroundColor Cyan
-    git add .
+    # Re-stage if tracker was modified
+    git add -A
 
     Write-Host "[Git Sync] Committing: '$Message'..." -ForegroundColor Cyan
     git commit -m "$Message"
