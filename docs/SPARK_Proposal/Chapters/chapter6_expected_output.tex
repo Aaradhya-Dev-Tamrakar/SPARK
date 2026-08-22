@@ -1,4 +1,4 @@
-\chapter{\scshape Expected Output}\label{chap:expected_output}
+\chapter{Expected Output}\label{chap:expected_output}
 
 The project transitions from foundational research and simulation to physical cohort data collection, model fine-tuning, and end-to-end clinical validation.
 
@@ -16,9 +16,9 @@ The project transitions from foundational research and simulation to physical co
 \subsection{Software \& Machine Learning Deliverables}
 
 \begin{enumerate}
-    \item \textbf{Autonomous Dual-Layer Firmware} (ESP-IDF/PlatformIO C++): Continuous 200\,Hz IMU sampling, Layer~1 software threshold pre-filter ($|a|>2.5$\,g, $>300$\,ms), and on-device TFLite Micro inference.
+    \item \textbf{Edge Firmware Pipeline} (ESP-IDF/PlatformIO C++): Continuous 200\,Hz IMU sampling, Layer~1 software threshold pre-filter ($|a|>2.5$\,g, $>300$\,ms), and on-device TFLite Micro inference.
     \item \textbf{Quantized INT8 1D CNN Model}: Ultra-compact \textbf{18.5\,KB} FlatBuffer and C-header array (\texttt{spark\_cnn\_int8.h}) trained under leakage-free subject-grouped splits on 38,426 SisFall windows ($87.81\%$ sensitivity, $0.9185$ AUC-ROC).
-    \item \textbf{Local Companion Gateway Suite}: Asynchronous GATT BLE receiver (\texttt{BleReceiver}), gradient-based XAI explainer (\texttt{CnnShapExplainer}), and automated one-page clinical PDF generator (\texttt{ReportLab}) verified across 4 fall archetypes.
+    \item \textbf{Companion Gateway Suite}: Asynchronous GATT BLE receiver (\texttt{BleReceiver}), gradient-based XAI explainer (\texttt{CnnShapExplainer}), and automated one-page clinical PDF generator (\texttt{ReportLab}) verified across 4 fall archetypes.
     \item \textbf{Zero-Dependency REST Server \& Web Dashboard}: Standalone HTTP server (\texttt{gateway/server.py}) providing live incident monitoring and PDF downloads for care staff.
     \item \textbf{Nepal Cohort Wearable Dataset \& Protocol}: Standardized 34-activity protocol (15 falls, 19 ADLs) across $N=12\text{--}20$ volunteers at KEC, published as an open-access regional benchmark.
     \item \textbf{Comprehensive Open-Source Repository}: Complete codebase with 48 automated test suites passing cleanly, CI validation scripts, and reproducibility documentation.
@@ -37,8 +37,8 @@ While SPARK's primary wearable node operates autonomously, indoor residential se
 The 6-axis edge kinetic pipeline can be extended to aquatic safety and drowning mitigation by adapting temporal feature extractors:
 \begin{itemize}
     \item \textbf{Stroke Cadence Monitoring}: Continuous cyclic analysis ($0.4\text{--}1.6$\,Hz) tracking normal swimming biomechanics.
-    \item \textbf{Instinctive Drowning Response (IDR) Detection}: High-frequency vertical arm pressing ($>2.5$\,Hz without forward displacement) triggering distress flags.
-    \item \textbf{Submersion Immobility Timeout}: Vertical orientation stillness exceeding $15$\,seconds triggering emergency acoustic/radio alarms.
+    \item \textbf{Instinctive Drowning Response (IDR) Detection}: High-frequency vertical arm pressing ($>2.5$\,Hz with no forward displacement) triggering distress flags.
+    \item \textbf{Submersion Immobility Timeout}: Vertical orientation stillness exceeding $15$\,s triggering emergency acoustic/radio alarms.
 \end{itemize}
 
 \subsection{Client-Side Encrypted Telemetry Storage}

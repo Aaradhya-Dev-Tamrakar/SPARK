@@ -92,7 +92,7 @@ To provide clinicians with transparent, auditable decision rationale without clo
 \begin{equation}
     \phi_c(t) = x_c(t) \cdot \frac{\partial P(\text{FALL})}{\partial x_c(t)}
 \end{equation}
-where $x_c(t)$ represents the normalized input signal for IMU channel $c \in \{a_x, a_y, a_z, \omega_x, \omega_y, \omega_z\}$ at time $t$. Summing channel attributions yields relative kinetic importance:
+where $x_c(t)$ represents the normalized input signal at time $t$ for IMU channel $c \in \{a_x, a_y, a_z,$ $\omega_x, \omega_y, \omega_z\}$. Summing channel attributions yields relative kinetic importance:
 \begin{equation}
     \Phi_c = \frac{\sum_{t=1}^{T} |\phi_c(t)|}{\sum_{k=1}^{6} \sum_{t=1}^{T} |\phi_k(t)|} \times 100\%
 \end{equation}
@@ -102,7 +102,7 @@ This allows the gateway to automatically identify biomechanical fall archetypes 
 
 The gateway codebase adheres to Object-Oriented Software Engineering (OOSE) design patterns:
 \begin{itemize}
-    \item \textbf{Factory Pattern}: \texttt{get\_explainer()} dynamically instantiates either \texttt{CnnShapExplainer} (full waveform attribution) or \texttt{PeakFeatureExplainer} (compact telemetry fallback).
+    \item \textbf{Factory Pattern}: Dynamically instantiates the full waveform explainer (\texttt{Cnn\-Shap\-Explainer}) or the compact fallback explainer (\texttt{Peak\-Feature\-Explainer}).
     \item \textbf{Observer Pattern}: The asynchronous BLE GATT receiver (\texttt{BleReceiver}) acts as Subject, notifying subscribed Observers (\texttt{ShapPipeline}, \texttt{PdfReportGenerator}, \texttt{JsonEventStore}) upon validated event arrival.
     \item \textbf{Strategy Pattern}: \texttt{FallDetectionStrategy} encapsulates sensitivity parameters (High, Standard, SportMode) loaded dynamically without firmware re-flashing.
 \end{itemize}

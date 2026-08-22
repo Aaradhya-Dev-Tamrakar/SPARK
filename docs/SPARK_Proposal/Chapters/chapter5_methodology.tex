@@ -177,7 +177,7 @@ Three sensitivity profiles are implemented as configurable parameter sets, adjus
 
 Training data is sourced from two complementary datasets:
 \begin{itemize}
-	\item \textbf{SisFall Benchmark Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types across 38 subjects (23 young adults, 15 older adults) recorded at 200\,Hz. Processed via \texttt{training/data\_prep/prepare\_sisfall.py} into \textbf{38,426 standardized $200 \times 6$ sliding windows} ($1.0$\,s duration, 50\% overlap during impact intervals).
+	\item \textbf{SisFall Benchmark Dataset} \cite{sucerquia2017sisfall}: 15 fall types + 19 ADL types across 38 subjects (23 young adults, 15 older adults) recorded at 200\,Hz. Processed via \path{training/data_prep/prepare_sisfall.py} into \textbf{38,426 standardized $200 \times 6$ sliding windows} ($1.0$\,s duration, 50\% overlap during impact intervals).
 	\item \textbf{Nepal Cohort Dataset (KEC Protocol)}: Standardized 34-activity protocol (15 fall types across 8 biomechanical mechanisms and 19 diverse ADLs) recorded with the SPARK wearable node at 200\,Hz dorsal wrist placement across $N=12\text{--}20$ volunteers at Kathmandu Engineering College.
 \end{itemize}
 Per-channel StandardScaler normalization coefficients (mean and standard deviation per axis) are computed on the training fold and baked into the embedded firmware as constant arrays.
@@ -188,9 +188,9 @@ To maximize fall detection sensitivity ($\ge 90\%$) while preventing overfitting
 \begin{enumerate}
     \item \textbf{Optimal Decision Threshold Calibration}: Rather than using a fixed 0.50 cutoff, the operating threshold is dynamically calibrated on the validation split using Youden's $J$ statistic:
     \begin{equation}
-        J(\tau) = \text{Sensitivity}(\tau) + \text{Specificity}(\tau) - 1
+        J(\tau) = \operatorname{Sens}(\tau) + \operatorname{Spec}(\tau) - 1
     \end{equation}
-    The optimal operating threshold ($\tau^* \approx 0.35\text{--}0.45$) is exported to \texttt{model\_config.json} and flashed to the runtime firmware.
+    The optimal operating threshold $\tau^* \in [0.35, 0.45]$ is saved to \texttt{model\_config.json} and flashed to the runtime firmware.
     \item \textbf{Class-Balanced Calibration Sampling}: The representative dataset for INT8 post-training quantization samples exactly 50\% FALL and 50\% NON\_FALL windows to prevent high-$g$ impact peak clipping during integer scale/zero-point quantization.
     \item \textbf{Time-Series Data Augmentation}: Synthetic kinematic variance is introduced during training: temporal shifts ($\pm 5$ samples / $\pm 25$\,ms), sensor magnitude scaling ($\pm 5\%$), and Gaussian noise jitter, improving generalization across different subject wrist dynamics.
     \item \textbf{Positive Class Loss Weighting \& Focal Loss}: False negatives (missed falls) carry severe clinical consequences compared to false alarms. Positive class loss weighting ($1.25\times\text{--}1.5\times$) and Focal Loss ($\gamma=2.0, \alpha=0.75$) penalize hard-to-classify fall examples.
