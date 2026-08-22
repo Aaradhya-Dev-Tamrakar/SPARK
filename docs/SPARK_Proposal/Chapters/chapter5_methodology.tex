@@ -19,7 +19,7 @@ SPARK consists of two physical subsystems: a battery-powered wearable node and a
 The wearable node (ESP32-S3 + MPU6050) acquires raw 6-axis IMU data at 200\,Hz and runs the two-layer fall detection pipeline entirely on-device. On a confirmed fall, a JSON event payload is transmitted to the laptop gateway over BLE. The laptop ingests the event, computes SHAP attribution, and auto-generates a PDF clinical incident report --- entirely locally, with no cloud round-trip or persistent database. A companion phone display client reads the completed report from the laptop over the local network. Figure~\ref{fig:system_flow} illustrates the end-to-end data and control flow across all pipeline stages.
 
 
-Figure~\ref{fig:system_flow} is organized into three zones connected by two link types  solid arrows for sequential on-device processing, and a dashed BLE boundary where the wearable node hands off to the gateway. Each block is described below.
+Figure~\ref{fig:system_flow} is organized into three zones connected by two link types  solid arrows for sequential on-device processing, and a dashed BLE boundary where the wearable node hands off to the gateway.
 
 \textbf{Sensor zone (wearable node, solid fill hatch)}
 \begin{itemize}
@@ -45,7 +45,7 @@ Figure~\ref{fig:system_flow} is organized into three zones connected by two link
 
 \subsection{Wearable Node Assembly}
 
-The wearable node is assembled on a breadboard for the prototype phase, transitioning to a compact perfboard layout prior to the March 2027 demonstration. The assembly sequence is:
+The wearable node is assembled on a breadboard for the prototype phase, transitioning to a compact perfboard layout prior to the March 2027 demonstration.
 
 \begin{enumerate}
 	\item Connect the MPU6050 to the ESP32-S3 via I$^2$C: SDA to GPIO~21, SCL to GPIO~22, operating at 400\,kHz.
@@ -91,8 +91,6 @@ The \texttt{PRE\_FALL} flag is set when $|a|$ exceeds 2.5\,g for more than 300\,
 
 
 \section{Algorithm}
-
-The following steps describe the workflow of the SPARK fall detection system:
 
 \begin{enumerate}
 
@@ -239,7 +237,7 @@ The gateway executes gradient-based feature attribution ($X \times \nabla_X Y$, 
 
 \subsection{Automated Clinical PDF Incident Report Generation}
 
-Using ReportLab, the gateway instantly compiles a formal one-page clinical PDF report per incident, featuring:
+Using ReportLab, the gateway compiles a formal one-page clinical PDF report per incident, featuring:
 \begin{itemize}
     \item Header block (Institution, Device ID, Firmware version, Timestamp).
     \item Fall detection confidence badge and threshold status.

@@ -38,8 +38,6 @@ This project focuses on building a wearable fall detection system that combines 
 
 \section{Scope of the Project}\label{sec:scope}
 
-The scope of our project includes:
-
 \begin{itemize}
     \item \textbf{Continuous On-Device Data Acquisition:} Sampling 6-axis accelerometer and gyroscope data directly on the wearable node at a continuous 200\,Hz frequency over I$^2$C with a circular sliding-window ring buffer.
     \item \textbf{Dual-Layer Gated Edge Inference:} Layer~1 software threshold pre-filter ($|a| > 2.5$\,g for $>300$\,ms) running in the 200\,Hz ISR, gating Layer~2 quantized INT8 1D CNN inference ($18.5$\,KB footprint) only upon potential fall impact.
@@ -58,7 +56,7 @@ The scope of our project includes:
 
 \item Elderly Care Facilities \& Nursing Homes: Optimizes institutional care by allowing a small staff footprint to respond instantly to high-priority fall alerts.
 
-\item Smart Home \& IoT Integration: Functions as a localized, network-independent safety module that interfaces seamlessly with residential intranet hubs.
+\item Smart Home \& IoT Integration: Functions as a localized, network-independent safety module that interfaces with residential intranet hubs.
 
 \item Clinical Documentation \& Compliance Monitoring: Automatically logs and formats objective, auditable incident data required for formal medical reports and facility compliance audits.
 
