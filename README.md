@@ -19,8 +19,11 @@
 
 ## 📊 Project Progress & Roadmap
 
+> [!NOTE]
+> **Board Exam Pause (August 22, 2026)**: Active development paused for board examinations. All context, 19-track deep-research synthesis, and phase-by-phase post-boards execution roadmap preserved in [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
+
 ```
-Overall Integrated Progress: [█████████░░░░░░░░░░░] 45% (Core ML/Gateway Complete; Hardware, CAD & Mobile UI Pending)
+Overall Integrated Progress: [█████████░░░░░░░░░░░] 45% (Core ML/Gateway/Research Complete; Hardware Assembly, CAD, Nepal Cohort & Mobile UI Pending)
 ```
 
 ### Module Breakdown by Assignee
@@ -30,6 +33,7 @@ Overall Integrated Progress: [█████████░░░░░░░�
 | **ML Modeling & Quantization** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | SisFall ingestion, 1D CNN ($0.9185$ AUC-ROC), $18.5\text{ KB}$ INT8 quantizer & C-header export. |
 | **Gateway & SHAP Subsystem** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | BLE client, multi-scenario SHAP explainer, PDF reports, and local REST server. |
 | **Protocol & BOM Architecture** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | `WIRE_FORMAT_v1.md`, `DATA_COLLECTION_PROTOCOL.md`, and order form locked. |
+| **Deep-Research Synthesis (19 Tracks)** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | Novelty claims narrowed (1, 3, 4), ML strategy locked (Focal Loss), protocol mapped (F09–F15, D15–D19), power budget sharpened, DFM guidelines, venue targets (ICACT 2027). |
 | **Physical ESP32-S3 Firmware** | **Rupesh Kadel** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Host C++ tests pass, but **0% physical progress** (awaiting board delivery for on-chip I2C/BLE & silicon inference). |
 | **Enclosure CAD & 3D Printing** | **Sankalpa Lamsal** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Concept art only; **0% CAD progress** (no `.step`/`.stl` parametric model, no TPU slicer profile, no prints). |
 | **Layer 3 Mobile Display Client** | **Sonia Thapa** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Gateway backend REST API ready; **0% mobile UI progress** (no mobile app or frontend client built yet). |
@@ -136,7 +140,7 @@ SPARK/
 ├── training/                     # Machine Learning & Data Pipelines
 │   ├── data_prep/                # Dataset ingestion scripts (prepare_sisfall.py)
 │   ├── notebooks/                # ML exploration & classical baselines (RF / XGBoost)
-│   ├── train_cnn.py              # Primary 1D CNN training pipeline (93.58% AUC-ROC)
+│   ├── train_cnn.py              # Primary 1D CNN training pipeline ($0.9185$ AUC-ROC)
 │   ├── quantize_model.py         # INT8 post-training quantizer & C header exporter
 │   └── requirements.txt          # ML training Python dependencies
 │
@@ -164,16 +168,18 @@ SPARK/
 │   └── .gitkeep
 │
 ├── docs/                         # Specifications & Academic Reports
-│   ├── CHANGELOG.md              # Project change log (v54)
+│   ├── CHANGELOG.md              # Project change log (v55)
 │   ├── DATA_COLLECTION_PROTOCOL.md # Nepal cohort human-subject trial protocol
 │   ├── WIRE_FORMAT_v1.md         # Locked BLE event protocol schema
+│   ├── SPARK_POST_BOARDS_MASTER_PLAN.md # Post-boards resumption roadmap & context archive
+│   ├── SPARK_research_board_merged.md   # 19-track deep-research evidence base
 │   ├── SPARK_Component_Order_Form.xlsx # Canonical hardware BOM procurement spreadsheet
 │   ├── SPARK_Presentation_Mid_Term_Defense_v6.pptx # Mid-term defense slide deck
 │   └── SPARK_Proposal/           # Complete LaTeX thesis proposal source
 │       └── ThesisReports/        # LaTeX report (thesis_report.tex, compiling to PDF)
 │
 └── dev_logs/                     # Engineering Journals & Design Assets
-    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v54)
+    ├── SPARK_TRACKER.md          # Single source of truth master project tracker (v55)
     └── design-assets/            # 3D CAD references, master design sheet (v2), and walkthroughs
 ```
 

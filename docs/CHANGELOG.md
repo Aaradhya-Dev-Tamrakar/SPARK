@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Data architecture guide: `data/README.md`.
 - Licensing: `LICENSE` (MIT).
 
+## [v55] - 2026-08-22
+### Deep-Research Synthesis & Board Exam Pause
+- **19-Track Deep-Research Synthesis (`docs/SPARK_research_board_merged.md`)**: Completed and merged 19 focused research tracks covering novelty claim narrowing (Claims 1, 3, 4), ML sensitivity strategy (Focal Loss over architecture swap), SisFall protocol mapping (F09–F15, D15–D19), cohort sample sizing ($N=12\text{--}20$), TPU 95A DFM guidelines (brass heat-set inserts), power budget sharpening ($90\text{--}130\text{ mA}$ active, $35\text{--}60\text{ mA}$ event-gated BLE), commercial landscape analysis, and publication venue identification (ICACT 2027 / IEEE Healthcom).
+- **Post-Boards Master Resumption Plan (`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`)**: Created comprehensive context preservation archive and 5-phase execution roadmap (Protocol Lockdown → Hardware Logger Rig → Nepal Cohort Collection → Transfer Learning & Quantization → Live Validation & Defense) for resumption after board examinations.
+- **Tracker Updated**: Added board exam pause notice and post-boards plan cross-reference to `dev_logs/SPARK_TRACKER.md`.
+
+---
+
 ## [v54] - 2026-08-20
 ### Pipeline Execution & Explainability
 - **Full Workflow Execution**: End-to-end pipeline run from SisFall dataset extraction (38,426 windows), subject-grouped 1D CNN training ($0.9185$ AUC-ROC), and INT8 quantization ($18.5\text{ KB}$ flash) to firmware C-header export.
