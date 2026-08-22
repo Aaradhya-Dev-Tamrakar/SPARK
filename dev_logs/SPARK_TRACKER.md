@@ -18,7 +18,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 - **Project Assets & Google Drive Link Registered:**
   - Cloud Figures & Design Assets Folder: [SPARK Figures Google Drive](https://drive.google.com/drive/u/0/folders/1kOiDLc77xED4q5rOCQgz22sy2Uml5lAG)
 - **Automated Thesis PDF Compilation in Sync Routine:**
-  - `sync.ps1`: Integrated automatic `pdflatex` compilation (2 passes) before sync cleanup and git push.
+  - `sync.ps1`: Integrated `pdflatex` compilation (2 passes) as an opt-in step via `-Build` flag before sync cleanup and git push (removed auto-build default).
 
 **v55 change log (August 22, 2026 — Nepal Cohort Data Collection Setup, Transfer Learning & LaTeX Sync):**
 
@@ -34,7 +34,7 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
   - Updated all proposal chapters (`Chapters/chapter1_introduction.tex` through `chapter6_expected_output.tex`, `abbreviations.tex`, `references_manual.tex`, `appendix.tex`) with latest empirical benchmarks, 19-track deep research findings, and $18.5\text{ KB}$ INT8 models.
   - Verified clean PDF compilation (`thesis_report.pdf`, 44 pages).
 - **Automated Repository Synchronization:**
-  - `sync.ps1`: Added `Clean-IgnoredArtifacts` to automatically delete LaTeX build junk (`.aux`, `.log`, `.out`, etc.) from `docs/SPARK_Proposal/ThesisReports/` on every sync.
+  - `sync.ps1`: Added `Clean-IgnoredArtifacts` to delete LaTeX build junk (`.aux`, `.log`, `.out`, etc.) from `docs/SPARK_Proposal/ThesisReports/` after a `-Build` run (not on every sync).
 
 **v54 change log (August 20, 2026 — End-to-End Pipeline, Diverse Fall Archetypes & Aquatic Roadmap):**
 

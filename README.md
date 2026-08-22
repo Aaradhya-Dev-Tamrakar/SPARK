@@ -234,6 +234,9 @@ To maintain clean conventional commits and keep `SPARK_TRACKER.md` synchronized,
 # Sync with a custom conventional commit message
 .\sync.ps1 -m "feat(training): optimize CNN hyperparameters"
 
+# Build thesis_report.tex PDF first, then sync
+.\sync.ps1 -Build
+
 # Pull only (with autostash) without committing
 .\sync.ps1 -PullOnly
 ```

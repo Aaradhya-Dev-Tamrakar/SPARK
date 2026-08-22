@@ -11,4 +11,5 @@ uv run ruff format
 
 # Repository synchronization
 .\sync.ps1 -m "feat(scope): message"
+.\sync.ps1 -Build           # compile thesis PDF first, then sync
 ```

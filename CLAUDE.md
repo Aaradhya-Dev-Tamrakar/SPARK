@@ -42,6 +42,7 @@ latexmk -pdf thesis_report.tex
 # Auto-staged conventional commit & rebase push
 .\sync.ps1
 .\sync.ps1 -m "feat(training): message"
+.\sync.ps1 -Build           # compile thesis_report.tex PDF first, then sync
 .\sync.ps1 -PullOnly
 ```
 
