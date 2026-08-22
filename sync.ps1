@@ -109,6 +109,31 @@ function Update-TrackerLog {
     }
 }
 
+function Build-ThesisPdf {
+    $thesisDir = "docs/SPARK_Proposal/ThesisReports"
+    $thesisTex = "thesis_report.tex"
+    if (Test-Path "$thesisDir/$thesisTex") {
+        if (Get-Command pdflatex -ErrorAction SilentlyContinue) {
+            Write-Host "[Git Sync] Compiling thesis PDF ($thesisTex)..." -ForegroundColor Cyan
+            Push-Location $thesisDir
+            try {
+                # Two passes to resolve cross-references, TOC, and lists of figures/tables
+                pdflatex -interaction=nonstopmode $thesisTex | Out-Null
+                pdflatex -interaction=nonstopmode $thesisTex | Out-Null
+                if (Test-Path "thesis_report.pdf") {
+                    Write-Host "[Git Sync] Thesis PDF compiled successfully." -ForegroundColor Green
+                }
+            } catch {
+                Write-Host "[Git Sync] Warning: LaTeX build encountered an error: $_" -ForegroundColor Yellow
+            } finally {
+                Pop-Location
+            }
+        } else {
+            Write-Host "[Git Sync] pdflatex not found on PATH, skipping PDF build." -ForegroundColor DarkGray
+        }
+    }
+}
+
 function Clean-IgnoredArtifacts {
     $cleanupPaths = @(
         "docs/SPARK_Proposal/ThesisReports"
@@ -126,7 +151,8 @@ Ensure-RemotesConfigured
 Write-Host "[Git Sync] Pulling latest changes from origin main..." -ForegroundColor Cyan
 git pull --autostash origin main
 
-# Automatically clean gitignored LaTeX build artifacts in targeted directories
+# Build thesis PDF and clean up auxiliary files
+Build-ThesisPdf
 Clean-IgnoredArtifacts
 
 if ($PullOnly) {

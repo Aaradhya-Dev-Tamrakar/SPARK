@@ -8,8 +8,6 @@
 
 \subsection{ESP32-S3 Microcontroller}
 
-\subsection{ESP32-S3 Microcontroller}
-
 The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtensa LX7 microcontroller operating at up to 240\,MHz, featuring 512\,KB internal SRAM, 16\,MB external quad-SPI flash, vector instructions for neural network acceleration, and integrated Bluetooth~5 (LE). For SPARK, only the BLE subsystem is used for gateway communication, while the Wi-Fi radio is disabled to minimize energy consumption. The ESP32-S3 executes both the sensor acquisition ISR at 200\,Hz and the two-layer fall detection pipeline (including TFLite Micro CNN inference) within the on-chip SRAM envelope. Full INT8 post-training quantization compresses the 1D CNN model footprint to \textbf{18.5\,KB} of flash ($87.7\%$ compression vs.\ FP32), leaving extensive headroom for the Arduino/ESP-IDF framework, BLE stack, and circular sliding-window buffers.
 
 \begin{figure}[H]
