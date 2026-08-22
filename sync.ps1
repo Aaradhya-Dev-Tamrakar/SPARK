@@ -12,6 +12,8 @@
 .EXAMPLE
     .\sync.ps1                               # Fully automated: commit & push to all remotes
     .\sync.ps1 -m "feat(training): message"  # Uses custom conventional commit message
+    .\sync.ps1 -SkipBuild                    # Sync but skip LaTeX PDF compilation
+    .\sync.ps1 -Skip -Build                  # Also skips PDF compilation
     .\sync.ps1 -PullOnly                     # Only pull without committing/pushing
 #>
 
@@ -19,7 +21,12 @@ param (
     [Alias("m")]
     [string]$Message,
 
-    [switch]$PullOnly
+    [switch]$PullOnly,
+
+    [Alias("Skip", "NoBuild", "SkipPdf")]
+    [switch]$SkipBuild,
+
+    [switch]$Build
 )
 
 $ErrorActionPreference = "Continue"
@@ -30,7 +37,7 @@ $TargetRemotes = @(
     @{ Name = "aaradhyadt"; Url = "https://github.com/AaradhyaDT/SPARK.git" }
 )
 
-function Ensure-RemotesConfigured {
+function Initialize-RemotesConfigured {
     $existingRemotes = git remote
     foreach ($target in $TargetRemotes) {
         if ($existingRemotes -notcontains $target.Name) {
@@ -109,7 +116,7 @@ function Update-TrackerLog {
     }
 }
 
-function Build-ThesisPdf {
+function Invoke-ThesisPdfBuild {
     $thesisDir = "docs/SPARK_Proposal/ThesisReports"
     $thesisTex = "thesis_report.tex"
     if (Test-Path "$thesisDir/$thesisTex") {
@@ -134,7 +141,7 @@ function Build-ThesisPdf {
     }
 }
 
-function Clean-IgnoredArtifacts {
+function Clear-IgnoredArtifacts {
     $cleanupPaths = @(
         "docs/SPARK_Proposal/ThesisReports"
     )
@@ -146,14 +153,18 @@ function Clean-IgnoredArtifacts {
     }
 }
 
-Ensure-RemotesConfigured
+Initialize-RemotesConfigured
 
 Write-Host "[Git Sync] Pulling latest changes from origin main..." -ForegroundColor Cyan
 git pull --autostash origin main
 
-# Build thesis PDF and clean up auxiliary files
-Build-ThesisPdf
-Clean-IgnoredArtifacts
+# Build thesis PDF and clean up auxiliary files (unless skipped)
+if (-not $SkipBuild) {
+    Invoke-ThesisPdfBuild
+    Clear-IgnoredArtifacts
+} else {
+    Write-Host "[Git Sync] Skipping thesis PDF build." -ForegroundColor DarkGray
+}
 
 if ($PullOnly) {
     Write-Host "[Git Sync] Pull complete (PullOnly flag set)." -ForegroundColor Green
