@@ -4,24 +4,32 @@
 
 \chapter{\scshape Literature Review}
 
-Fall detection using wearable inertial sensors has been an active research area for over two decades. The literature can be broadly categorized by detection approach: threshold-based methods, machine learning classifiers, and more recent deep learning architectures.
+Fall detection using wearable inertial sensors has been an active research area for over two decades. The literature can be categorized across multiple architectural and computational axes: threshold-based methods, classical machine learning, always-on edge neural networks, distributed server-offloaded gating, hardware-interrupt gating, and emerging explainable AI (XAI) frameworks.
 
-\textbf{Threshold-based methods} compute a scalar magnitude from accelerometer axes --- typically the resultant $|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}$ and trigger a fall event when a spike followed by a quiet period is detected. Kangas et al.\ \cite{kangas2008comparison} compared multiple threshold algorithms on hip and wrist IMU data and reported sensitivity values of 73--95\% depending on placement, but with false-positive rates exceeding 30\% on vigorous ADLs. Bourke and Lyons \cite{bourke2008threshold} proposed a dual-axis threshold method achieving 96\% sensitivity, though specificity on sit-to-stand transitions remained problematic. The fundamental limitation of threshold-only approaches is that any rapid motion --- vigorous exercise, dropping an object, stumbling without falling --- can trigger the threshold, requiring either a very high threshold (missing genuine falls) or a low threshold (excessive false positives).
+\textbf{Threshold-based methods} compute a scalar magnitude from accelerometer axes --- typically the resultant $|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}$ --- and trigger a fall event when a spike followed by a quiet period is detected. Kangas et al.\ \cite{kangas2008comparison} compared multiple threshold algorithms on hip and wrist IMU data and reported sensitivity values of 73--95\% depending on placement, but with false-positive rates exceeding 30\% on vigorous ADLs. Bourke and Lyons \cite{bourke2008threshold} proposed a dual-axis threshold method achieving 96\% sensitivity, though specificity on sit-to-stand transitions remained poor. The fundamental limitation of threshold-only approaches is that rapid voluntary motions (e.g., sitting down quickly, stumbling without falling) trigger the threshold, forcing an intractable trade-off between sensitivity and false alarms.
 
-\textbf{Machine learning classifiers} applied to hand-crafted time-domain and frequency-domain features from IMU windows have addressed some of these limitations. Sucerquia et al.\ published the SisFall dataset \cite{sucerquia2017sisfall}, a widely used benchmark containing 15 fall types and 19 ADL types from 38 subjects, enabling standardized evaluation of feature-based classifiers. Support vector machines, decision trees, and random forests trained on SisFall features have achieved sensitivity above 90\%, but these approaches typically run on a connected laptop or server, not on the wearable hardware itself.
+\textbf{Machine learning classifiers} applied to hand-crafted time- and frequency-domain features from IMU windows addressed several threshold limitations. Sucerquia et al.\ published the SisFall dataset \cite{sucerquia2017sisfall}, a standard benchmark containing 15 fall types and 19 ADL types from 38 subjects. Classical classifiers (SVM, Random Forest) trained on SisFall features achieved sensitivity above 90\%, but were evaluated offline or on high-power host computers rather than wearable microcontrollers.
 
-\textbf{Deep learning on IMU time-series} has demonstrated superior accuracy without manual feature engineering. Nho et al.\ \cite{nho2021cnn} trained a 1D CNN on the UCI MHEALTH dataset and SisFall combined, reporting sensitivity of 97.2\% and specificity of 98.1\% with a model that fits within 150\,KB. However, the model ran on a Raspberry Pi 3 serving as the wearable compute unit, not on a resource-constrained microcontroller. Wang et al.\ \cite{wang2020lstm} applied an LSTM architecture to continuous IMU streams, achieving comparable accuracy but with inference latency unsuitable for real-time detection on embedded hardware.
+\textbf{Always-on edge deep learning} has eliminated manual feature engineering by feeding raw multi-axis IMU streams directly into embedded neural networks. David et al.\ \cite{david2021tensorflow} demonstrated the viability of INT8-quantized CNNs under 320\,KB RAM using TensorFlow Lite Micro. Recent works have targeted wearable microcontrollers directly: Yu et al.\ \cite{yu2023tinycnn} introduced TinyCNN running continuously on an Arduino Nano 33 BLE Sense (37\,ms latency, $>98\%$ specificity), while Hu et al.\ \cite{hu2025microfallnet} developed MicroFallNet on ESP32-S3 (14\,ms latency, 9.6\,KB footprint). However, these architectures operate as \textit{always-on} inference engines, executing the neural network continuously across every sliding window regardless of activity, creating unnecessary active-power drain on wearable batteries.
 
-\textbf{TFLite Micro on microcontrollers} has enabled CNN deployment on devices with fewer than 320\,KB of RAM. David et al.\ \cite{david2021tensorflow} demonstrated keyword spotting and gesture recognition using TFLite Micro on Cortex-M4 class hardware, establishing the feasibility of INT8 quantized CNN inference in this memory envelope. Kumar et al.\ \cite{kumar2022fall} deployed a threshold-gated classifier on an Arduino Nano~33~BLE Sense, but did not combine on-device TFLite Micro CNN inference with a structured two-layer gating architecture or provide any gateway explainability.
+\textbf{Distributed gating vs.\ single-chip execution:} To conserve power, two-stage gating architectures have been proposed, but existing designs split execution across network tiers. Xu et al.\ \cite{xu2021fusion} implemented a threshold-based module (TBM) on an MSP430 wearable node, but explicitly offloaded the subsequent CNN confirmation to a remote server. Other recent works similarly use LoRa or RF links to trigger heavy neural networks or vision models on remote compute nodes. While effective at reducing on-node compute, these distributed schemes introduce critical network latencies and failure points unacceptable in low-connectivity South Asian eldercare environments.
 
-\textbf{Explainability in health AI} has been identified as a critical gap for clinical adoption. Lundberg and Lee \cite{lundberg2017shap} introduced SHAP (SHapley Additive exPlanations), a unified framework for model interpretability based on cooperative game theory, which provides consistent attribution of each input feature's contribution to a model output. While SHAP has been applied to ECG classification \cite{yao2021interpretation} and sepsis prediction in clinical ML, no published wearable fall detection system applies SHAP attribution at the per-event level and surfaces the result to caregivers in a clinical dashboard.
+\textbf{Hardware wake vs.\ continuous software ISR gating:} A hardware alternative to continuous software monitoring is the IMU-native wake-on-motion interrupt. Alvarez et al.\ \cite{sensors2025wearable} configured an LSM6DSO IMU in wake-on-shake mode to hold an STM32WB5MM MCU in low-power STOP mode until disturbed. While ultra-low power, hardware interrupts lack temporal duration filtering and suffer from high false wake-ups during arm swings. In contrast, SPARK executes a continuous 200\,Hz software magnitude-and-duration gate within the MCU ISR without sleeping, maintaining complete temporal awareness before invoking the CNN.
 
-\textbf{Gap summary:} The existing literature leaves the following cluster of gaps unaddressed simultaneously: (a) on-device TFLite Micro CNN inference in a two-layer gated architecture on a sub-\$5 microcontroller; (b) SHAP-based per-event explainability surfaced to caregivers; (c) adaptive sensitivity profiles without firmware reflash; and (d) a dataset collected from Nepali subjects on locally procurable hardware. SPARK addresses all four gaps in a single open-source system.
+\textbf{Custom silicon and FPGA accelerators:} Cross-tier hybrid architectures such as Vigil \cite{vigil2024fpga} combine probabilistic CNNs and k-NN classifiers on custom RISC-V SoCs synthesized on FPGAs. While achieving same-chip multi-stage execution, their hardware complexity and fabrication cost place them far above the sub-\$5 commodity microcontroller tier targeted by SPARK.
+
+\textbf{Explainability in wearable health AI:} Clinical adoption of AI systems demands transparent decision rationale. Lundberg and Lee \cite{lundberg2017shap} established SHAP as a mathematically rigorous attribution framework based on cooperative game theory. In health informatics, SHAP has been applied to ECG classification \cite{yao2021interpretation} and general Human Activity Recognition (HAR). Kundu et al.\ \cite{kundu2025explainable} surveyed XAI in HAR, noting that prior works (e.g., Liu et al.\ \cite{liu2024explainable} using KernelSHAP on CNN-LSTMs, and Arul et al. on XGBoost) perform heavy model-agnostic permutations offline on generic activity classes (walking, standing). No published system executes real-time gradient-based feature attribution ($X \times \nabla_X Y$) on a local companion gateway specifically tailored for clinical fall event audits.
+
+\textbf{Gap Summary \& Academic Novelty:} SPARK addresses these limitations through two core defensible contributions:
+\begin{enumerate}
+\item \textbf{On-Device Gated Pipeline (Claim 1):} Combining a continuous software magnitude-and-duration threshold gate with an INT8 quantized 1D CNN confirmation, both executing entirely on a single sub-\$5 MCU (ESP32-S3) with zero classification offload.
+\item \textbf{Local Companion-Gateway XAI (Claim 3):} Real-time gradient attribution ($X \times \nabla_X Y$) and automated 1-page clinical PDF reporting executing locally on a companion gateway laptop with zero cloud dependencies.
+\end{enumerate}
 
 \begingroup
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{longtable}{|p{0.7in}|p{1.4in}|p{1.5in}|p{1.5in}|}
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|p{0.8in}|p{1.3in}|p{1.6in}|p{1.7in}|}
 \caption{Literature Review Matrix} \label{tab:litreview} \\
 \hline
 \textbf{Authors} & \textbf{Paper Title (Year)} & \textbf{Key Contribution} & \textbf{Motivation / Adopted Concepts} \\
@@ -42,57 +50,63 @@ Fall detection using wearable inertial sensors has been an active research area 
 \endlastfoot
 
 Kangas et al.\ \cite{kangas2008comparison} &
-Comparison of Low-Complexity Fall Detection Algorithms for Body-Attached Accelerometers (2008) &
-Compares threshold algorithms on hip/wrist IMU data; 73--95\% sensitivity depending on placement, false-positive rate $>$30\% on vigorous ADLs. &
-Motivated Layer 1 threshold gating in SPARK's two-layer architecture, with awareness that threshold alone is insufficient. \\
+Low-Complexity Fall Detection (2008) &
+Threshold algorithms on hip/wrist IMU; 73--95\% sensitivity, false-positive rate $>$30\% on ADLs. &
+Motivated Layer~1 threshold gating; demonstrated that threshold alone is insufficient. \\
 \hline
 
 Bourke \& Lyons \cite{bourke2008threshold} &
-Evaluation of a Threshold-Based Tri-Axial Accelerometer Fall Detection Algorithm (2008) &
-Dual-axis threshold method reaching 96\% sensitivity; specificity poor on sit-to-stand transitions. &
-Confirmed the need for a learned classifier stage beyond threshold gating alone. \\
+Threshold-Based Tri-Axial Fall Detection (2008) &
+Dual-axis threshold method reaching 96\% sensitivity; poor specificity on sit-to-stand. &
+Confirmed the necessity of a learned classifier confirmation stage. \\
 \hline
 
 Sucerquia et al.\ \cite{sucerquia2017sisfall} &
-SisFall: A Fall and Movement Dataset (2017) &
-Public benchmark: 15 fall types, 19 ADL types, 38 subjects. &
-Adopted as SPARK's primary training dataset, paired with self-collected Nepal-context data. \\
+SisFall: Fall \& Movement Dataset (2017) &
+Public benchmark: 15 fall types, 19 ADL types, 38 subjects at 200\,Hz. &
+Adopted as SPARK's primary training and baseline evaluation benchmark. \\
 \hline
 
-Nho, Lim \& Kwon \cite{nho2021cnn} &
-Deep Convolutional Neural Network for Fall Detection Using Inertial Sensor Data from Wearable Devices (2021) &
-1D CNN on UCI MHEALTH + SisFall; 97.2\% sensitivity, 98.1\% specificity, model fits in 150\,KB, but ran on Raspberry Pi 3. &
-Motivated SPARK's on-device TFLite Micro target instead of an SBC-class compute unit. \\
-\hline
-
-Wang et al.\ \cite{wang2020lstm} &
-LSTM-Based Fall Detection System Using Wearable Sensors (2020) &
-LSTM on continuous IMU streams; accuracy comparable to CNN but with latency unsuitable for real-time embedded use. &
-Informed SPARK's choice of CNN over LSTM for the MCU inference stage. \\
+Xu et al.\ \cite{xu2021fusion} &
+Fusion Fall Detection Algorithm (2021) &
+Two-stage gating (TBM on MSP430), but explicitly offloads CNN confirmation to a remote server. &
+Provides direct architectural contrast: SPARK executes both gate and CNN on the same single MCU. \\
 \hline
 
 David et al.\ \cite{david2021tensorflow} &
-TensorFlow Lite Micro: Embedded Machine Learning for TinyML Systems (2021) &
-Demonstrates INT8-quantized CNN inference under 320\,KB RAM on Cortex-M4-class hardware (keyword spotting, gesture recognition). &
-Directly adopted as SPARK's inference runtime (ESP32-S3 + TFLite Micro CNN). \\
+TensorFlow Lite Micro (2021) &
+Demonstrated INT8 quantized CNN inference under 320\,KB RAM on Cortex-M4 class MCUs. &
+Adopted as the embedded runtime engine for SPARK Layer~2 inference on ESP32-S3. \\
 \hline
 
-Kumar, Sharma \& Singh \cite{kumar2022fall} &
-Microcontroller-Based Fall Detection for Elderly Monitoring Using a Threshold-Gated Classifier on Arduino Nano 33 BLE Sense (2022) &
-Threshold-gated classifier deployed and evaluated entirely on-device, but without TFLite Micro CNN inference or explainability. &
-Motivated closing this exact gap: on-device CNN inference plus gating plus explainability, together. \\
+Yu et al.\ \cite{yu2023tinycnn} &
+TinyCNN Wearable Fall Detection (2023) &
+Always-on 1D CNN on Arduino Nano 33 BLE (37\,ms latency, $>98\%$ specificity); no pre-gating. &
+Serves as benchmark for edge CNN efficiency; highlights SPARK's power-saving pre-filter gate. \\
+\hline
+
+Hu et al.\ \cite{hu2025microfallnet} &
+MicroFallNet for Smart Wristbands (2025) &
+Ultra-lightweight CNN on ESP32-S3 (14\,ms latency, 9.6\,KB model); always-on continuous inference. &
+Confirms feasibility of ESP32-S3 CNN execution; SPARK adds Layer~1 gating to reduce active duty cycle. \\
+\hline
+
+Vigil et al.\ \cite{vigil2024fpga} &
+RISC-V SoC Hybrid Fall Detector (2024) &
+Two-fold hybrid CNN-kNN implemented on custom RISC-V SoC / FPGA hardware. &
+Demonstrates on-chip two-stage execution, but at high cost/complexity compared to SPARK's sub-\$5 MCU. \\
 \hline
 
 Lundberg \& Lee \cite{lundberg2017shap} &
-A Unified Approach to Interpreting Model Predictions (2017) &
-Introduces SHAP, a cooperative game-theoretic framework for consistent per-feature attribution. &
-Adopted as SPARK's explainability layer for per-event attribution surfaced to caregivers. \\
+Unified Approach to Interpreting Predictions (2017) &
+Introduces SHAP game-theoretic framework for consistent, axiomatic feature attribution. &
+Adopted as the mathematical foundation for SPARK's companion-gateway explainability engine. \\
 \hline
 
-Yao et al.\ \cite{yao2021interpretation} &
-Interpretation of Electrocardiogram Heartbeat by CNN and GRU (2021) &
-Applies SHAP to a clinical CNN+GRU ECG classifier; attribution highlighted physiologically plausible regions. &
-Confirms SHAP generalizes to real clinical deep-learning models; no prior fall-detection work applies it at the per-event level. \\
+Liu et al.\ \cite{liu2024explainable} &
+Explainable AI for Wearable HAR (2024) &
+Applies KernelSHAP to CNN-LSTM on UCI HAR dataset for offline accelerometer attribution. &
+Informed SPARK's XAI focus; SPARK advances to real-time gradient attribution ($X \times \nabla$) for clinical falls. \\
 \hline
 
 \end{longtable}

@@ -2,68 +2,75 @@
 % Appendix
 %======================
 
-\section*{A.1 \quad Self-Collected Dataset Protocol}
+\section*{A.1 \quad Nepal Cohort 34-Activity Data Collection Protocol}
 
-The SPARK self-collected dataset is recorded at KEC campus using the SPARK wearable node (ESP32 + MPU6050 at 100\,Hz). All four team members plus recruited volunteers act as subjects. The protocol defines four fall types and five ADL types as listed below.
+The SPARK self-collected dataset protocol is executed in the KEC Robotics / Electronics laboratory using high-density gymnastic crash mats ($20$\,cm thickness) with $N=12\text{--}20$ volunteers (sample size grounded in clinical pilot standards \cite{julious2005sample}). The protocol spans 34 activities:
 
-\textbf{Fall types (positive class):}
+\textbf{15 Fall Activities across 8 Biomechanical Mechanisms (Positive Class, 3 trials each):}
 \begin{itemize}
-    \item Forward trip fall --- simulated stumble onto a crash mat
-    \item Lateral fall (left) --- sideways fall onto crash mat
-    \item Lateral fall (right) --- sideways fall onto crash mat
-    \item Sitting-to-floor fall --- controlled seat loss from a chair
+    \item \textbf{Forward Falls (F01--F03)}: Trip while walking, slip on slick surface, stumble during recovery.
+    \item \textbf{Backward Falls (F04--F06)}: Slip on heels while walking, backward loss of balance from chair, sit-to-stand collapse.
+    \item \textbf{Lateral Falls (F07--F09)}: Left and right sideways slip while turning, stumbling sideways over obstacle.
+    \item \textbf{Syncope / Fainting Falls (F10--F12)}: Vertical collapse with delayed recovery, wall-sliding collapse.
+    \item \textbf{Rotational Twist Falls (F13--F15)}: Torso twist slip during rapid turn, ladder/step misstep twist.
 \end{itemize}
 
-\textbf{ADL types (negative class):}
+\textbf{19 Activities of Daily Living (ADLs) (Negative Class, 3--5 trials / 2-minute continuous blocks):}
 \begin{itemize}
-    \item Walking (normal pace, indoor)
-    \item Running (moderate pace, corridor)
-    \item Stair climbing (ascending and descending, KEC stairwell)
-    \item Sit-to-stand transition (chair, rapid)
-    \item Bending to pick up an object
+    \item \textbf{Locomotion (D01--D06)}: Slow walk, normal walk, fast brisk walk, jogging, ascending and descending stairs.
+    \item \textbf{Postural Transitions (D07--D12)}: Sitting on chair, standing up, lying on bed, getting up from bed, squatting, bending to tie shoes.
+    \item \textbf{Dynamic Upper-Limb ADLs (D13--D19)}: Vigorous clapping, arm waving, sweeping floor, drinking water, typing, coughing/sneezing while seated, stumbling with reflex recovery.
 \end{itemize}
 
-Each fall is repeated a minimum of 5 times per subject. ADL sequences are recorded in 2-minute continuous blocks. The node is worn on the dominant wrist during all recordings. Raw CSV output is labelled using a post-hoc annotation script keyed to the Layer~1 flag timestamp.
+The node is secured to the dorsal wrist ($x$: distal, $y$: anterior, $z$: dorsal normal) sampling 6 axes at 200\,Hz, outputting SisFall-compatible CSV schemas (`Ax, Ay, Az, Gx, Gy, Gz`).
 
-\section*{A.2 \quad ESP32 Hardware Connections}
+\section*{A.2 \quad Wearable Node Hardware Connections}
 
 \begin{table}[H]
     \centering
     \caption*{Wearable Node Pin Connections}
     \begin{tabular}{|l|l|l|}
         \hline
-        \textbf{Component} & \textbf{ESP32 Pin} & \textbf{Function} \\
+        \textbf{Module / Signal} & \textbf{ESP32-S3 Pin} & \textbf{Description / Level} \\
         \hline
-        MPU6050 SDA & GPIO 21 & I$^2$C Data \\
-        MPU6050 SCL & GPIO 22 & I$^2$C Clock \\
-        MPU6050 VCC & 3.3\,V rail & Power \\
-        MPU6050 GND & GND & Ground \\
-        INA219 SDA & GPIO 21 & I$^2$C Data (address 0x41) \\
-        INA219 SCL & GPIO 22 & I$^2$C Clock \\
-        INA219 VIN+ & After LDO output & Current sense (series) \\
-        TP4056 OUT+ & LDO AMS1117 IN & Battery regulated output \\
-        AMS1117-3.3 OUT & ESP32 VIN & 3.3\,V regulated supply \\
+        MPU6050 SDA & GPIO 21 (or GPIO 4) & I$^2$C Data (400\,kHz, 3.3\,V) \\
+        MPU6050 SCL & GPIO 22 (or GPIO 5) & I$^2$C Clock (400\,kHz, 3.3\,V) \\
+        MPU6050 INT & GPIO 6 & Hardware Motion Interrupt \\
+        MPU6050 VCC & 3.3\,V rail & Regulated 3.3\,V DC Supply \\
+        MPU6050 GND & GND & System Common Ground \\
+        TP4056 BAT+ & 3.7\,V Li-ion (+) & Pouch Cell Positive Terminal \\
+        TP4056 BAT-- & 3.7\,V Li-ion (--) & Pouch Cell Negative Terminal \\
+        TP4056 OUT+ & ESP32-S3 5V/VIN & Regulated Battery Input \\
+        TP4056 OUT-- & ESP32-S3 GND & Battery Ground Return \\
         \hline
     \end{tabular}
 \end{table}
 
-\section*{A.3 \quad PostgreSQL Schema}
+\section*{A.3 \quad JSON Wire Format Schema (BLE / REST)}
 
 \begin{verbatim}
-CREATE TABLE fall_events (
-    event_id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id            VARCHAR(64) NOT NULL,
-    timestamp          TIMESTAMPTZ NOT NULL,
-    layer1_flag        BOOLEAN NOT NULL,
-    layer2_confidence  FLOAT NOT NULL,
-    fall_confirmed     BOOLEAN NOT NULL,
-    ax_peak            FLOAT,
-    ay_peak            FLOAT,
-    az_peak            FLOAT,
-    severity_score     INT CHECK (severity_score BETWEEN 1 AND 5),
-    shap_top_feature   VARCHAR(32),
-    shap_json          JSONB,
-    alert_sent         BOOLEAN DEFAULT FALSE,
-    false_positive_flagged BOOLEAN DEFAULT FALSE
-);
+{
+  "event_id": "evt_20260822_001",
+  "device_id": "SPARK-01",
+  "firmware_version": "v1.2.0",
+  "timestamp_ms": 1787403200000,
+  "confidence": 0.942,
+  "fall_confirmed": true,
+  "peak_features": {
+    "ax_peak": 4.12,
+    "ay_peak": 1.85,
+    "az_peak": 8.34,
+    "gx_peak": 182.4,
+    "gy_peak": 341.2,
+    "gz_peak": 95.6
+  },
+  "shap_attribution": {
+    "az_peak": 0.421,
+    "gy_peak": 0.284,
+    "ax_peak": 0.152,
+    "gx_peak": 0.081,
+    "ay_peak": 0.042,
+    "gz_peak": 0.020
+  }
+}
 \end{verbatim}

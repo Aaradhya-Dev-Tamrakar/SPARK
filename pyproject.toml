@@ -41,7 +41,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gateway*", "training*"]
+include = ["gateway*", "training*", "tools*"]
 
 [tool.ruff]
 line-length = 100
@@ -74,10 +74,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["gateway", "training"]
+known-first-party = ["gateway", "training", "tools"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests", "gateway", "training"]
+pythonpath = ["."]
 python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]

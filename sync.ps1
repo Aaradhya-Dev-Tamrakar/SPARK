@@ -109,10 +109,25 @@ function Update-TrackerLog {
     }
 }
 
+function Clean-IgnoredArtifacts {
+    $cleanupPaths = @(
+        "docs/SPARK_Proposal/ThesisReports"
+    )
+    foreach ($path in $cleanupPaths) {
+        if (Test-Path $path) {
+            Write-Host "[Git Sync] Cleaning gitignored build artifacts in $path..." -ForegroundColor DarkCyan
+            git clean -fdX $path
+        }
+    }
+}
+
 Ensure-RemotesConfigured
 
 Write-Host "[Git Sync] Pulling latest changes from origin main..." -ForegroundColor Cyan
 git pull --autostash origin main
+
+# Automatically clean gitignored LaTeX build artifacts in targeted directories
+Clean-IgnoredArtifacts
 
 if ($PullOnly) {
     Write-Host "[Git Sync] Pull complete (PullOnly flag set)." -ForegroundColor Green

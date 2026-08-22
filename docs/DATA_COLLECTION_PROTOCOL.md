@@ -60,78 +60,91 @@ This protocol specifies the standardized procedure for recording human-subject k
 
 Each participant executes a total of **34 standardized activity trials** (15 falls and 19 activities of daily living).
 
-### 4.1 Fall Simulation Trials (15 Trials)
+### 4.1 Fall Simulation Trials (15 Trials across 8 Mechanisms)
 
-| Code | Activity Description | Execution Instructions |
-| :--- | :--- | :--- |
-| **F01** | Forward trip while walking | Walk 3 paces on approach, simulate tripping on obstacle, fall forward onto hands/mat. |
-| **F02** | Forward fall from slip | Walk forward, feet slip forward, fall forward/lateral onto mat. |
-| **F03** | Backward slip while walking | Walk forward, heel slips forward, fall backward onto buttocks/back on mat. |
-| **F04** | Backward fall while sitting | Attempt to sit on chair, miss seat, fall backward onto crash mat. |
-| **F05** | Lateral fall (Left) | Walk forward, lose balance to the left, fall on left flank/arm onto mat. |
-| **F06** | Lateral fall (Right) | Walk forward, lose balance to the right, fall on right flank/arm onto mat. |
-| **F07** | Syncope / Fainting collapse | Stand still, simulate sudden loss of consciousness, vertical knee collapse onto mat. |
-| **F08** | Fall while standing up from chair | Rise from seated position, experience dizziness, collapse onto nearby mat. |
+| Code | Activity Description | Biomechanical Mechanism | Execution Instructions |
+| :--- | :--- | :--- | :--- |
+| **F01** | Forward trip while walking | Forward Trip | Walk 3 paces on approach, simulate tripping on obstacle, fall forward onto hands/mat. |
+| **F02** | Forward fall from slip | Forward Slip | Walk forward, feet slip forward, fall forward/lateral onto mat. |
+| **F03** | Forward stumble with failed recovery | Forward Stumble | Stumble forward, attempt 2 recovery steps, collapse onto crash mat. |
+| **F04** | Backward slip while walking | Backward Slip | Walk forward, heel slips forward, fall backward onto buttocks/back on mat. |
+| **F05** | Backward fall while sitting | Backward Miss | Attempt to sit on chair, miss seat, fall backward onto crash mat. |
+| **F06** | Backward collapse from sit-to-stand | Postural Collapse | Rise from chair, experience sudden weakness, collapse backward onto mat. |
+| **F07** | Lateral fall (Left flank) | Lateral Slip | Walk forward, lose balance to the left, fall on left flank/arm onto mat. |
+| **F08** | Lateral fall (Right flank) | Lateral Slip | Walk forward, lose balance to the right, fall on right flank/arm onto mat. |
+| **F09** | Sideways stumble over obstacle | Lateral Obstacle | Stumble sideways over raised obstacle, roll onto lateral torso on mat. |
+| **F10** | Syncope / Fainting vertical collapse | Syncope / Faint | Stand still, simulate sudden loss of consciousness, vertical knee buckle onto mat. |
+| **F11** | Wall-sliding vertical collapse | Syncope / Faint | Stand near wall, slide vertically downward in collapse onto mat. |
+| **F12** | Slow dizzy collapse from chair | Syncope / Faint | Slump sideways/forward from seated chair position onto floor mat. |
+| **F13** | Torso twist slip during rapid turn | Rotational Twist | Make 90-degree turn, foot slips, twist torso while falling onto mat. |
+| **F14** | Step-down twist fall from low platform | Rotational Step | Step down from 15 cm platform, misjudge step, twist fall onto mat. |
+| **F15** | Rolling out of bed onto mat | Rolling Fall | Lie on low cot/bench, roll over edge onto crash mat. |
 
 ### 4.2 Activities of Daily Living (ADL) Trials (19 Trials)
 
-| Code | Activity Description | Duration / Repetitions |
-| :--- | :--- | :--- |
-| **D01** | Normal level-ground walking | 10 meters continuous walking |
-| **D02** | Fast walking / brisk pace | 10 meters continuous |
-| **D03** | Jogging | 10 meters continuous |
-| **D04** | Ascending stairs | 1 flight of stairs (10–12 steps) |
-| **D05** | Descending stairs | 1 flight of stairs (10–12 steps) |
-| **D06** | Sit-to-stand from chair | 5 repetitions at natural pace |
-| **D07** | Stand-to-sit onto chair | 5 repetitions at natural pace |
-| **D08** | Bending to pick up object from floor | 5 repetitions |
-| **D09** | Reaching upward to high shelf | 5 repetitions |
-| **D10** | Violent coughing & sneezing | 3 simulated episodes |
-| **D11** | Stumbling / near-fall recovery | Trip on mat edge but catch balance without falling |
-| **D12** | Clapping, waving, and gesturing | 30 seconds active arm movement |
-| **D13** | Typing on computer keyboard | 60 seconds continuous typing |
-| **D14** | Writing on paper / notebook | 60 seconds continuous writing |
+| Code | Activity Description | Category | Duration / Repetitions |
+| :--- | :--- | :--- | :--- |
+| **D01** | Normal level-ground walking | Locomotion | 10 meters continuous walking |
+| **D02** | Fast walking / brisk pace | Locomotion | 10 meters continuous |
+| **D03** | Jogging | Locomotion | 10 meters continuous |
+| **D04** | Ascending stairs | Locomotion | 1 flight of stairs (10–12 steps) |
+| **D05** | Descending stairs | Locomotion | 1 flight of stairs (10–12 steps) |
+| **D06** | Sit-to-stand from chair | Postural Transition | 5 repetitions at natural pace |
+| **D07** | Stand-to-sit onto chair | Postural Transition | 5 repetitions at natural pace |
+| **D08** | Bending to pick up object from floor | Postural Transition | 5 repetitions |
+| **D09** | Reaching upward to high shelf | Postural Transition | 5 repetitions |
+| **D10** | Violent coughing & sneezing | Physiological ADL | 3 simulated episodes |
+| **D11** | Stumbling / near-fall recovery | Dynamic Recovery | Trip on mat edge but catch balance without falling (3 reps) |
+| **D12** | Clapping, waving, and gesturing | Upper-Limb Dynamics | 30 seconds active arm movement |
+| **D13** | Typing on computer keyboard | Fine Motor | 60 seconds continuous typing |
+| **D14** | Writing on paper / notebook | Fine Motor | 60 seconds continuous writing |
+| **D15** | Sweeping floor with broom | Domestic Task | 60 seconds continuous sweeping |
+| **D16** | Drinking water from glass / bottle | Arm Posture | 5 repetitions of lifting, drinking, placing glass |
+| **D17** | Tying shoelaces while seated | Postural Flexion | 3 repetitions of bending forward to tie shoes |
+| **D18** | Squatting and rising | Lower-Limb ADL | 5 repetitions of deep squat and standing |
+| **D19** | Turning around 360 degrees | Rotational ADL | 5 complete turns while standing |
 
 ---
 
-## 5. Data File Format & Storage Schema
+## 5. Elderly Kinematic Gap & Klenk Lean-and-Release Protocol
 
-To ensure $100\%$ interoperability with SPARK's existing training pipeline (`prepare_sisfall.py`), all recorded files must conform to the following format:
+Elderly real-world falls exhibit significantly lower impact accelerations ($3.5\text{--}6.0g$) compared to vigorous young adult simulations ($8.0\text{--}12.0g$). To simulate frail elderly kinematics safely among young volunteers:
+* **Klenk Lean-and-Release Method**: Participants lean against an elastic tether attached to a quick-release mechanism at $15^\circ\text{--}25^\circ$ angles.
+* **Controlled Muscle Release**: Upon tether release, participants simulate delayed muscle reflex response, collapsing into the crash mat without protective arm braking.
+* **Partial-Freeze Fine-Tuning**: Captured low-impact trials calibrate the classifier decision threshold $\tau^*$ via Youden's $J$ statistic without altering pre-trained convolutional feature weights.
 
-### 5.1 Directory Structure
+---
+
+## 6. Data File Format & Storage Schema
+
+To ensure $100\%$ interoperability with SPARK's training pipeline (`prepare_nepal_cohort.py`), all recorded files conform to the SisFall schema:
+
+### 6.1 Directory & File Naming
 ```
 data/
-  raw_nepal_cohort/
-    README.txt
-    Subject_SA01/
-      FALL_F01_SA01_R01.txt
-      FALL_F02_SA01_R01.txt
-      ADL_D01_SA01_R01.txt
-      ...
-    Subject_SA02/
-      ...
+  nepal_cohort/
+    F01_SA01_R01.csv
+    F01_SA01_R02.csv
+    ...
+    D19_SA20_R03.csv
 ```
 
-### 5.2 File Format
-* Plain text ASCII, comma-separated values (CSV format without header).
-* 6 columns per line:
-  ```
-  accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z
-  ```
-* Sample line:
-  ```
-  -0.1245, 0.4521, 0.9812, 1.25, -4.10, 0.32
-  ```
+### 6.2 File Schema (CSV with Header)
+```csv
+Ax,Ay,Az,Gx,Gy,Gz
+-0.1245,0.4521,0.9812,1.25,-4.10,0.32
+-0.1189,0.4498,0.9754,1.40,-3.95,0.28
+```
+* Accelerations in $g$ ($1g = 9.80665\text{ m/s}^2$).
+* Angular rates in $^\circ/\text{s}$ (degrees per second).
 
 ---
 
-## 6. Checklist & Execution Protocol
+## 7. Informed Consent & Ethics Checklist (KEC)
 
-1. [ ] Inspect crash mat position and secure perimeter.
-2. [ ] Fit wearable on participant with snug Velcro tension.
-3. [ ] Verify BLE telemetry stream active on gateway laptop.
-4. [ ] Record subject metadata: Subject ID, age, gender, height (cm), weight (kg).
-5. [ ] Execute ADL protocol block (D01–D14).
-6. [ ] Rest interval (3 minutes).
-7. [ ] Execute Fall simulation block (F01–F08).
-8. [ ] Verify file integrity and absence of dropped packets.
+1. [ ] **Informed Consent**: Participant reviews and signs the KEC Ethics Information Sheet.
+2. [ ] **Physical Check**: Screening for bone fractures, joint pain, or vestibular conditions.
+3. [ ] **Rig Fitment**: Wearable node mounted securely on dorsal wrist over compression sleeve.
+4. [ ] **Crash Mat Verification**: 20–30 cm gymnastic mat in place with 2 spotters ready.
+5. [ ] **Trial Capture**: Operator runs `python tools/record_cohort_data.py --subject SA01 --activity F01 --trial R01`.
+6. [ ] **Verification**: Run `python tools/verify_cohort_dataset.py` before participant departs.

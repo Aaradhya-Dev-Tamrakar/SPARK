@@ -6,6 +6,7 @@ idf_component_register(
         "tflite/inference.cpp"
         "comms/output.cpp"
         "comms/peak_features.cpp"
+        "data_logger.cpp"
     INCLUDE_DIRS
         "."
     REQUIRES

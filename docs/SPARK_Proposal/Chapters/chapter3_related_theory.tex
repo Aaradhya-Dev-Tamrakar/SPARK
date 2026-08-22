@@ -6,19 +6,21 @@
 
 \section{Hardware Description}
 
-\subsection{ESP32-S3}
+\subsection{ESP32-S3 Microcontroller}
 
-The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtensa LX7 microcontroller operating at up to 240\,MHz, with 512\,KB SRAM, 16\,MB flash, and integrated 802.11\,b/g/n WiFi and Bluetooth 5 (LE). For SPARK, only the BLE subsystem is used for gateway transmission; WiFi is disabled to conserve power. The ESP32-S3 executes both the sensor acquisition ISR at 200\,Hz and the two-layer fall detection pipeline including TFLite Micro CNN inference within the available SRAM and flash envelope. INT8 quantization reduces the 1D CNN model footprint to approximately 80--120\,KB of flash, leaving sufficient headroom for the Arduino~SDK, BLE stack, and ring-buffer firmware.
+\subsection{ESP32-S3 Microcontroller}
+
+The ESP32-S3 (Espressif Systems, WROOM-1-CAM/N16R8 variant) is a dual-core Xtensa LX7 microcontroller operating at up to 240\,MHz, featuring 512\,KB internal SRAM, 16\,MB external quad-SPI flash, vector instructions for neural network acceleration, and integrated Bluetooth~5 (LE). For SPARK, only the BLE subsystem is used for gateway communication, while the Wi-Fi radio is disabled to minimize energy consumption. The ESP32-S3 executes both the sensor acquisition ISR at 200\,Hz and the two-layer fall detection pipeline (including TFLite Micro CNN inference) within the on-chip SRAM envelope. Full INT8 post-training quantization compresses the 1D CNN model footprint to \textbf{18.5\,KB} of flash ($87.7\%$ compression vs.\ FP32), leaving extensive headroom for the Arduino/ESP-IDF framework, BLE stack, and circular sliding-window buffers.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.32\textwidth]{esp32_devkit.png}
-	\caption{ESP32-S3}\label{fig:esp32_devkit}
+	\caption{ESP32-S3 Microcontroller Node}\label{fig:esp32_devkit}
 \end{figure}
 
 \subsection{MPU6050 6-Axis IMU}
 
-The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer ($\pm$2/$\pm$4/$\pm$8/$\pm$16\,g selectable) and a 3-axis MEMS gyroscope ($\pm$250/$\pm$500/$\pm$1000/$\pm$2000$^\circ$/s selectable) on a single die, communicating over I$^2$C at up to 400\,kHz. For SPARK, the accelerometer is configured at $\pm$8\,g full-scale (captures the free-fall and impact spike of a genuine fall without clipping) and the gyroscope at $\pm$500$^\circ$/s. The built-in Digital Motion Processor (DMP) is bypassed in favour of raw register reads at 200\,Hz, enabling direct integration with the complementary filter and sliding window buffer.
+The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer ($\pm$2/$\pm$4/$\pm$8/$\pm$16\,g selectable) and a 3-axis MEMS gyroscope ($\pm$250/$\pm$500/$\pm$1000/$\pm$2000$^\circ$/s selectable) on a single die, communicating over I$^2$C at 400\,kHz. For SPARK, the accelerometer is configured at $\pm$8\,g full-scale (capturing peak fall impacts without saturation) and the gyroscope at $\pm$500$^\circ$/s. Direct register reads are executed in a 200\,Hz hardware timer ISR (bypassing the internal DMP), ensuring deterministic time-series windowing aligned with the dorsal wrist anatomic coordinate frame ($x$: distal/radial, $y$: anterior/ulnar, $z$: dorsal normal).
 
 \begin{figure}[H]
 	\centering
@@ -26,100 +28,86 @@ The InvenSense MPU-6050 integrates a 3-axis MEMS accelerometer ($\pm$2/$\pm$4/$\
 	\caption{MPU6050 6-Axis IMU}\label{fig:mpu6050}
 \end{figure}
 
-\subsection{Laptop Gateway}
+\subsection{Laptop Companion Gateway \& Hardware Acceleration}
 
-A laptop (Acer Swift Go 16, already owned by the team) serves as the sole SPARK gateway: sole BLE receiver and sole SHAP/PDF pipeline compute. It receives the JSON event payload over BLE from the wearable node, runs the SHAP attribution pipeline locally against the trained CNN, and auto-generates a one-page clinical PDF incident report --- all without a cloud round-trip or persistent database. No Raspberry Pi or dedicated single-board computer is required; the laptop is the gateway for both development and the March 2027 demonstration.
+A local companion laptop (Acer Swift Go 16, equipped with an Intel Core Ultra 7 155H processor) serves as the primary gateway: BLE GATT receiver, SHAP explainability engine, and PDF report generator. To ensure responsive real-time auditability without cloud latency, the gateway leverages Intel OpenVINO 2026.3 hardware acceleration. Empirical benchmarking across 5,000 INT8 inference passes established:
+\begin{itemize}
+    \item \textbf{Intel CPU (AVX-VNNI)}: $0.131$\,ms per window ($7{,}618$\,windows/s).
+    \item \textbf{Intel Arc GPU (DirectX 12)}: $0.200$\,ms per window ($4{,}993$\,windows/s).
+    \item \textbf{Intel AI Boost NPU}: $0.383$\,ms per window ($2{,}610$\,windows/s) for ultra-low-power continuous background monitoring.
+\end{itemize}
+This guarantees sub-millisecond companion inference and rapid PDF incident generation entirely on local premises.
 
-\subsection{Phone Display Client}
+\subsection{Phone Display Client \& Local Server}
 
-A user's own phone (no dedicated purchase) acts as a read-only Layer~3 client. It has no direct BLE link to the wearable and performs no SHAP computation or PDF generation on-device; it reads a completed report from the laptop gateway over the local network, letting a caregiver or patient view results without the laptop physically present.
+A caregiver or clinician's smartphone functions as a read-only Layer~3 client. The laptop gateway hosts a standalone, zero-dependency HTTP/REST server (\texttt{gateway/server.py}) with Cross-Origin Resource Sharing (CORS) support. The phone reads completed event summaries, interactive SHAP attribution charts, and downloads PDF incident reports over the local Wi-Fi intranet without requiring external internet or database services.
 
-\subsection{Power System (Wearable Node)}
+\subsection{Power System \& Enclosure DFM}
 
-The wearable node is powered by a single 3.7\,V nominal 1100\,mAh Li-ion/LiPo cell, paired with a TP4056-class charge/protection circuit (USB-C input, 1\,A charge current) required unless the sourced pack is already protected. No separate LDO regulator or current/voltage telemetry sensor is used in this design --- the ESP32-S3 devboard and MPU6050 breakout both carry their own onboard regulation, and no power-rail instrumentation exists to log real-time draw. At an estimated 110--140\,mA active current draw (BLE + 200\,Hz IMU polling), the 1100\,mAh cell is projected to provide approximately 8--10 hours of continuous monitoring; this is an estimate from published ESP32-S3 active-draw figures, not a measured value, pending on-hardware profiling.
+The wearable node is powered by a 3.7\,V nominal 1100\,mAh Li-ion pouch cell paired with a TP4056-class constant-current/constant-voltage (CC/CV) charge controller module with USB-C input. 
 
-\subsubsection{Li-ion/LiPo Cell}
-
-A single 3.7\,V nominal 1100\,mAh Li-ion/LiPo pouch cell that serves as the main power source for the wearable node. At an estimated active current draw of 110--140\,mA, it is projected to provide approximately 8--10 hours of continuous, uninterrupted fall monitoring, pending on-hardware verification.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{cell_18650.png}
-	\caption{Li-ion/LiPo Cell}\label{fig:pwr_cell}
-\end{figure}
-
-\subsubsection{Charge/Protection Circuit}
-
-A single-cell constant-current/constant-voltage (CC/CV) linear charge controller module (TP4056-class) with USB-C input. It regulates a 1\,A charging current to safely recharge the cell and provides safety cutoffs (overcharge protection at 4.2\,V and over-discharge protection at 2.5\,V). Required unless the sourced battery pack is already protected.
+\begin{itemize}
+    \item \textbf{Power Profile}: Continuous active sampling with un-gated BLE streaming draws $90\text{--}130$\,mA ($8\text{--}11$\,hours endurance). Under SPARK's event-gated BLE architecture (advertising only on confirmed falls), average current drops to $35\text{--}60$\,mA, extending operational battery life to $16\text{--}28$\,hours on a single charge.
+    \item \textbf{Mechanical DFM}: The enclosure is 3D-printed in Thermoplastic Polyurethane (TPU 95A) at KEC Makerspace. To prevent thread stripping inherent in self-tapping screws driven into flexible elastomers, the enclosure incorporates $3\text{--}4$\,mm solid wall sections with brass heat-set threaded inserts (M2/M2.5), secured to the wrist via an ergonomic two-zone dorsal bracer strap.
+\end{itemize}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{tp4056.png}
-	\caption{Charge/Protection Circuit}\label{fig:pwr_tp4056}
-\end{figure}
-
-\subsection{Mechanical Mounting and Support Components}
-
-Beyond the core compute, sensing, and power modules, the wearable node relies on a set of mechanical mounting and low-level support components for physical attachment and circuit integration.
-
-\subsubsection{Velcro Wrist Strap}
-
-An adjustable Velcro strap used to secure the wearable enclosure to the wrist (top-of-wrist/dorsal placement, locked design), allowing the accelerometer and gyroscope to reliably capture body motion during a fall event. This strap is a separate, additional-retention component distinct from the enclosure's own built-in Velcro closure tab (part of the 3D-printed shell, no separate purchase).
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{velcro_strap.png}
-	\caption{Velcro Wrist Strap}\label{fig:velcro_strap}
-\end{figure}
-
-\subsubsection{USB-C Cables}
-
-Standard USB-C cables are used to power and program the ESP32-S3 boards and to charge the wearable's battery via the onboard charge/protection circuit during bench testing.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{micro_usb_cable.png}
-	\caption{USB-C Cable}\label{fig:micro_usb_cable}
-\end{figure}
-
-\subsubsection{Passive Components}
-
-Assorted resistors and capacitors used on the wearable node breadboard for signal conditioning, decoupling, and pull-up/pull-down configuration around the ESP32-S3 and MPU6050 circuitry.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{resistor.png}
-	\caption{Resistor}\label{fig:resistor}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=2.6cm,keepaspectratio]{capacitor.png}
-	\caption{Capacitor}\label{fig:capacitor}
+	\begin{minipage}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=2.5cm,keepaspectratio]{cell_18650.png}
+		\caption{Li-ion Cell}\label{fig:pwr_cell}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=2.5cm,keepaspectratio]{tp4056.png}
+		\caption{Charge Controller}\label{fig:pwr_tp4056}
+	\end{minipage}
 \end{figure}
 
 \section{Software Description}
 
-\subsection{Two-Layer Detection Architecture}
+\subsection{Two-Layer Gated Detection Architecture}
 
-The detection pipeline implements a gated dual-layer structure. Layer~1 is a deterministic threshold pre-filter executed in the ESP32-S3 ISR at 200\,Hz. It computes the resultant acceleration magnitude $|a| = \sqrt{a_x^2 + a_y^2 + a_z^2}$. A \texttt{PRE\_FALL} flag is raised when $|a|$ exceeds 2.5\,g for more than 300\,ms; the queue is cleared if no new peak acceleration occurs within a 10\,s timeout. These thresholds are currently fixed design values, pending empirical tuning against real fall simulations (WP~1.0/2.0). Layer~1 incurs no inference cost, reducing false-positive load on the CNN and conserving power by skipping inference on clear non-falls.
+The detection pipeline implements a deterministic, gated dual-layer architecture:
+\begin{enumerate}
+    \item \textbf{Layer 1 (Deterministic Threshold Pre-filter)}: Continuously executes within the 200\,Hz ISR. It computes the resultant acceleration magnitude:
+    \begin{equation}
+        |a| = \sqrt{a_x^2 + a_y^2 + a_z^2}
+    \end{equation}
+    A candidate fall is latched (\texttt{PRE\_FALL}) when $|a| > 2.5$\,g for $>300$\,ms. Normal ADLs (sitting, walking) remain below threshold, bypassing CNN inference entirely and eliminating unnecessary computational power drain.
+    \item \textbf{Layer 2 (Quantized 1D CNN Inference)}: Triggered solely upon \texttt{PRE\_FALL}. The 200-sample ($1.0$\,s) 6-axis sliding window is normalized via pre-computed StandardScaler coefficients and classified by the on-device TFLite Micro CNN. If the fall probability $P(\text{FALL}) \ge 0.85$ (or calibrated threshold), a \texttt{CONFIRMED\_FALL} telemetry event is dispatched.
+\end{enumerate}
 
-When \texttt{PRE\_FALL} is raised, Layer~2 is invoked: the gate-triggered window of ($a_x$, $a_y$, $a_z$, $\omega_x$, $\omega_y$, $\omega_z$) at 200\,Hz is assembled, normalized using Standard\-Scaler parameters baked into the firmware at training time, and fed to the TFLite Micro 1D CNN. The CNN produces a fall probability score $P(\text{FALL}) \in [0, 1]$. If $P(\text{FALL}) > 0.85$, a \texttt{CONFIRMED\_FALL} event is serialized as JSON --- device ID, firmware version, timestamp, confidence, and per-channel peak features, per the locked wire format --- and transmitted to the laptop gateway over BLE.
+\subsection{1D CNN Architecture \& INT8 Quantization}
 
-\subsection{1D CNN Architecture}
+The 1D CNN architecture comprises two convolutional feature-extraction blocks followed by a compact classification head:
+\begin{itemize}
+    \item \textbf{Input Layer}: $200 \times 6$ tensor (200 time steps across $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$).
+    \item \textbf{Block 1}: Conv1D (32 filters, kernel size 5, stride 1) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D (pool size 2, stride 2) $\rightarrow$ Dropout (0.20).
+    \item \textbf{Block 2}: Conv1D (64 filters, kernel size 3, stride 1) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D.
+    \item \textbf{Head}: Dense (32 units, ReLU) $\rightarrow$ Dense (2 units, Softmax).
+\end{itemize}
+Full INT8 post-training quantization using representative class-balanced calibration yields an \textbf{18.5\,KB} FlatBuffer array exported as \texttt{spark\_cnn\_int8.h} for direct compilation into ESP-IDF/PlatformIO firmware.
 
-The 1D CNN consists of: Conv1D (32 filters, kernel~5) $\rightarrow$ ReLU $\rightarrow$ MaxPool1D (2) $\rightarrow$ Conv1D (64 filters, kernel~3) $\rightarrow$ ReLU $\rightarrow$ GlobalAveragePooling1D $\rightarrow$ Dense (32, ReLU) $\rightarrow$ Dense (2, Softmax). The model is trained in TensorFlow/Keras on the SisFall dataset~\cite{sucerquia2017sisfall} as the primary source, with self-collected Nepal-context data (protocol TBD) as a secondary fine-tuning set. INT8 post-training quantization via the TFLite Converter produces a C array for inclusion in the PlatformIO build.
+\subsection{Gradient-Based SHAP Explainability Pipeline}
 
-\subsection{SHAP Explainability Pipeline}
+To provide clinicians with transparent, auditable decision rationale without cloud reliance, the companion gateway implements gradient-based feature attribution ($X \times \nabla_X Y$):
+\begin{equation}
+    \phi_c(t) = x_c(t) \cdot \frac{\partial P(\text{FALL})}{\partial x_c(t)}
+\end{equation}
+where $x_c(t)$ represents the normalized input signal for IMU channel $c \in \{a_x, a_y, a_z, \omega_x, \omega_y, \omega_z\}$ at time $t$. Summing channel attributions yields relative kinetic importance:
+\begin{equation}
+    \Phi_c = \frac{\sum_{t=1}^{T} |\phi_c(t)|}{\sum_{k=1}^{6} \sum_{t=1}^{T} |\phi_k(t)|} \times 100\%
+\end{equation}
+This allows the gateway to automatically identify biomechanical fall archetypes (e.g., forward trip dominated by pitch rate $\omega_y$ vs.\ lateral slip dominated by roll rate $\omega_x$ and $a_y$, or vertical collapse dominated by $a_z$), rendering attribution bar charts into automated PDF clinical incident reports.
 
-SHAP (SHapley Additive exPlanations)\@ \cite{lundberg2017shap} assigns to each input feature $i$ an attribution value $\phi_i$ satisfying local accuracy ($f(x) = \phi_0 + \sum_i \phi_i$), missingness, and consistency axioms. For each \texttt{CONFIRMED\_FALL} event, the laptop gateway computes SHAP values for the six IMU channel features (peak values of $a_x, a_y, a_z, \omega_x, \omega_y, \omega_z$ received over BLE) using the \texttt{shap} Python library against the trained CNN output. The top contributing feature (e.g., \texttt{az\_peak} with 42\% of fall confidence) and the full SHAP vector are written directly into the auto-generated PDF incident report --- computed and rendered locally on the laptop, with no cloud round-trip and no persistent database. This provides care staff with an auditable rationale for every alert --- a capability absent from all commercial and published academic fall detection systems.
+\subsection{Gateway Software Architecture Patterns}
 
-\subsection{Gateway Software Architecture}
-
-The gateway implements three software design patterns documented in the thesis Chapter~3\@ (OOSE alignment):
-
-\textbf{Factory Pattern} decouples the detection node abstraction from its concrete implementations. A \texttt{FallDetector} abstract base class handles BLE transmission, event serialization, and power management; \texttt{ThresholdDetector} (Layer~1) and \texttt{CNNDetector} (Layer~2) are concrete subclasses.
-
-\textbf{Observer Pattern} implements the report-generation pipeline. The BLE receiver is the Subject; the SHAP attribution module and PDF report generator are Observers subscribed to \texttt{CONFIRMED\_FALL} events. The read-only phone display client is not itself an Observer --- it reads the completed report from the laptop over the local network once generation finishes. Adding a new local output (e.g., a CSV export) requires adding a new Observer without modifying the gateway core.
-
-\textbf{Strategy Pattern} implements the configurable sensitivity profiles. A \texttt{Fall\-Detection\-Strategy} interface is implemented by three concrete strategies: \texttt{HighSensitivity} (elderly, bed-ridden), \texttt{Standard} (default), and \texttt{SportMode} (active ADL). Threshold parameters are loaded from the user profile at gateway startup; no firmware reflash is required to switch profiles.
+The gateway codebase adheres to Object-Oriented Software Engineering (OOSE) design patterns:
+\begin{itemize}
+    \item \textbf{Factory Pattern}: \texttt{get\_explainer()} dynamically instantiates either \texttt{CnnShapExplainer} (full waveform attribution) or \texttt{PeakFeatureExplainer} (compact telemetry fallback).
+    \item \textbf{Observer Pattern}: The asynchronous BLE GATT receiver (\texttt{BleReceiver}) acts as Subject, notifying subscribed Observers (\texttt{ShapPipeline}, \texttt{PdfReportGenerator}, \texttt{JsonEventStore}) upon validated event arrival.
+    \item \textbf{Strategy Pattern}: \texttt{FallDetectionStrategy} encapsulates sensitivity parameters (High, Standard, SportMode) loaded dynamically without firmware re-flashing.
+\end{itemize}

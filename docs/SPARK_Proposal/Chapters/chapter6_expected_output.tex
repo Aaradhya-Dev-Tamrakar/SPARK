@@ -1,40 +1,56 @@
-%======================
-% Chapter 6 : Expected Output
-%======================
-
 \chapter{\scshape Expected Output}\label{chap:expected_output}
 
-This chapter describes the deliverables, performance targets, and project schedule for SPARK.\@ The system is developed in three sequential phases: proposal and planning (June--July 2026), skill development and dataset preparation (July--August 2026), and core build, integration, and evaluation (September 2026--March 2027).
+This chapter describes the tangible deliverables, verified milestones, and structured future research extensions for SPARK.\@ The project transitions from foundational research and simulation to physical cohort data collection, model fine-tuning, and end-to-end clinical validation.
 
-\section{Deliverables}
+\section{Tangible Deliverables}
 
-SPARK produces the following tangible deliverables by the March 2027 demonstration deadline:
+SPARK produces the following open-source hardware, edge firmware, machine learning, and companion software deliverables:
 
-\subsection{Hardware Deliverables}
-
-\begin{enumerate}
-    \item \textbf{Functional wearable node}: ESP32-S3 with MPU6050 6-axis IMU, 1100\,mAh Li-ion/LiPo battery, TP4056-class charge/protection circuit, mounted top-of-wrist/dorsal in a wrist-worn enclosure 3D-printed in TPU at KEC Makerspace, secured with the enclosure's built-in Velcro closure tab plus a separate Velcro wrist strap, worn over a compression arm sleeve base layer.
-
-    \item \textbf{Gateway}: Laptop (Acer Swift Go~16, already owned) as the sole BLE receiver and sole SHAP/PDF compute --- no dedicated single-board computer required.
-
-    \item \textbf{Phone display client}: Read-only companion view (user's own phone, no additional hardware) that reads completed reports from the laptop gateway over the local network.
-
-    \item \textbf{Power estimate report}: Documented active current draw range (110--140\,mA, published figure estimate for BLE + 200\,Hz IMU polling, not yet hardware-measured --- no power telemetry sensor exists in this design) and resulting endurance estimate (7.9--10 hours from the 1100\,mAh cell), with on-hardware profiling planned for thesis Chapter~5 (Implementation).
-\end{enumerate}
-
-\subsection{Software Deliverables}
+\subsection{Hardware \& Mechanical Deliverables}
 
 \begin{enumerate}
-    \item \textbf{ESP32-S3 firmware} (PlatformIO/Arduino C++): MPU6050 ISR at 200\,Hz via direct register access, sliding window ring buffer, Layer~1 threshold pre-filter, Layer~2 TFLite Micro INT8 CNN inference, and BLE JSON event transmission per the locked wire format.
-
-    \item \textbf{Trained and quantized 1D CNN model} --- INT8 TFLite model file ($\leq 120$\,KB) achieving Sensitivity $\geq 90\%$ and Specificity $\geq 90\%$ on the held-out test set, integrated as a C header array in the PlatformIO build.
-
-    \item \textbf{Gateway software} (Python): BLE receiver parsing the locked wire format, SHAP attribution pipeline (per-event, no cloud round-trip, no persistent database), and ReportLab PDF incident report generator --- all running locally on the laptop.
-
-    \item \textbf{Phone display client software}: Read-only report viewer that pulls completed reports from the laptop over the local network; no SHAP computation or PDF generation on-device.
-
-    \item \textbf{Self-collected KEC Wearable Fall Dataset}: Minimum 500 labelled fall event windows and 2000 ADL windows recorded at KEC campus using the SPARK node, with subject metadata, published to GitHub under an open licence as ``KEC Wearable Fall Dataset in Nepal Context''. 
-
-    \item \textbf{GitHub repository}: Complete open-source repository containing firmware, gateway software, trained model, dataset, KiCad schematic (breadboard-level), and a reproducible README enabling replication of the full system.
-
+    \item \textbf{Functional Wearable Edge Node}: Ergonomic dorsal wrist wearable incorporating the ESP32-S3 microcontroller, MPU6050 6-axis IMU, 1100\,mAh Li-ion battery, and TP4056 USB-C charging module.
+    \item \textbf{TPU 95A DFM Enclosure}: Robust 3D-printed enclosure with $3\text{--}4$\,mm solid walls, threaded brass heat-set inserts (M2/M2.5) to prevent screw stripping, and a dual-zone retention strap.
+    \item \textbf{Benchmarked Companion Gateway}: Intel Core Ultra 7 155H companion laptop utilizing OpenVINO hardware acceleration (CPU AVX-VNNI $0.131$\,ms, Arc GPU $0.200$\,ms, AI Boost NPU $0.383$\,ms).
+    \item \textbf{Power Profile Validation}: Documented operating current draw ($35\text{--}60$\,mA event-gated BLE) delivering $16\text{--}28$\,hours of continuous protection.
 \end{enumerate}
+
+\subsection{Software \& Machine Learning Deliverables}
+
+\begin{enumerate}
+    \item \textbf{Autonomous Dual-Layer Firmware} (ESP-IDF/PlatformIO C++): Continuous 200\,Hz IMU sampling, Layer~1 software threshold pre-filter ($|a|>2.5$\,g, $>300$\,ms), and on-device TFLite Micro inference.
+    \item \textbf{Quantized INT8 1D CNN Model}: Ultra-compact \textbf{18.5\,KB} FlatBuffer and C-header array (\texttt{spark\_cnn\_int8.h}) trained under leakage-free subject-grouped splits on 38,426 SisFall windows ($87.81\%$ sensitivity, $0.9185$ AUC-ROC).
+    \item \textbf{Local Companion Gateway Suite}: Asynchronous GATT BLE receiver (\texttt{BleReceiver}), gradient-based XAI explainer (\texttt{CnnShapExplainer}), and automated one-page clinical PDF generator (\texttt{ReportLab}) verified across 4 fall archetypes.
+    \item \textbf{Zero-Dependency REST Server \& Web Dashboard}: Standalone HTTP server (\texttt{gateway/server.py}) providing live incident monitoring and PDF downloads for care staff.
+    \item \textbf{Nepal Cohort Wearable Dataset \& Protocol}: Standardized 34-activity protocol (15 falls, 19 ADLs) across $N=12\text{--}20$ volunteers at KEC, published as an open-access regional benchmark.
+    \item \textbf{Comprehensive Open-Source Repository}: Complete codebase with 48 automated test suites passing cleanly, CI validation scripts, and reproducibility documentation.
+\end{enumerate}
+
+\section{Future Research Extensions \& Academic Roadmap}
+
+For the final thesis defense and post-thesis publication, SPARK defines three rigorous architectural extensions:
+
+\subsection{Multi-Modal Vision-IMU Fusion}
+
+While SPARK's primary wearable node operates autonomously, indoor residential settings can benefit from late vision-IMU fusion. A stationary ambient sensor node (e.g., ESP32-CAM or gateway webcam) is activated only upon wearable Layer~1 \texttt{PRE\_FALL} notification, running lightweight pose estimation to eliminate false positives from dropping the device or vigorous slapping motions without compromising bathroom/bedroom privacy during normal ADLs.
+
+\subsection{Aquatic Distress \& Drowning Detection Roadmap}
+
+The 6-axis edge kinetic pipeline can be extended to aquatic safety and drowning mitigation by adapting temporal feature extractors:
+\begin{itemize}
+    \item \textbf{Stroke Cadence Monitoring}: Continuous cyclic analysis ($0.4\text{--}1.6$\,Hz) tracking normal swimming biomechanics.
+    \item \textbf{Instinctive Drowning Response (IDR) Detection}: High-frequency vertical arm pressing ($>2.5$\,Hz without forward displacement) triggering distress flags.
+    \item \textbf{Submersion Immobility Timeout}: Vertical orientation stillness exceeding $15$\,seconds triggering emergency acoustic/radio alarms.
+\end{itemize}
+
+\subsection{Client-Side Encrypted Telemetry Storage}
+
+To maintain strict patient privacy and compliance with international health data regulations (HIPAA/GDPR principles), longitudinal motion features are encrypted on the companion gateway using client-derived AES-256 keys before cold storage or optional decentralized backup.
+
+\section{Target Publication Venues}
+
+The research findings and Nepal cohort benchmark are targeted for peer-reviewed academic dissemination:
+\begin{itemize}
+    \item \textbf{ICACT 2027 (Kathmandu, Nepal)}: IEEE International Conference on Advanced Communication Technology (IEEE Xplore indexed).
+    \item \textbf{IEEE Healthcom}: IEEE International Conference on E-health Networking, Application \& Services.
+\end{itemize}
