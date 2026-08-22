@@ -1,12 +1,28 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v54)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v55)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 22, 2026 (v54 — Deep-Research Synthesis Completed, Post-Boards Resumption Plan Archived in [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md)) ·
+**Last updated:** August 22, 2026 (v55 — Nepal Cohort Data Collection Setup, Firmware Logger, CLI Ingestion & Transfer Learning Pipeline Completed) ·
 
 > [!NOTE]
-> **Board Exam Pause Notice (August 22, 2026)**: Research and development paused for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) for full context snapshot, 19-track deep research synthesis, and phase-by-phase post-boards execution roadmap.
+> **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+
+**v55 change log (August 22, 2026 — Nepal Cohort Data Collection Setup, Transfer Learning & LaTeX Sync):**
+
+- **Nepal Cohort Data Collection Setup Implemented:**
+  - `firmware/main/data_logger.cpp` & `data_logger.h`: 200 Hz continuous 6-axis streaming logger mode (`SPARK_MODE_DATA_LOGGER`) over USB-Serial (921600 baud).
+  - `tools/record_cohort_data.py`: Interactive CLI recording tool for 34 activities (F01–F15, D01–D19), participant metadata, live 200 Hz rate monitor, saturation detection, and SisFall-format CSV export.
+  - `tools/verify_cohort_dataset.py`: Cohort completion grid and file integrity verification auditor.
+  - `training/data_prep/prepare_nepal_cohort.py`: Window slicer creating normalized $200 \times 6$ arrays for Nepal cohort trials.
+  - `training/train_transfer.py`: Partial-Freeze Fine-Tuning pipeline (freezes pre-trained SisFall Conv1D layers, fine-tunes Dense head with Youden's $J$ threshold calibration).
+  - `docs/DATA_COLLECTION_MASTER_PLAN.md`: Standalone repository master plan for KEC collection campaign.
+  - `tests/test_cohort_collection.py`: Added 8 new unit tests; full test suite passing cleanly (**56 tests passed**).
+- **LaTeX Thesis Documentation Synchronized:**
+  - Updated all proposal chapters (`Chapters/chapter1_introduction.tex` through `chapter6_expected_output.tex`, `abbreviations.tex`, `references_manual.tex`, `appendix.tex`) with latest empirical benchmarks, 19-track deep research findings, and $18.5\text{ KB}$ INT8 models.
+  - Verified clean PDF compilation (`thesis_report.pdf`, 44 pages).
+- **Automated Repository Synchronization:**
+  - `sync.ps1`: Added `Clean-IgnoredArtifacts` to automatically delete LaTeX build junk (`.aux`, `.log`, `.out`, etc.) from `docs/SPARK_Proposal/ThesisReports/` on every sync.
 
 **v54 change log (August 20, 2026 — End-to-End Pipeline, Diverse Fall Archetypes & Aquatic Roadmap):**
 

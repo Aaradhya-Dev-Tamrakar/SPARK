@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="9ZyaDiTMT4hkcDNG4sH-">
+    <mxGraphModel dx="2667" dy="1898" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="" mermaidData="{&#xa;  &quot;data&quot;: &quot;---\ntitle: SPARK System Block Diagram\n---\nflowchart TD\n    subgraph WN[\&quot;Wearable Node — ESP32-S3 WROOM-1\&quot;]\n        IMU[\&quot;MPU6050 IMU&lt;br/&gt;6-axis at 200 Hz&lt;br/&gt;I2C at 400 kHz\&quot;]:::sensor\n        SW[\&quot;Circular Sliding Window&lt;br/&gt;200 x 6 SRAM Ring Buffer\&quot;]:::sensor\n        L1[\&quot;Layer 1: Threshold Pre-filter&lt;br/&gt;Magnitude gate, Duration gate\&quot;]:::edgeinf\n        L2[\&quot;Layer 2: INT8 TFLite Micro CNN&lt;br/&gt;18.5 KB Quantized Model\&quot;]:::edgeinf\n        BLETX[\&quot;BLE GATT Transmitter&lt;br/&gt;JSON Wire Format v1\&quot;]:::edgeinf\n        IMU --&gt; SW --&gt; L1 --&gt; L2 --&gt; BLETX\n    end\n\n    BLETX -.-&gt;|\&quot;Bluetooth 5.0 LE&lt;br/&gt;GATT Notification\&quot;| BLERX\n\n    subgraph GW[\&quot;Companion Gateway — Laptop with OpenVINO\&quot;]\n        BLERX[\&quot;Async BLE Receiver&lt;br/&gt;bleak GATT Client\&quot;]:::gwnode\n        SHAP[\&quot;SHAP Attribution Engine&lt;br/&gt;OpenVINO, sub-1ms inference\&quot;]:::gwnode\n        PDF[\&quot;PDF Report Generator&lt;br/&gt;ReportLab Clinical Report\&quot;]:::gwnode\n        REST[\&quot;Local REST API + JSON Store&lt;br/&gt;server.py, zero-dependency\&quot;]:::gwnode\n        BLERX --&gt; SHAP --&gt; PDF\n        BLERX --&gt; REST\n    end\n\n    REST -.-&gt;|\&quot;Local Wi-Fi&lt;br/&gt;HTTP REST API\&quot;| PHONE\n\n    subgraph OUT[\&quot;Output\&quot;]\n        PHONE[\&quot;Phone Display Client&lt;br/&gt;Read-only, Local Intranet\&quot;]:::outnode\n        REPORT[\&quot;Clinical PDF Incident Report&lt;br/&gt;SHAP Chart + Signature Block\&quot;]:::outnode\n    end\n\n    PDF --&gt; REPORT\n\n    classDef sensor fill:#dbeafe,stroke:#2563eb,color:#1e3a5f\n    classDef edgeinf fill:#d1fae5,stroke:#059669,color:#064e3b\n    classDef gwnode fill:#fef3c7,stroke:#d97706,color:#78350f\n    classDef outnode fill:#f3f4f6,stroke:#6b7280,color:#1f2937&quot;,&#xa;  &quot;config&quot;: null&#xa;}" id="27">
+          <mxCell connectable="0" parent="1" style="group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;" vertex="1">
+            <mxGeometry as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Wearable Node — ESP32-S3 WROOM-1" mermaidId="n:WN" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Wearable Node — ESP32-S3 WROOM-1" id="2">
+          <mxCell parent="27" style="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="655" width="354" x="155" y="18" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="MPU6050 IMU&#xa;6-axis at 200 Hz&#xa;I2C at 400 kHz" mermaidId="n:IMU" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a5f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="MPU6050 IMU&#xa;6-axis at 200 Hz&#xa;I2C at 400 kHz" id="3">
+          <mxCell parent="2" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a5f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="93" width="174" x="90" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Circular Sliding Window&#xa;200 x 6 SRAM Ring Buffer" mermaidId="n:SW" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a5f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Circular Sliding Window&#xa;200 x 6 SRAM Ring Buffer" id="4">
+          <mxCell parent="2" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a5f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="239" x="58" y="188" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Layer 1: Threshold Pre-filter&#xa;Magnitude gate, Duration gate" mermaidId="n:L1" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Layer 1: Threshold Pre-filter&#xa;Magnitude gate, Duration gate" id="5">
+          <mxCell parent="2" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="279" x="38" y="311" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Layer 2: INT8 TFLite Micro CNN&#xa;18.5 KB Quantized Model" mermaidId="n:L2" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Layer 2: INT8 TFLite Micro CNN&#xa;18.5 KB Quantized Model" id="6">
+          <mxCell parent="2" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="284" x="35" y="434" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="BLE GATT Transmitter&#xa;JSON Wire Format v1" mermaidId="n:BLETX" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="BLE GATT Transmitter&#xa;JSON Wire Format v1" id="7">
+          <mxCell parent="2" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#d1fae5;strokeColor=#059669;fontColor=#064e3b;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="215" x="70" y="557" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:IMU-&gt;SW#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="19">
+          <mxCell edge="1" parent="2" source="3" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="4">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:SW-&gt;L1#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="20">
+          <mxCell edge="1" parent="2" source="4" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="5">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:L1-&gt;L2#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="21">
+          <mxCell edge="1" parent="2" source="5" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="6">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:L2-&gt;BLETX#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="22">
+          <mxCell edge="1" parent="2" source="6" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="Companion Gateway — Laptop with OpenVINO" mermaidId="n:GW" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Companion Gateway — Laptop with OpenVINO" id="8">
+          <mxCell parent="27" style="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="389" width="642" x="8" y="741" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Async BLE Receiver&#xa;bleak GATT Client" mermaidId="n:BLERX" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Async BLE Receiver&#xa;bleak GATT Client" id="9">
+          <mxCell parent="8" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="197" x="226" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="SHAP Attribution Engine&#xa;OpenVINO, sub-1ms inference" mermaidId="n:SHAP" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="SHAP Attribution Engine&#xa;OpenVINO, sub-1ms inference" id="10">
+          <mxCell parent="8" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="274" x="35" y="168" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="PDF Report Generator&#xa;ReportLab Clinical Report" mermaidId="n:PDF" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="PDF Report Generator&#xa;ReportLab Clinical Report" id="11">
+          <mxCell parent="8" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="243" x="51" y="291" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Local REST API + JSON Store&#xa;server.py, zero-dependency" mermaidId="n:REST" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Local REST API + JSON Store&#xa;server.py, zero-dependency" id="12">
+          <mxCell parent="8" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="261" x="346" y="291" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:BLERX-&gt;SHAP#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.04;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="23">
+          <mxCell edge="1" parent="8" source="9" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.04;exitY=1;entryX=0.5;entryY=0;" target="10">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="172" y="143" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:SHAP-&gt;PDF#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="24">
+          <mxCell edge="1" parent="8" source="10" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="11">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:BLERX-&gt;REST#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.96;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="25">
+          <mxCell edge="1" parent="8" source="9" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.96;exitY=1;entryX=0.5;entryY=0;" target="12">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="477" y="143" />
+                <mxPoint x="477" y="205" />
+                <mxPoint x="477" y="266" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="Output" mermaidId="n:OUT" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Output" id="13">
+          <mxCell parent="27" style="html=1;whiteSpace=wrap;strokeWidth=1;verticalAlign=top;fillColor=light-dark(#ffffde,#1f2020);strokeColor=light-dark(#aaaa33,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="143" width="629" x="11" y="1198" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Phone Display Client&#xa;Read-only, Local Intranet" mermaidId="n:PHONE" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#f3f4f6;strokeColor=#6b7280;fontColor=#1f2937;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Phone Display Client&#xa;Read-only, Local Intranet" id="14">
+          <mxCell parent="13" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#f3f4f6;strokeColor=#6b7280;fontColor=#1f2937;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="240" x="354" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Clinical PDF Incident Report&#xa;SHAP Chart + Signature Block" mermaidId="n:REPORT" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#f3f4f6;strokeColor=#6b7280;fontColor=#1f2937;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Clinical PDF Incident Report&#xa;SHAP Chart + Signature Block" id="15">
+          <mxCell parent="13" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#f3f4f6;strokeColor=#6b7280;fontColor=#1f2937;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="73" width="269" x="35" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Bluetooth 5.0 LE&#xa;GATT Notification" mermaidId="e:BLETX-&gt;BLERX#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="Bluetooth 5.0 LE&#xa;GATT Notification" id="16">
+          <mxCell edge="1" parent="27" source="7" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="9">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="Local Wi-Fi&#xa;HTTP REST API" mermaidId="e:REST-&gt;PHONE#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="Local Wi-Fi&#xa;HTTP REST API" id="17">
+          <mxCell edge="1" parent="27" source="12" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="14">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:PDF-&gt;REPORT#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="18">
+          <mxCell edge="1" parent="27" source="11" style="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="15">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <mxCell id="26" parent="27" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontColor=light-dark(#333333,#cccccc);fontFamily=trebuchet ms,verdana,arial,sans-serif;" value="SPARK System Block Diagram" vertex="1">
+          <mxGeometry height="25" width="650" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
