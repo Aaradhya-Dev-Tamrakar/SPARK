@@ -362,9 +362,9 @@ Resolved by replaceable port insert. Confirm physical module before Fusion 360 p
 
 Measure with calipers: USB-C location, FPC height, mounting holes, antenna keepout, reset/boot buttons, underside clearance.
 
-### Screw Test Coupon
+### 5. Slotted Modular Architecture Variant (DI-04)
 
-Print test boss in actual TPU 95A stock. Torque-test M2.5 × 8 mm screw before committing CAD geometry.
+Consider slotted/dovetail rail sliding trays for the IMU and battery/MCU sleds into the main C-shell. This simplifies maintenance, decouples small module print iterations from the main 145 mm shell, and minimizes screw boss dependencies in TPU 95A.
 
 ---
 

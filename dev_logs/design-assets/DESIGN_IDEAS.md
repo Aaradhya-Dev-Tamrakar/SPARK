@@ -77,8 +77,22 @@ Single-piece open-back forearm enclosure, silhouette inspired by a bracer/vambra
 
 **Open blockers before Fusion 360:**
 1. ⚠ ESP32-S3 power input path (TP4056 outputs raw 3.0–4.2V, not regulated 5V).
-2. TP4056 connector type confirmation.
-3. Exact ESP32-S3 board caliper measurements.
-4. TPU 95A screw test coupon.
+---
+
+## DI-04 — Slotted Modular Enclosure Concept (Interlocking / Rail-Slotted Architecture)
+
+- **Status:** Exploratory Design Idea / Architecture Variant.
+- **Date logged:** 2026-08-22
+- **Concept summary:**
+  Explores a **slotted / rail-interlocking modular system** for the 270° C-shell assembly. Instead of relying solely on top-down screw fastening and static single-body chassis geometry:
+  1. **Slotted Sub-Module Trays:** Individual sliding trays / snap-in sleds for Zone 1 (IMU carrier sled), Zone 2 (battery + MCU carrier sled), and proximal interface ports that slide into dovetailed or T-slotted longitudinal guide rails along the inner C-shell arc.
+  2. **Benefits for Fabrication & Assembly:**
+     - Modular maintenance: Replace or upgrade the sensor sled (e.g. testing alternative IMUs) or battery bay without reprinting the entire 145 mm forearm shell.
+     - Screw elimination / reduction: Sliding interlocks reduce the count of M2.5 screw bosses required in flexible TPU 95A, bypassing thread-stripping risks.
+     - Rapid iteration: Independent calibration of tolerance fits on smaller test coupons rather than large 8–11 hr full-body prints.
+  3. **CAD & DFM Considerations:**
+     - Requires careful clearance modeling in Fusion 360 ($\approx 0.3\text{–}0.5\text{ mm}$ sliding tolerance in TPU 95A / PETG hybrid).
+     - Potential dual-material hybrid (rigid PETG sleds running in flexible TPU 95A C-shell channels).
 
 ---
+
