@@ -12,15 +12,15 @@
 
 The SPARK project is paused in a healthy, fully verified, and mathematically defensible state across all three tiers:
 
-```
-[ ESP32-S3 Wearable Node ]  ──(BLE GATT / UART)──>  [ Local Companion Gateway ]  ──(REST/CORS)──>  [ Web/Mobile UI ]
+```[ ESP32-S3 Wearable Node ]  ──(BLE GATT / UART)──>  [ Local Companion Gateway ]  ──(REST/CORS)──>  [ Web/Mobile UI ]
   • MPU6050 at 200 Hz                                • Intel Core Ultra 7 155H                      • Sonia Thapa (L3)
   • Layer 1: Accel/Gyro Gate                         • CnnShapExplainer (Input × ∇)                  • Dark-mode Dashboard
   • Layer 2: 18.5 KB INT8 CNN                        • ReportLab 1-Page Clinical PDF                 • Event / Report API
   • Status: C-Header Embedded                        • Status: 48/48 Tests Passing                   • Status: Unblocked
 ```
 
-### Key Metrics Reached:
+### Key Metrics Reached
+
 * **ML Model**: 1D CNN trained on 38,426 SisFall windows under subject-grouped split ($87.81\%$ sensitivity, $0.9185$ AUC-ROC).
 * **Quantization**: INT8 Post-Training Quantization compressed model to **$18.5\text{ KB}$** (C-header byte array in [`firmware/main/models/spark_cnn_int8.h`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/firmware/main/models/spark_cnn_int8.h)).
 * **Gateway Explainability**: Local companion-device $\text{Input} \times \nabla_{\text{Input}}$ gradient attribution generating one-page clinical PDF incident reports with 4 distinct simulated fall archetypes.
@@ -35,7 +35,7 @@ The SPARK project is paused in a healthy, fully verified, and mathematically def
 The 19 research tracks conducted in August 2026 established the following locked parameters and academic boundaries:
 
 | Track Domain | Locked Parameter / Finding | Academic & Engineering Impact |
-|---|---|---|
+| --- | --- | --- |
 | **Novelty Claim 1 (MCU Gate)** | Software threshold gate + INT8 CNN confirmation on a single commodity MCU ($<\$5$). | Defense-proof wording locked. Refutes server offload (*Xu 2021*), always-on non-gated CNNs (*TinyCNN 2023, MicroFallNet 2025*), and high-cost FPGAs (*Vigil 2024*). |
 | **Novelty Claim 3 (Gateway XAI)** | Real-time gradient attribution ($\text{Input} \times \nabla$) on local companion gateway. | Contrasts against general HAR literature which only ran KernelSHAP offline on generic non-fall data. |
 | **Model Sensitivity ($\ge 90\%$)** | Use **Focal Loss** ($\gamma=2.0, \alpha=0.75$) + temporal jitter over architecture changes. | Avoids heavier models (TCN / Squeeze-and-Excitation) that add $2\times\text{--}75\times$ flash overhead for minimal gain. |
@@ -88,6 +88,7 @@ graph TD
 ---
 
 ### Phase 1: Academic & Protocol Lockdown (Week 1, Days 1–3)
+
 1. **Complete Protocol Document ([`docs/DATA_COLLECTION_PROTOCOL.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md))**:
    * Add the remaining 12 unmapped rows from Track 7 (**F09–F15** falls & **D15–D19** ADLs).
    * Include the sample size rationale ($N=12\text{--}20$) and Klenk lean-and-release protocol.
@@ -102,6 +103,7 @@ graph TD
 ---
 
 ### Phase 2: Hardware Prototyping & Logger Setup (Week 1, Days 4–7)
+
 1. **Physical Prototype Assembly**:
    * Mount ESP32-S3 and MPU6050 on the dorsal wrist reference using an elastic/Velcro strap.
    * Wire I2C lines (`SDA: GPIO 4`, `SCL: GPIO 5`, `INT: GPIO 6`).
@@ -112,6 +114,7 @@ graph TD
 ---
 
 ### Phase 3: Nepali Cohort Data Collection at KEC (Week 2)
+
 1. **Setup**:
    * KEC Robotics / Electronics Lab with high-density gymnastic crash mats ($20\text{ cm}$ thickness).
 2. **Execution**:
@@ -121,6 +124,7 @@ graph TD
 ---
 
 ### Phase 4: Transfer Learning & Model Quantization (Week 3)
+
 1. **Fine-Tuning**:
    * Load pretrained `spark_cnn.keras` base weights.
    * Freeze Conv1D feature extractors and train dense classification layers on mixed SisFall + Nepal cohort data using Focal Loss ($\gamma=2.0$).
@@ -133,6 +137,7 @@ graph TD
 ---
 
 ### Phase 5: Real-Time Live Validation & Final Defense (Week 4)
+
 1. **Live Crash-Mat Validation**:
    * Perform live test falls wearing the autonomous device.
    * Confirm Layer 1 trigger $\to$ Layer 2 INT8 inference ($<15\text{ ms}$) $\to$ BLE notification transmission $\to$ Gateway $\text{Input} \times \nabla$ attribution chart $\to$ One-page clinical PDF report.

@@ -12,8 +12,7 @@
 
 To validate the SPARK system against real South Asian biomechanics, bridge the elderly kinematic gap ($8\text{--}12g$ youth vs. $3.5\text{--}6g$ elderly), and train the transfer-learned edge classifier, we establish a standardized **3-Tier Data Collection Setup**:
 
-```
-┌────────────────────────────────────────────────────────┐
+```┌────────────────────────────────────────────────────────┐
 │ 1. WEARABLE LOGGER NODE (ESP32-S3 + MPU6050)           │
 │    • Continuous 200 Hz Hardware Timer ISR (5 ms delta) │
 │    • Raw register reads (±16g accel, ±2000 dps gyro)   │
@@ -43,6 +42,7 @@ To validate the SPARK system against real South Asian biomechanics, bridge the e
 ## 2. Hardware & Firmware Logger Configuration
 
 ### 2.1 Hardware Wiring
+
 * **Microcontroller**: ESP32-S3 (WROOM-1-CAM / N16R8)
 * **Sensor**: InvenSense MPU6050 6-axis IMU breakout
 * **Pin Connections**:
@@ -54,6 +54,7 @@ To validate the SPARK system against real South Asian biomechanics, bridge the e
 * **Mounting**: Dorsal (top) side of non-dominant/dominant wrist, secured with an elastic Velcro bracer over a compression arm sleeve base layer.
 
 ### 2.2 Firmware Architecture (`firmware/main/data_logger.cpp`)
+
 * **Operating Mode**: `SPARK_MODE_DATA_LOGGER` (bypasses Layer 1 gating and Layer 2 inference).
 * **Sampling Rate**: Exact $200\text{ Hz}$ clock generated via ESP32-S3 hardware timer ISR ($\Delta t = 5.0\text{ ms}$).
 * **Sensor Ranges**:
@@ -68,7 +69,9 @@ To validate the SPARK system against real South Asian biomechanics, bridge the e
 ## 3. Gateway Ingestion & Labeling Tooling
 
 ### 3.1 Interactive CLI Recorder (`tools/record_cohort_data.py`)
+
 A dedicated Python tool for the recording operator:
+
 1. **Participant Enrollment**: Prompts for Subject ID (`SA01` through `SA20`), age, gender, height (cm), and weight (kg).
 2. **Activity Selection**: Quick-select menu for all 34 activities (**F01–F15**, **D01–D19**).
 3. **Automated Trial Increment**: Auto-tracks repetitions (`R01`, `R02`, `R03`).
@@ -86,6 +89,7 @@ A dedicated Python tool for the recording operator:
    * Headers: `Ax,Ay,Az,Gx,Gy,Gz` (calibrated units: $g$ and $^\circ/\text{s}$).
 
 ### 3.2 Dataset Verifier (`tools/verify_cohort_dataset.py`)
+
 * Scans `data/nepal_cohort/` and generates a 34-activity completion grid per subject.
 * Highlights missing trials or corrupted files before participants leave the laboratory.
 
@@ -94,12 +98,14 @@ A dedicated Python tool for the recording operator:
 ## 4. Physical Lab Setup & Experimental Protocol (KEC)
 
 ### 4.1 Safety & Environment
+
 * **Location**: KEC Electronics & Robotics Laboratory.
 * **Crash Mat**: High-density multi-layer gymnastic crash mat ($20\text{--}30\text{ cm}$ thickness, $2.0\text{ m} \times 1.5\text{ m}$ surface).
 * **Personnel**: 2 trained spotters positioned on the mat flanks to assist participants during fall recovery.
 * **Warm-Up**: 5-minute guided joint warm-up (wrists, shoulders, knees).
 
 ### 4.2 Cohort Demographics & Sample Size
+
 * **Target Cohort**: $N = 12\text{--}20$ healthy student and faculty volunteers (aged 18–35).
 * **Statistical Basis**: Grounded in pilot clinical study sample size conventions (*Julious, 2005*).
 * **Ethics**: Standardized KEC informed consent form signed prior to recording.

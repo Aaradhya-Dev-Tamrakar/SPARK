@@ -80,13 +80,11 @@ C_HEADER_TEMPLATE = textwrap.dedent("""\
 
     #pragma once
 
-    #include <cstddef>
-
     alignas(16) const unsigned char spark_cnn_model[] = {{
     {hex_lines}
     }};
 
-    const size_t spark_cnn_model_len = {size_bytes};
+    const unsigned int spark_cnn_model_len = {size_bytes};
 """)
 
 
@@ -298,6 +296,9 @@ def _compute_metrics(
         y_pred = (y_prob_fall >= threshold).astype(np.int32)
     elif y_prob_fall is not None and y_pred is not None and threshold != 0.5:
         y_pred = (y_prob_fall >= threshold).astype(np.int32)
+
+    if y_pred is None or y_prob_fall is None:
+        raise ValueError("Provide y_pred or y_prob_fall to compute metrics")
 
     fall_mask = y_true == 1
     nonfall_mask = y_true == 0

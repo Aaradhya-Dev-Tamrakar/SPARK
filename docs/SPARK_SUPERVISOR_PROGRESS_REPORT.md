@@ -13,7 +13,7 @@
 ## 1. Project Information & Team Roster
 
 | Member Name | Roll / Reg No. | Primary Subsystem Ownership | Key Responsibilities |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Aaradhya Dev Tamrakar** *(Project Lead)* | 79001 / BEI | ML Pipeline & Gateway Architecture | CNN model development, INT8 quantization, SHAP explainability, ReportLab PDF pipeline, local REST API |
 | **Rupesh Kadel** | 79034 / BEI | Embedded Systems & Firmware | ESP32-S3 FreeRTOS firmware, 200 Hz MPU6050 I2C driver, Layer 1 heuristic gate, TFLite Micro runtime integration |
 | **Sankalpa Lamsal** | 79039 / BEI | Hardware & Biomechanical Enclosure | Power circuit (TP4056 + 1100 mAh LiPo), 3D TPU 95A dorsal bracer CAD/DFM, wiring harness, test bench setup |
@@ -86,8 +86,7 @@ graph LR
 * **Nepal Cohort Fine-Tuning Pipeline ([`train_transfer.py`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/training/train_transfer.py))**:
   * Implemented Partial-Freeze Fine-Tuning to freeze generalized SisFall Conv1D feature extractors and adapt the Dense classification head on locally acquired Nepali trials, avoiding small-sample overfitting ($N=12\text{--}20$).
 
-```
-1D CNN Pipeline Architecture:
+```1D CNN Pipeline Architecture:
 Input Window (200 x 6)
   │
   ├──► Conv1D (32 filters, kernel=5, ReLU) + BatchNorm + SpatialDropout
@@ -118,7 +117,7 @@ Input Window (200 x 6)
 ## 4. Empirical Performance Benchmarks Summary
 
 | Subsystem / Metric | Target Specification | Achieved Benchmark | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Layer 1 Gate Latency** | $< 5.0\text{ ms}$ | **$< 0.05\text{ ms}$** (Host & ESP32-S3 cycle evaluation) | **Exceeded** |
 | **Layer 2 INT8 Model Size** | $\le 120\text{ KB}$ | **$18.5\text{ KB}$** (FlatBuffer & C header) | **Exceeded** |
 | **Model Sensitivity (Held-out)** | $\ge 85.0\%$ | **$87.81\%$** (Youden's $J$ calibrated) | **Met** |
@@ -163,7 +162,8 @@ gantt
     Live Crash-Mat End-to-End Trials & Thesis Defense Prep :p5, 2026-10-06, 7d
 ```
 
-### Actionable Steps for Resumption:
+### Actionable Steps for Resumption
+
 1. **Week 1 (Days 1–3)**: Formalize KEC ethics approval with Supervisor (Er. Dipen Manandhar) using [`DATA_COLLECTION_PROTOCOL.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md).
 2. **Week 1 (Days 4–7)**: Assemble the physical wearable logger rig, flash `SPARK_MODE_DATA_LOGGER`, and verify 200 Hz continuous streaming over serial.
 3. **Week 2**: Execute the 34-activity protocol with 12–20 KEC volunteers on gymnastic crash mats, saving timestamped CSV records.
@@ -175,8 +175,8 @@ gantt
 ## 7. Supervisor Review & Feedback Section
 
 **Supervisor Comments & Directives:**
-```
-[                                                                                   ]
+
+```[                                                                                   ]
 [                                                                                   ]
 [                                                                                   ]
 [                                                                                   ]
