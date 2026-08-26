@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "fusion360": {
+        "type": "remote",
+        "url": "http://127.0.0.1:27182/mcp",
+        "disabled": false
+      }
+    }
+  }
+}
