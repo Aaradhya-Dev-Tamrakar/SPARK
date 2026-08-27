@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
+
+# Fusion 360 MCP cached session
+tools/.fusion_session
 dist/
 build/
 .venv/
