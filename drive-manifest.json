@@ -7,25 +7,25 @@
       "drive_file_id": "1U88oD2n8az5_VLi7ywWWfKNP4dTVlc9qLOIBKvBXIeQ",
       "drive_file_name": "spark_README.md",
       "description": "SPARK Wearable Gateway Architecture & Overview",
-      "sha256": "5033208a745398a2"
+      "sha256": "2b15fe8644ea7c1b"
     },
     "docs/CHANGELOG.md": {
       "drive_file_id": "1OHzG1tUzVSeIPemRlivhzlWYqj4n_Kun0F90VSTRzAw",
       "drive_file_name": "spark_CHANGELOG.md",
       "description": "SPARK Development Changelog & Version History",
-      "sha256": "99acdb0cd3344919"
+      "sha256": "78d6fb7d98ba05ab"
     },
     "docs/WIRE_FORMAT_v1.md": {
       "drive_file_id": "1W7RvgyyfwyXiNPG8pJR8WbEA7GBX_1OXuFP9FRl-G-U",
       "drive_file_name": "spark_WIRE_FORMAT_v1.md",
       "description": "SPARK Sensor-to-Gateway Binary Wire Protocol Specification",
-      "sha256": "6101943be5080c49"
+      "sha256": "59a71e155e42bde7"
     },
     "dev_logs/SPARK_TRACKER.md": {
       "drive_file_id": "1gR-sAiPYikFGhWADP2j41ANeBzv7hTUVSrkAWLtjvu4",
       "drive_file_name": "spark_TRACKER.md",
       "description": "SPARK Engineering Milestones & Sprint Tracker",
-      "sha256": "492cedd8f8272f58"
+      "sha256": "640c31be89c8a2a8"
     }
   }
 }
