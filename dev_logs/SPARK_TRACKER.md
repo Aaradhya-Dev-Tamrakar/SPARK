@@ -1,12 +1,24 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v56)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v57)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** August 22, 2026 (v56 — Thesis Figures Verified, Draw.io XML Sources Added & Google Drive Asset Repository Linked) ·
+**Last updated:** September 24, 2026 (v57 — Subject-Agnostic Platform Realignment & Humanoid Robotics Integration) ·
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+
+**v57 change log (September 24, 2026 — Subject-Agnostic Platform Realignment & Humanoid Robotics Integration):**
+
+- **Proposal Chapters Synchronized for Robotics Applicability:**
+  - `chapter1_introduction.tex`: Added Domain #7 (*Autonomous Bipedal Robotics & Humanoid Training*) under Section 1.5 Application of the Project.
+  - `chapter5_methodology.tex`: Generalized Strategy Pattern sensitivity labels from human-exclusive tags to descriptive dynamic thresholds (`HighSensitivity` frail gait/low-torque, `Standard` default, `SportMode` dynamic locomotion/agile maneuvers).
+  - `chapter6_expected_output.tex`: Added formal subsection on *Bipedal Robotics Safety & Sim-to-Real Crash Mitigation* covering MuJoCo/Isaac Sim pre-training, hardware GPIO E-stop cut-off, and CAN FD / ROS 2 diagnostics.
+- **Protocol & Developer Guides Alignment:**
+  - `docs/WIRE_FORMAT_v1.md`: Added v2 metadata field note for `subject_type` (`"human"` vs `"bipedal_robot"`).
+  - `AGENT.md`, `CLAUDE.md`, `README.md`, `docs/CHANGELOG.md`: Re-aligned core descriptions with project title and dual human/robotics capability.
+- **Verification:**
+  - Confirmed 56/56 automated test suite passing cleanly (`uv run pytest`).
 
 **v56 change log (August 22, 2026 — Thesis Figures Redesigned, Draw.io Integration & Drive Link):**
 
@@ -337,18 +349,18 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 ---
 
-## §0 — Status Summary (v56 — Board Exam Pause)
+## §0 — Status Summary (v57 — Subject-Agnostic Platform & Bipedal Robotics Extension)
 
-**Locked Scope & Verified State (as of August 22, 2026):**
+**Locked Scope & Verified State (as of September 24, 2026):**
 
-1. **Repository Status:** Frozen for TU/KEC 8th semester board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+1. **Repository Status:** Codebase stable and verified; proposal updated with Subject-Agnostic Kinetic Platform and Bipedal Robotics safety extensions. Full context preserved in [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
 2. **Wearable Node:** ESP32-S3 + MPU6050 at 200 Hz; dual-phase Layer 1 threshold gate + Layer 2 embedded INT8 CNN (`firmware/main/models/spark_cnn_int8.h`, 18.5 KB FlatBuffer, $87.7\%$ compression vs FP32).
 3. **ML Performance:** 1D CNN trained on 38,426 SisFall windows under subject-grouped split ($87.81\%$ sensitivity, $0.9185$ AUC-ROC).
 4. **Gateway Host:** Laptop (Intel Core Ultra 7 155H); OpenVINO hardware inference engine execution verified (CPU $131\ \mu\text{s}$, GPU $200\ \mu\text{s}$, NPU $383\ \mu\text{s}$).
 5. **Gateway Explainability & Output:** Real-time $\text{Input} \times \nabla_{\text{Input}}$ gradient attribution + 1-page ReportLab clinical PDF generator (4 simulated fall archetypes: forward trip, lateral slip, vertical syncope, rotational twist).
 6. **Data Collection Infra:** 200 Hz USB/BLE continuous streaming logger mode (`SPARK_MODE_DATA_LOGGER`), interactive CLI recording tool (`record_cohort_data.py`), dataset completion auditor (`verify_cohort_dataset.py`), and partial-freeze fine-tuning pipeline (`train_transfer.py`).
-7. **Verification & Tests:** 56/56 unit tests passing (`uv run pytest`), Ruff lint and formatting clean, 44-page thesis PDF compiles cleanly.
-8. **Novelty Claims:** Defense-proof scope locked (Claim 1: single commodity MCU gate + INT8 CNN; Claim 3: local companion gateway real-time gradient attribution).
+7. **Verification & Tests:** 56/56 unit tests passing cleanly (`uv run pytest`), Ruff lint and formatting clean, LaTeX thesis proposal updated.
+8. **Novelty Claims & Scope Extensibility:** Defense-proof scope locked (Claim 1: single commodity MCU gate + INT8 CNN; Claim 3: local companion gateway real-time gradient attribution), with formal extension mapped for out-of-band crash mitigation in bipedal and humanoid robot training.
 
 ---
 

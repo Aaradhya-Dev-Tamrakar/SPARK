@@ -61,3 +61,5 @@ would need real chunking.
   `Optional[None]` reserved for v2.
 - Both: replace "wire format not confirmed" blocking comments with a
   reference to this doc.
+- v2 Extension Note: Optional `subject_type` ("human" | "bipedal_robot") in payload metadata to allow downstream gateway SHAP explainer and report generators to toggle between clinical and robotic engineering diagnostic templates.
+

@@ -1,7 +1,8 @@
 # SPARK — Signal Pattern Analysis & Real-time Kinetics
 
-> **A Two-Layer Gated Edge-AI Wearable Fall Detection System with Clinical Explainability**  
-> Major Project (8th Semester) — Department of Electronics & Computer Engineering, Kathmandu Engineering College (KEC), Institute of Engineering (IOE), Tribhuvan University, Nepal.
+> **A Two-Layer Gated Edge-AI Fall Detection & Kinetic Pattern Recognition System with Explainable Telemetry**  
+> Major Project (8th Semester) — Department of Electronics & Computer Engineering, Kathmandu Engineering College (KEC), Institute of Engineering (IOE), Tribhuvan University, Nepal.  
+> *Empirically validated on human gait; architecturally extensible to out-of-band bipedal/humanoid robotics safety modules.*
 
 ---
 

@@ -1,6 +1,6 @@
 # AGENT.md — Developer & AI Agent Guidelines
 
-This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetics*), a two-layer gated wearable fall detection and clinical explainability system. All developers and AI coding agents operating on this codebase must adhere to the rules, architecture constraints, and conventions detailed below.
+This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetics*), a two-layer gated fall detection, kinetic pattern recognition, and explainability system. Validated empirically on human gait for clinical elderly monitoring, the core architecture is designed with modular extensibility to out-of-band bipedal robotic safety modules. All developers and AI coding agents operating on this codebase must adhere to the rules, architecture constraints, and conventions detailed below.
 
 ---
 

@@ -9,13 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+- Hardware bring-up and physical on-chip testing on ESP32-S3 boards.
+- KEC cohort experimental collection campaign.
 
-- Standard repository tooling and config: `pyproject.toml` (PEP 517/621), `.pre-commit-config.yaml` (Ruff & formatting hooks).
-- Comprehensive AI guidelines: `AGENT.md`, `CLAUDE.md`, `ANTIGRAVITY.md`.
-- Contributor templates: `.github/pull_request_template.md`.
-- Data architecture guide: `data/README.md`.
-- Licensing: `LICENSE` (MIT).
+## [v57] - 2026-09-24
+
+### Subject-Agnostic Kinetic Platform & Robotics Extension
+
+- **Bipedal & Humanoid Robotics Safety Module Extension (`docs/SPARK_Proposal/Chapters/`)**:
+  - `chapter1_introduction.tex`: Formalized Domain #7 (*Autonomous Bipedal Robotics & Humanoid Training*) under Section 1.5 Application of the Project for out-of-band crash telemetry, instantaneous reflex compliance triggering, and Sim-to-Real RL episode termination.
+  - `chapter5_methodology.tex`: Generalized Strategy Pattern sensitivity labels from human-exclusive tags to descriptive kinetic dynamics: `HighSensitivity` (frail gait / low-torque threshold), `Standard` (default), and `SportMode` (dynamic locomotion / agile maneuvers).
+  - `chapter6_expected_output.tex`: Added formal subsection on *Bipedal Robotics Safety & Sim-to-Real Crash Mitigation* outlining synthetic pre-training in physics engines (MuJoCo, Isaac Sim), hardware GPIO optoisolated E-stop integration, and industrial CAN FD / ROS 2 diagnostic topics.
+- **Wire Format Specification Updated (`docs/WIRE_FORMAT_v1.md`)**:
+  - Documented v2 `subject_type` metadata field (`"human"` vs `"bipedal_robot"`) enabling automated template switching between clinical incident reports and robotics engineering diagnostic logs.
+- **Master Guidelines & Architecture Alignment (`AGENT.md`, `CLAUDE.md`, `README.md`)**:
+  - Re-aligned high-level project framing with official title ("*Explainable Edge AI for Kinetic Pattern Recognition and Distress Signaling*"), emphasizing core kinetic pattern recognition engine and dual applicability across wearable healthcare and autonomous robotics.
+- **Quality Assurance & Verification**:
+  - Verified complete Python test suite passing cleanly (**56/56 unit tests passed**, 0 regressions).
+
+## [v56] - 2026-08-22
+
+### Thesis Figures Verified & Drive Asset Repository Linked
+
+- Thesis Diagram Audit & Redesign Completed: `fig_system_flow.png`, `fig_two_layer_flow.png`, and `fig_cnn_architecture.png` redesigned with orthogonal layout matching locked firmware/gateway specs.
+- Project Assets & Google Drive Link Registered.
+- Automated thesis PDF compilation integrated into `sync.ps1 -Build`.
 
 ## [v55] - 2026-08-22
 

@@ -45,6 +45,15 @@ The 6-axis edge kinetic pipeline can be extended to aquatic safety and drowning 
 
 To maintain strict patient privacy and compliance with international health data regulations (HIPAA/GDPR principles), longitudinal motion features are encrypted on the companion gateway using client-derived AES-256 keys before cold storage or optional decentralized backup.
 
+\subsection{Bipedal Robotics Safety \& Sim-to-Real Crash Mitigation}
+
+The two-layer gated architecture and 18.5\,KB INT8 model, validated empirically on human gait, provide an architectural template for an out-of-band crash mitigation and safety module for bipedal and humanoid robots (e.g., during Sim-to-Real reinforcement learning locomotion training). Future work includes:
+\begin{itemize}
+    \item \textbf{Sim-to-Real Synthetic Pre-training}: Bootstrapping the 1D CNN feature extractors using high-throughput physics simulators (MuJoCo, Isaac Sim) with randomized perturbation and joint slip profiles prior to physical robot deployment.
+    \item \textbf{Hardware E-Stop Interfacing}: Exposing optocoupled hardware GPIO dry-contacts from the ESP32-S3 to motor power distribution boards for sub-millisecond hardware compliance triggering before ground collision.
+    \item \textbf{Industrial Bus Integration}: Bridging wire format event notifications into CAN FD or native ROS~2 diagnostic topics (\texttt{/robot/safety/fall\_event}).
+\end{itemize}
+
 \section{Target Publication Venues}
 
 The research findings and Nepal cohort benchmark are targeted for peer-reviewed academic dissemination:

@@ -1,7 +1,7 @@
 # CLAUDE.md — Assistant Guidelines for SPARK
 
 ## Project Overview
-**SPARK** is an edge-AI wearable fall detection system designed for elderly individuals in Nepal, featuring a 2-layer gated detection scheme (Layer 1 IMU threshold on ESP32-S3 $\rightarrow$ Layer 2 TFLite CNN on ESP32-S3) with laptop-based SHAP explainability and clinical PDF reports.
+**SPARK** (*Signal Pattern Analysis & Real-time Kinetics*) is a two-layer gated edge-AI fall detection and kinetic distress signaling platform. Validated empirically on human gait for elderly monitoring in Nepal (Layer 1 IMU threshold on ESP32-S3 $\rightarrow$ Layer 2 TFLite INT8 CNN on ESP32-S3) with laptop-based SHAP explainability and incident reports, with modular extensibility as an out-of-band safety module for bipedal and humanoid robotics training.
 
 ## Key Developer Commands
 

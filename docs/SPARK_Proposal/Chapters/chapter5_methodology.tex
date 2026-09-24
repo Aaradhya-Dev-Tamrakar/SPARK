@@ -184,9 +184,9 @@ On \texttt{CONFIRMED\_FALL}, the ESP32-S3 serializes the event as a JSON payload
 Three sensitivity profiles are implemented as configurable parameter sets, adjustable without a firmware reflash:
 
 \begin{itemize}
-    \item \textbf{HighSensitivity} (elderly, bed-ridden): Layer 1 threshold \(|a|_{\text{spike}} = 2.0\)\,g, rest duration 200\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.75\).
+    \item \textbf{HighSensitivity} (frail gait / low-torque threshold): Layer 1 threshold \(|a|_{\text{spike}} = 2.0\)\,g, rest duration 200\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.75\).
     \item \textbf{Standard} (default): \(|a|_{\text{spike}} = 2.5\)\,g, rest duration 300\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.85\).
-    \item \textbf{SportMode} (active ADL): \(|a|_{\text{spike}} = 3.0\)\,g, rest duration 400\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.90\).
+    \item \textbf{SportMode} (dynamic locomotion / agile maneuvers): \(|a|_{\text{spike}} = 3.0\)\,g, rest duration 400\,ms; \allowbreak Layer 2 threshold \(P(\text{FALL}) \allowbreak > 0.90\).
 \end{itemize}
 
 \section{Machine Learning Pipeline}
