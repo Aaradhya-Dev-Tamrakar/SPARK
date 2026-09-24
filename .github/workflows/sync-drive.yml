@@ -19,6 +19,7 @@ jobs:
   sync-to-drive:
     name: Sync Markdown to Google Drive
     runs-on: ubuntu-latest
+    if: github.repository == 'Aaradhya-Dev-Tamrakar/SPARK' && secrets.GDRIVE_CLIENT_ID != '' && secrets.GDRIVE_REFRESH_TOKEN != ''
     permissions:
       contents: write
 
