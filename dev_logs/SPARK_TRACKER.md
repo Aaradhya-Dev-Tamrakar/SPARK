@@ -17,6 +17,8 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
 - **Protocol & Developer Guides Alignment:**
   - `docs/WIRE_FORMAT_v1.md`: Added v2 metadata field note for `subject_type` (`"human"` vs `"bipedal_robot"`).
   - `AGENT.md`, `CLAUDE.md`, `README.md`, `docs/CHANGELOG.md`: Re-aligned core descriptions with project title and dual human/robotics capability.
+- **Strategic Architecture & SIL Defense Roadmap (`docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md`)**:
+  - Formalized permanent project record preserving: (1) Humanoid robotics dual-use architectural analysis and gap breakdown, (2) Pre-hardware Software-in-the-Loop (SIL) / QEMU / CAD simulation task allocations across all 4 team members, and (3) CI/CD dual-remote Google Drive sync boundary resolution.
 - **Verification:**
   - Confirmed 56/56 automated test suite passing cleanly (`uv run pytest`).
 

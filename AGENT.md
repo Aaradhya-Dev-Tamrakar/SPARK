@@ -31,6 +31,7 @@ This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetic
    - **Deep-Research Evidence Base (19 Tracks)**: [`docs/SPARK_research_board_merged.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_research_board_merged.md).
    - **Post-Boards Resumption Roadmap**: [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
    - **Supervisor Progress Report**: [`docs/SPARK_SUPERVISOR_PROGRESS_REPORT.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_SUPERVISOR_PROGRESS_REPORT.md).
+   - **Robotics & Hardware-Free Defense Strategy**: [`docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md).
 
 ---
 
