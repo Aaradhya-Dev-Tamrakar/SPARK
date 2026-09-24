@@ -19,6 +19,11 @@ _Optimized for day-to-day use. Full history/rationale archive moved to §7
   - `AGENT.md`, `CLAUDE.md`, `README.md`, `docs/CHANGELOG.md`: Re-aligned core descriptions with project title and dual human/robotics capability.
 - **Strategic Architecture & SIL Defense Roadmap (`docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md`)**:
   - Formalized permanent project record preserving: (1) Humanoid robotics dual-use architectural analysis and gap breakdown, (2) Pre-hardware Software-in-the-Loop (SIL) / QEMU / CAD simulation task allocations across all 4 team members, and (3) CI/CD dual-remote Google Drive sync boundary resolution.
+- **Pre-Hardware Task Briefings Created (`docs/team_briefings/`)**:
+  - `README.md`: Master index and faculty defense narrative script.
+  - `RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md`: ESP-IDF virtual execution (QEMU/Wokwi), INT8 tensor arena profiling, wire format verification, and defense Q&A.
+  - `SANKALPA_CAD_ENCLOSURE_GUIDE.md`: 3D STEP module imports, parametric two-zone dorsal bracer in Fusion 360, M2.5 heat-set insert bosses, TPU 95A slicer settings, and defense Q&A.
+  - `SONIA_MOBILE_CLIENT_GUIDE.md`: Layer 3 UI (Flutter/React Native/PWA) consuming `gateway/server.py` in replay mode, interactive SHAP attribution bars, PDF viewer integration, and defense Q&A.
 - **Verification:**
   - Confirmed 56/56 automated test suite passing cleanly (`uv run pytest`).
 

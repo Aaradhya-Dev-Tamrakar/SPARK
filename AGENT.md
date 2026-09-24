@@ -32,6 +32,7 @@ This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetic
    - **Post-Boards Resumption Roadmap**: [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
    - **Supervisor Progress Report**: [`docs/SPARK_SUPERVISOR_PROGRESS_REPORT.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_SUPERVISOR_PROGRESS_REPORT.md).
    - **Robotics & Hardware-Free Defense Strategy**: [`docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_STRATEGIC_ROADMAP_ROBOTICS_AND_HARDWARE_DEFENSE.md).
+   - **Pre-Hardware Team Task Briefings**: [`docs/team_briefings/README.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/team_briefings/README.md).
 
 ---
 
