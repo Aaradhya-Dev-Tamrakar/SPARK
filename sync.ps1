@@ -305,8 +305,26 @@ if ($Build) {
     Write-Host "[Git Sync] Skipping thesis PDF build (use -Build to compile)." -ForegroundColor DarkGray
 }
 
-Write-Host "[Git Sync] Pulling latest changes from origin $currentBranch..." -ForegroundColor Cyan
-git pull --autostash origin $currentBranch
+# Run verification gate if present
+$verifyScript = "scripts/verify.py"
+if (Test-Path $verifyScript) {
+    Write-Host "[Git Sync] Running scripts/verify.py..." -ForegroundColor Cyan
+    python $verifyScript
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[Git Sync] Verification failed. Commit aborted." -ForegroundColor Red
+        exit 1
+    }
+}
+
+$hasRemoteOrigin = [bool](git remote get-url origin 2>$null)
+$remoteBranchExists = if ($hasRemoteOrigin) { [bool](git ls-remote --heads origin $currentBranch 2>$null) } else { $false }
+
+if ($hasRemoteOrigin -and $remoteBranchExists) {
+    Write-Host "[Git Sync] Pulling latest changes from origin $currentBranch..." -ForegroundColor Cyan
+    git pull --autostash origin $currentBranch
+} else {
+    Write-Host "[Git Sync] Branch '$currentBranch' is local-only or no origin remote. Skipping initial pull." -ForegroundColor Yellow
+}
 
 if ($PullOnly) {
     Write-Host "[Git Sync] Pull complete (PullOnly flag set)." -ForegroundColor Green
