@@ -44,36 +44,36 @@ Overall Integrated Progress: [█████████░░░░░░░�
 
 ## 🏗️ System Architecture
 
-```
-                                  WEARABLE NODE (ESP32-S3)
-   ┌──────────────────┐        ┌────────────────────────────────────────────────────────┐
-   │ MPU6050 6-DOF    │        │  [Layer 1: Pre-Impact Gate]                            │
-   │ IMU @ 200 Hz     │───────>│  |a| > 2.5g, Δt < 300 ms (Host-testable C/C++)         │
-   └──────────────────┘        └───────────────────────────┬────────────────────────────┘
-                                                           │ (Triggered: Motion Window)
-                               ┌───────────────────────────▼────────────────────────────┐
-                               │  [Layer 2: Edge ML Classifier]                         │
-                               │  Quantized 1D CNN on TFLite Micro (spark_cnn_int8.h)   │
-                               └───────────────────────────┬────────────────────────────┘
-                                                           │ BLE Notification (WIRE_FORMAT_v1)
-                                                           ▼
-                                  LOCAL GATEWAY (Laptop / Local Server)
-   ┌────────────────────────────────────────────────────────────────────────────────────┐
-   │  [BleReceiver / Replay / Serial] ──> [JSON Store] ──> [SHAP Attribution Engine]    │
-   │                                                                 │                  │
-   │                                                                 ▼                  │
-   │                                                   [ReportLab Clinical PDF Report]  │
-   │                                                                 │                  │
-   │                                 ┌───────────────────────────────┘                  │
-   │                                 ▼                                                  │
-   │  [Gateway REST API & Embedded Web Dashboard Server] (gateway/server.py)           │
-   └───────────────────────────────────────────────────────┬────────────────────────────┘
-                                                           │ Local Network (HTTP / REST)
-                                                           ▼
-                                  DISPLAY CLIENT (Smartphone / Web UI)
-   ┌────────────────────────────────────────────────────────────────────────────────────┐
-   │  Layer 3 Read-Only Responsive Dashboard (Live Alert Feed & Clinical PDF Viewer)    │
-   └────────────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Wearable ["WEARABLE NODE (ESP32-S3)"]
+        imu["MPU6050 6-DOF<br>IMU @ 200 Hz"]
+        l1["[Layer 1: Pre-Impact Gate]<br>|a| > 2.5g, Δt < 300 ms (Host-testable C/C++)"]
+        l2["[Layer 2: Edge ML Classifier]<br>Quantized 1D CNN on TFLite Micro (spark_cnn_int8.h)"]
+        
+        imu --> l1
+        l1 -- "(Triggered: Motion Window)" --> l2
+    end
+    
+    subgraph Gateway ["LOCAL GATEWAY (Laptop / Local Server)"]
+        recv["[BleReceiver / Replay / Serial]"]
+        json["[JSON Store]"]
+        shap["[SHAP Attribution Engine]"]
+        pdf["[ReportLab Clinical PDF Report]"]
+        api["[Gateway REST API & Embedded Web Dashboard Server]<br>(gateway/server.py)"]
+        
+        recv --> json
+        json --> shap
+        shap --> pdf
+        pdf --> api
+    end
+    
+    subgraph Client ["DISPLAY CLIENT (Smartphone / Web UI)"]
+        dash["Layer 3 Read-Only Responsive Dashboard<br>(Live Alert Feed & Clinical PDF Viewer)"]
+    end
+    
+    l2 -- "BLE Notification (WIRE_FORMAT_v1)" --> recv
+    api -- "Local Network (HTTP / REST)" --> dash
 ```
 
 ---
