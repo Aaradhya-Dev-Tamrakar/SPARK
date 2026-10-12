@@ -12,7 +12,21 @@ import sys
 
 
 def verify_file(filepath: str) -> tuple[bool, int, str]:
-    """Verifies a single CSV trial file. Returns (is_valid, row_count, error_msg)."""
+    """Validate the schema and sample count of one cohort trial CSV file.
+
+    The file must have a six-column header, every data row must contain six
+    columns, and it must contain at least 100 data rows. The first invalid
+    row or failed check determines the returned status and message.
+
+    Args:
+        filepath: Path to the CSV trial file to validate.
+
+    Returns:
+        A tuple containing a validity flag, the number of complete data rows
+        read before the result was determined, and a status message. The
+        message is ``"OK"`` for a valid file or describes the invalid schema,
+        row, short trial, or read error.
+    """
     try:
         with open(filepath, newline="") as f:
             reader = csv.reader(f)
@@ -35,7 +49,33 @@ def verify_file(filepath: str) -> tuple[bool, int, str]:
 
 
 def scan_cohort_dataset(dataset_dir: str) -> dict[str, object]:
-    """Scans and analyzes the cohort directory."""
+    """Scan CSV trials and aggregate cohort coverage and integrity statistics.
+
+    CSV files are discovered directly within ``dataset_dir``. Files whose
+    names contain at least three underscore-separated components are
+    attributed to an activity and subject; only valid files contribute to
+    trial counts and total samples.
+
+    Args:
+        dataset_dir: Directory containing cohort trial CSV files.
+
+    Returns:
+        A dictionary with these report fields:
+        - ``total_files``: Number of CSV files discovered.
+        - ``unique_subjects``: Sorted subject identifiers parsed from
+          qualifying filenames.
+        - ``unique_activities``: Sorted activity identifiers parsed from
+          qualifying filenames.
+        - ``fall_trials`` and ``adl_trials``: Counts of valid fall (activity
+          starts with ``"F"``) and non-fall trials.
+        - ``total_samples``: Number of data rows across valid trials.
+        - ``total_duration_hours``: Valid sample duration at 200 Hz, rounded
+          to three decimal places.
+        - ``corrupted_count`` and ``corrupted_files``: Count and
+          ``(filename, error_message)`` entries for invalid trials.
+        - ``subject_grid``: Mapping of subject identifiers to activity trial
+          counts, including files regardless of their validity.
+    """
     pattern = os.path.join(dataset_dir, "*.csv")
     files = glob.glob(pattern)
 
@@ -86,6 +126,12 @@ def scan_cohort_dataset(dataset_dir: str) -> dict[str, object]:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line options for cohort dataset verification.
+
+    Returns:
+        The parsed arguments namespace, containing ``data_dir`` (the cohort
+        directory) and ``min_subjects`` (the target minimum cohort size).
+    """
     parser = argparse.ArgumentParser(description="SPARK Nepal Cohort Dataset Verifier")
     parser.add_argument(
         "--data-dir", type=str, default="data/nepal_cohort", help="Path to cohort data"
@@ -97,6 +143,15 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Run the cohort verification report and determine the process status.
+
+    Prints a summary of the dataset and any invalid trial files. If the data
+    directory does not exist, reports that no trials have been recorded.
+
+    Returns:
+        ``0`` when the directory is absent or no corrupted files are found;
+        otherwise, ``1``.
+    """
     args = parse_args()
     print("=" * 70)
     print("SPARK Nepal Cohort Dataset Verification & Completion Audit")
