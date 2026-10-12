@@ -1,0 +1,191 @@
+
+=== Cell 2 (sec1_gpu) ===
+Mon Oct 12 17:54:50 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          Off |   00000000:00:04.0 Off |                    0 |
+| N/A   30C    P0             42W /  400W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+[+] TensorFlow Version: 2.21.0
+[+] Detected GPU Accelerator: PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')
+
+
+=== Cell 4 (sec2_drive) ===
+Mounted at /content/drive
+[*] Scanning Google Drive for SPARK dataset files...
+[+] Detected uncompressed dataset files in Drive: /content/drive/MyDrive/Share to Aaradhya/Super-NLM/SPARK
+
+[+] Final DATA_DIR: /content/drive/MyDrive/Share to Aaradhya/Super-NLM/SPARK
+[+] Verified all 3 dataset files exist and are ready for training!
+
+
+=== Cell 6 (sec3_split) ===
+Loading SisFall windows...
+  Total Windows: 38426, Window Shape: (200, 6)
+  FALL: 12586, NON_FALL: 25840
+  Train: 31714 | Val: 3005 | Test: 3707
+
+
+=== Cell 8 (sec4_aug) ===
+[*] Final augmented training set: 126856 windows
+
+
+=== Cell 10 (sec5_model) ===
+[1mModel: "functional"[0m
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃[1m [0m[1mLayer (type)                   [0m[1m [0m┃[1m [0m[1mOutput Shape          [0m[1m [0m┃[1m [0m[1m      Param #[0m[1m [0m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ input_layer ([38;5;33mInputLayer[0m)        │ ([38;5;45mNone[0m, [38;5;34m200[0m, [38;5;34m6[0m)         │             [38;5;34m0[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv1d ([38;5;33mConv1D[0m)                 │ ([38;5;45mNone[0m, [38;5;34m196[0m, [38;5;34m32[0m)        │           [38;5;34m992[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling1d ([38;5;33mMaxPooling1D[0m)    │ ([38;5;45mNone[0m, [38;5;34m98[0m, [38;5;34m32[0m)         │             [38;5;34m0[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout ([38;5;33mDropout[0m)               │ ([38;5;45mNone[0m, [38;5;34m98[0m, [38;5;34m32[0m)         │             [38;5;34m0[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv1d_1 ([38;5;33mConv1D[0m)               │ ([38;5;45mNone[0m, [38;5;34m96[0m, [38;5;34m64[0m)         │         [38;5;34m6,208[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_1 ([38;5;33mDropout[0m)             │ ([38;5;45mNone[0m, [38;5;34m96[0m, [38;5;34m64[0m)         │             [38;5;34m0[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ global_average_pooling1d        │ ([38;5;45mNone[0m, [38;5;34m64[0m)             │             [38;5;34m0[0m │
+│ ([38;5;33mGlobalAveragePooling1D[0m)        │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense ([38;5;33mDense[0m)                   │ ([38;5;45mNone[0m, [38;5;34m32[0m)             │         [38;5;34m2,080[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_2 ([38;5;33mDropout[0m)             │ ([38;5;45mNone[0m, [38;5;34m32[0m)             │             [38;5;34m0[0m │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_1 ([38;5;33mDense[0m)                 │ ([38;5;45mNone[0m, [38;5;34m2[0m)              │            [38;5;34m66[0m │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+
+[1m Total params: [0m[38;5;34m9,346[0m (36.51 KB)
+
+[1m Trainable params: [0m[38;5;34m9,346[0m (36.51 KB)
+
+[1m Non-trainable params: [0m[38;5;34m0[0m (0.00 B)
+
+
+=== Cell 12 (sec6_train) ===
+[*] Training Upgraded SPARK 1D CNN with Asymmetric Focal Loss on GPU...
+Epoch 1/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m22s[0m 6ms/step - accuracy: 0.7328 - loss: 0.1725 - val_accuracy: 0.8309 - val_loss: 0.0480
+Epoch 2/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.7846 - loss: 0.0550 - val_accuracy: 0.7691 - val_loss: 0.0502
+Epoch 3/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.7726 - loss: 0.0532 - val_accuracy: 0.8080 - val_loss: 0.0442
+Epoch 4/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.7872 - loss: 0.0502 - val_accuracy: 0.8512 - val_loss: 0.0379
+Epoch 5/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8048 - loss: 0.0471 - val_accuracy: 0.7960 - val_loss: 0.0406
+Epoch 6/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8221 - loss: 0.0442 - val_accuracy: 0.7611 - val_loss: 0.0428
+Epoch 7/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8309 - loss: 0.0421 - val_accuracy: 0.7601 - val_loss: 0.0397
+Epoch 8/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8393 - loss: 0.0401 - val_accuracy: 0.8206 - val_loss: 0.0365
+Epoch 9/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8420 - loss: 0.0390 - val_accuracy: 0.8369 - val_loss: 0.0340
+Epoch 10/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8452 - loss: 0.0384 - val_accuracy: 0.8416 - val_loss: 0.0351
+Epoch 11/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8281 - loss: 0.0424 - val_accuracy: 0.7551 - val_loss: 0.0370
+Epoch 12/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8352 - loss: 0.0393 - val_accuracy: 0.7757 - val_loss: 0.0368
+Epoch 13/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8443 - loss: 0.0366 - val_accuracy: 0.8256 - val_loss: 0.0342
+Epoch 14/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8512 - loss: 0.0344 - val_accuracy: 0.7757 - val_loss: 0.0369
+Epoch 15/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8565 - loss: 0.0327 - val_accuracy: 0.8146 - val_loss: 0.0350
+Epoch 16/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8601 - loss: 0.0316 - val_accuracy: 0.8250 - val_loss: 0.0318
+Epoch 17/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8655 - loss: 0.0302 - val_accuracy: 0.8429 - val_loss: 0.0321
+Epoch 18/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8683 - loss: 0.0294 - val_accuracy: 0.8549 - val_loss: 0.0287
+Epoch 19/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8736 - loss: 0.0284 - val_accuracy: 0.8449 - val_loss: 0.0340
+Epoch 20/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8769 - loss: 0.0275 - val_accuracy: 0.8246 - val_loss: 0.0330
+Epoch 21/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8780 - loss: 0.0270 - val_accuracy: 0.8413 - val_loss: 0.0310
+Epoch 22/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8832 - loss: 0.0262 - val_accuracy: 0.8373 - val_loss: 0.0316
+Epoch 23/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8850 - loss: 0.0254 - val_accuracy: 0.8725 - val_loss: 0.0326
+Epoch 24/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8871 - loss: 0.0251 - val_accuracy: 0.8306 - val_loss: 0.0327
+Epoch 25/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8882 - loss: 0.0244 - val_accuracy: 0.8260 - val_loss: 0.0344
+Epoch 26/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8875 - loss: 0.0241 - val_accuracy: 0.8473 - val_loss: 0.0339
+Epoch 27/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8905 - loss: 0.0238 - val_accuracy: 0.8373 - val_loss: 0.0340
+Epoch 28/50
+[1m1983/1983[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m5s[0m 2ms/step - accuracy: 0.8914 - loss: 0.0235 - val_accuracy: 0.8446 - val_loss: 0.0352
+
+
+=== Cell 14 (sec7_thresh) ===
+[1m94/94[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 11ms/step
+[*] Default Threshold:            0.5000
+[*] Youden's J Threshold:         0.5611
+[*] Safety-Constrained Threshold: 0.4236 (Sens >= 90%)
+
+
+=== Cell 16 (sec8_eval) ===
+===========================================================================
+HELD-OUT TEST SET EVALUATION MATRIX
+===========================================================================
+Metric                     Default (0.50)   Youden (0.56)   Safety (0.42)
+---------------------------------------------------------------------------
+Sensitivity (FALL)                 0.8057          0.7390          0.8981  [Target >= 0.90]
+Specificity (NON_FALL)             0.8559          0.9146          0.7621  [Target >= 0.90]
+F1-Score                           0.7424          0.7560          0.7185
+AUC-ROC                            0.9272          0.9272          0.9272
+===========================================================================
+
+
+=== Cell 18 (sec9_quant) ===
+Saved artifact at '/tmp/tmpx7383pig'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 200, 6), dtype=tf.float32, name='keras_tensor')
+Output Type:
+  TensorSpec(shape=(None, 2), dtype=tf.float32, name=None)
+Captures:
+  134004391271056: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391272016: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391271824: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391272976: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391272784: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391273360: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391272400: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  134004391274128: TensorSpec(shape=(), dtype=tf.resource, name=None)
+
+/usr/local/lib/python3.13/dist-packages/tensorflow/lite/python/convert.py:846: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn(
+
+[+] Quantized INT8 Model Size: 18912 bytes (18.47 KB)
+[+] Satisfies ESP32-S3 Flash Budget (<= 120 KB): True
+[+] Generated 'spark_cnn_int8.h' ready for firmware embedding!
+[*] You can download spark_cnn_int8.h directly from Colab files pane.
+
+
+=== Cell 20 (sec10_teardown_code) ===
+[+] All training, evaluation, and Drive exports completed successfully!
+[*] Programmatically unassigning runtime to conserve Colab compute credits...
