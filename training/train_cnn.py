@@ -157,11 +157,85 @@ def augment_windows(
     return augmented.astype(np.float32)
 
 
+def mixup_augment_windows(
+    windows: np.ndarray,
+    labels: np.ndarray,
+    rng: np.random.Generator,
+    alpha: float = 0.2,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Kinematics-safe Mixup: Blends pairs of time-series windows from the same
+    label group (fall-with-fall, nonfall-with-nonfall) to preserve physical validity
+    and prevent creating hybrid gravity vectors.
+    """
+    mixed_windows = windows.copy()
+    mixed_labels = labels.copy()
+
+    for cls in [0, 1]:
+        cls_idx = np.where(labels == cls)[0]
+        if len(cls_idx) < 2:
+            continue
+        shuffled = rng.permutation(cls_idx)
+        # Sample lambda from Beta distribution constrained to [0.75, 1.0] for physical stability
+        lam = rng.beta(alpha, alpha, size=len(cls_idx))
+        lam = np.maximum(lam, 1.0 - lam)
+        for i, idx in enumerate(cls_idx):
+            partner_idx = shuffled[i]
+            l = float(lam[i])
+            mixed_windows[idx] = l * windows[idx] + (1.0 - l) * windows[partner_idx]
+
+    return mixed_windows.astype(np.float32), mixed_labels
+
+
+class AsymmetricFocalLoss(tf.keras.losses.Loss):
+    """
+    Focal Loss specially calibrated for edge fall detection.
+    gamma: suppresses easy background ADL noise.
+    alpha: heavily penalizes missed safety events (falls).
+    """
+
+    def __init__(
+        self,
+        gamma: float = 2.0,
+        alpha: float = 0.75,
+        name: str = "asymmetric_focal_loss",
+        **kwargs,
+    ):
+        super().__init__(name=name, **kwargs)
+        self.gamma = float(gamma)
+        self.alpha = float(alpha)
+
+    def call(self, y_true, y_pred):
+        y_true = tf.cast(tf.squeeze(y_true), tf.int32)
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1.0 - 1e-7)
+        y_true_oh = tf.one_hot(y_true, depth=2)
+
+        # Probability of true class
+        p_t = tf.reduce_sum(y_true_oh * y_pred, axis=-1)
+        focal_weight = tf.pow(1.0 - p_t, self.gamma)
+
+        # Alpha weighting: alpha for fall (1), (1 - alpha) for non-fall (0)
+        alpha_t = tf.where(tf.equal(y_true, 1), self.alpha, 1.0 - self.alpha)
+
+        loss = -alpha_t * focal_weight * tf.math.log(p_t)
+        return tf.reduce_mean(loss)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({"gamma": self.gamma, "alpha": self.alpha})
+        return config
+
+
 def build_model(
     input_shape,
     dropout_rate: float = 0.2,
     use_batch_norm: bool = False,
     learning_rate: float = LEARNING_RATE,
+    loss_type: str = "sparse_categorical_crossentropy",
+    focal_gamma: float = 2.0,
+    focal_alpha: float = 0.75,
+    lr_schedule_type: str = "constant",
+    steps_per_epoch: int = 100,
 ) -> tf.keras.Model:
     """
     1D CNN architecture per proposal main.md sec:cnn_arch:
@@ -193,9 +267,29 @@ def build_model(
     layers.append(tf.keras.layers.Dense(2, activation="softmax"))
 
     model = tf.keras.Sequential(layers)
+
+    # Configure learning rate schedule or constant LR
+    if lr_schedule_type == "cosine":
+        lr_schedule = tf.keras.optimizers.schedules.CosineDecayRestarts(
+            initial_learning_rate=learning_rate,
+            first_decay_steps=max(10 * steps_per_epoch, 100),
+            t_mul=1.5,
+            m_mul=0.9,
+            alpha=1e-5,
+        )
+        optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
+    else:
+        optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    # Configure loss function
+    if loss_type == "focal":
+        loss_fn = AsymmetricFocalLoss(gamma=focal_gamma, alpha=focal_alpha)
+    else:
+        loss_fn = "sparse_categorical_crossentropy"
+
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-        loss="sparse_categorical_crossentropy",
+        optimizer=optimizer,
+        loss=loss_fn,
         metrics=["accuracy"],
     )
     return model
@@ -214,6 +308,30 @@ def find_optimal_threshold(y_true: np.ndarray, y_prob_fall: np.ndarray) -> float
     best_idx = int(np.argmax(j_scores))
     best_thresh = float(thresholds[best_idx])
     # Constrain to practical probability range [0.10, 0.90]
+    return float(np.clip(best_thresh, 0.10, 0.90))
+
+
+def find_safety_constrained_threshold(
+    y_true: np.ndarray,
+    y_prob_fall: np.ndarray,
+    target_sensitivity: float = 0.90,
+) -> float:
+    """
+    Finds optimal operating cutoff guaranteeing safety-constrained sensitivity (>= target_sensitivity),
+    maximizing specificity among candidate thresholds. Falls back to Youden's J if target is unreachable.
+    """
+    if len(np.unique(y_true)) < 2:
+        return 0.50
+
+    fpr, tpr, thresholds = roc_curve(y_true, y_prob_fall)
+    valid_idx = np.where(tpr >= target_sensitivity)[0]
+    if len(valid_idx) > 0:
+        best_sub_idx = int(np.argmin(fpr[valid_idx]))
+        best_thresh = float(thresholds[valid_idx[best_sub_idx]])
+    else:
+        j_scores = tpr - fpr
+        best_thresh = float(thresholds[np.argmax(j_scores)])
+
     return float(np.clip(best_thresh, 0.10, 0.90))
 
 
@@ -282,6 +400,49 @@ def main():
         default=True,
         help="Enable time-series data augmentation during training (default: True)",
     )
+    ap.add_argument(
+        "--loss",
+        type=str,
+        default="sparse_categorical_crossentropy",
+        choices=["sparse_categorical_crossentropy", "focal"],
+        help="Loss function: sparse_categorical_crossentropy or focal (default: sparse_categorical_crossentropy)",
+    )
+    ap.add_argument(
+        "--focal-gamma",
+        type=float,
+        default=2.0,
+        help="Focusing parameter gamma for Focal Loss (default: 2.0)",
+    )
+    ap.add_argument(
+        "--focal-alpha",
+        type=float,
+        default=0.75,
+        help="Alpha weight for fall class in Focal Loss (default: 0.75)",
+    )
+    ap.add_argument(
+        "--use-mixup",
+        action="store_true",
+        help="Apply kinematics-safe label-preserving Mixup to training windows",
+    )
+    ap.add_argument(
+        "--mixup-alpha",
+        type=float,
+        default=0.2,
+        help="Beta distribution parameter alpha for Mixup (default: 0.2)",
+    )
+    ap.add_argument(
+        "--lr-schedule",
+        type=str,
+        default="constant",
+        choices=["constant", "cosine"],
+        help="Learning rate schedule: constant or cosine (default: constant)",
+    )
+    ap.add_argument(
+        "--target-sensitivity",
+        type=float,
+        default=0.90,
+        help="Target clinical sensitivity threshold for operating cutoff (default: 0.90)",
+    )
     args = ap.parse_args()
 
     for required_file in ("windows.npy", "labels.npy", "meta.csv"):
@@ -325,6 +486,15 @@ def main():
     else:
         X_train_fit, y_train_fit = X_train, y_train
 
+    if args.use_mixup:
+        print(f"Kinematics-safe Mixup enabled (alpha={args.mixup_alpha})...")
+        X_mix, y_mix = mixup_augment_windows(X_train_fit, y_train_fit, rng, alpha=args.mixup_alpha)
+        X_train_fit = np.concatenate([X_train_fit, X_mix], axis=0)
+        y_train_fit = np.concatenate([y_train_fit, y_mix], axis=0)
+        shuffle_idx = rng.permutation(len(y_train_fit))
+        X_train_fit, y_train_fit = X_train_fit[shuffle_idx], y_train_fit[shuffle_idx]
+        print(f"  Training set after Mixup: {len(X_train_fit)} windows")
+
     # Class weighting with positive class boost
     class_weights_arr = compute_class_weight(
         class_weight="balanced", classes=np.array([0, 1]), y=y_train
@@ -333,15 +503,29 @@ def main():
         0: float(class_weights_arr[0]),
         1: float(class_weights_arr[1] * args.pos_weight_boost),
     }
-    print(
-        f"Class weights (imbalance correction with {args.pos_weight_boost:.2f}x boost): {class_weight}"
-    )
 
+    # For Focal Loss, alpha handles class imbalance internally
+    fit_class_weight = None if args.loss == "focal" else class_weight
+    if args.loss == "focal":
+        print(
+            f"Loss: Asymmetric Focal Loss (gamma={args.focal_gamma}, alpha={args.focal_alpha})"
+        )
+    else:
+        print(
+            f"Class weights (imbalance correction with {args.pos_weight_boost:.2f}x boost): {class_weight}"
+        )
+
+    steps_per_epoch = max(len(X_train_fit) // BATCH_SIZE, 1)
     model = build_model(
         input_shape=windows.shape[1:],
         dropout_rate=args.dropout,
         use_batch_norm=args.use_batch_norm,
         learning_rate=LEARNING_RATE,
+        loss_type=args.loss,
+        focal_gamma=args.focal_gamma,
+        focal_alpha=args.focal_alpha,
+        lr_schedule_type=args.lr_schedule,
+        steps_per_epoch=steps_per_epoch,
     )
     model.summary()
 
@@ -349,14 +533,14 @@ def main():
         monitor="val_loss", patience=EARLY_STOP_PATIENCE, restore_best_weights=True
     )
 
-    print(f"Training (Adam lr={LEARNING_RATE}, batch={BATCH_SIZE}, max {EPOCHS} epochs)...")
+    print(f"Training (lr={LEARNING_RATE}, schedule={args.lr_schedule}, batch={BATCH_SIZE}, max {EPOCHS} epochs)...")
     history = model.fit(
         X_train_fit,
         y_train_fit,
         validation_data=(X_val, y_val),
         batch_size=BATCH_SIZE,
         epochs=EPOCHS,
-        class_weight=class_weight,
+        class_weight=fit_class_weight,
         callbacks=[early_stop],
         verbose=2,
     )
@@ -373,28 +557,41 @@ def main():
         for epoch_idx in range(len(history.history[fieldnames[0]])):
             writer.writerow([epoch_idx] + [history.history[k][epoch_idx] for k in fieldnames])
 
-    # Validation-based threshold tuning (Youden's Index)
-    print("\nTuning decision threshold on validation set (Youden's Index)...")
+    # Validation-based threshold tuning (Youden's Index & Safety-Constrained)
+    print("\nTuning decision thresholds on validation set...")
     val_probs = model.predict(X_val, verbose=0)[:, 1]
     optimal_threshold = find_optimal_threshold(y_val, val_probs)
-    print("  Default threshold: 0.5000")
-    print(f"  Optimal threshold: {optimal_threshold:.4f}")
+    safety_threshold = find_safety_constrained_threshold(
+        y_val, val_probs, target_sensitivity=args.target_sensitivity
+    )
+    print(f"  Default threshold:               0.5000")
+    print(f"  Youden's J optimal threshold:    {optimal_threshold:.4f}")
+    print(f"  Safety-constrained threshold:    {safety_threshold:.4f} (target sens >= {args.target_sensitivity:.2f})")
 
     # Evaluate on held-out test set
     print("\nEvaluating on held-out test set...")
     default_metrics = evaluate(model, X_test, y_test, threshold=0.50)
     tuned_metrics = evaluate(model, X_test, y_test, threshold=optimal_threshold)
+    safety_metrics = evaluate(model, X_test, y_test, threshold=safety_threshold)
 
     # Save model config metadata
     config_data = {
         "architecture": "SPARK_1D_CNN",
-        "optimal_threshold": round(optimal_threshold, 4),
+        "loss_type": args.loss,
+        "focal_gamma": args.focal_gamma if args.loss == "focal" else None,
+        "focal_alpha": args.focal_alpha if args.loss == "focal" else None,
+        "use_mixup": args.use_mixup,
+        "lr_schedule": args.lr_schedule,
         "default_threshold": 0.50,
+        "optimal_threshold": round(optimal_threshold, 4),
+        "safety_threshold": round(safety_threshold, 4),
+        "target_sensitivity": args.target_sensitivity,
         "dropout_rate": args.dropout,
         "use_batch_norm": args.use_batch_norm,
         "pos_weight_boost": args.pos_weight_boost,
         "metrics_default": default_metrics,
         "metrics_tuned": tuned_metrics,
+        "metrics_safety": safety_metrics,
     }
     (model_dir / "model_config.json").write_text(
         json.dumps(config_data, indent=2) + "\n", encoding="utf-8"
@@ -402,18 +599,19 @@ def main():
 
     report_lines = [
         "SPARK 1D CNN -- Held-Out Test Set Evaluation Report",
-        "=" * 60,
+        "=" * 75,
         f"Test Windows:  {len(test_idx)} ({int(y_test.sum())} FALL, {int((1 - y_test).sum())} NON_FALL)",
         f"Test Subjects: {len(set(subjects[test_idx]))}",
-        f"Optimal Threshold (Youden's J on Val): {optimal_threshold:.4f}",
+        f"Loss Function: {args.loss} | LR Schedule: {args.lr_schedule} | Mixup: {args.use_mixup}",
+        f"Thresholds:    Default=0.5000, Youden={optimal_threshold:.4f}, Safety={safety_threshold:.4f}",
         "",
-        f"{'Metric':<30} {'Default (0.50)':>15} {'Tuned (' + f'{optimal_threshold:.2f}' + ')':>15}",
-        f"{'-' * 30} {'-' * 15} {'-' * 15}",
-        f"  {'Sensitivity (Recall, FALL)':<28} {default_metrics['sensitivity']:>15.4f} {tuned_metrics['sensitivity']:>15.4f}  (target >= 0.90)",
-        f"  {'Specificity (NON_FALL)':<28} {default_metrics['specificity']:>15.4f} {tuned_metrics['specificity']:>15.4f}  (target >= 0.90)",
-        f"  {'F1-Score':<28} {default_metrics['f1']:>15.4f} {tuned_metrics['f1']:>15.4f}",
-        f"  {'AUC-ROC':<28} {default_metrics['auc_roc']:>15.4f} {tuned_metrics['auc_roc']:>15.4f}",
-        "=" * 60,
+        f"{'Metric':<28} {'Default (0.50)':>14} {'Youden (' + f'{optimal_threshold:.2f}' + ')':>14} {'Safety (' + f'{safety_threshold:.2f}' + ')':>14}",
+        f"{'-' * 28} {'-' * 14} {'-' * 14} {'-' * 14}",
+        f"  {'Sensitivity (FALL)':<26} {default_metrics['sensitivity']:>14.4f} {tuned_metrics['sensitivity']:>14.4f} {safety_metrics['sensitivity']:>14.4f}  (target >= 0.90)",
+        f"  {'Specificity (NON_FALL)':<26} {default_metrics['specificity']:>14.4f} {tuned_metrics['specificity']:>14.4f} {safety_metrics['specificity']:>14.4f}  (target >= 0.90)",
+        f"  {'F1-Score':<26} {default_metrics['f1']:>14.4f} {tuned_metrics['f1']:>14.4f} {safety_metrics['f1']:>14.4f}",
+        f"  {'AUC-ROC':<26} {default_metrics['auc_roc']:>14.4f} {tuned_metrics['auc_roc']:>14.4f} {safety_metrics['auc_roc']:>14.4f}",
+        "=" * 75,
     ]
     report = "\n".join(report_lines)
     print(report)
