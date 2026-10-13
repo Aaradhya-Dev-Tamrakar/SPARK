@@ -21,24 +21,30 @@
 ## 📊 Project Progress & Roadmap
 
 > [!NOTE]
-> **Board Exam Pause (August 22, 2026)**: Active development paused for board examinations. All context, 19-track deep-research synthesis, and phase-by-phase post-boards execution roadmap preserved in [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
+> Procurement is expected to begin next semester, after the Dashain, Tihar, and Chhath holidays. The current phase is pre-procurement readiness: reconcile the order package and finish protocol and ethics preparation. Hardware bring-up follows parts arrival; volunteer recording requires logger validation and institutional approval. See the [resumption plan](docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
 
-```
-Overall Integrated Progress: [█████████░░░░░░░░░░░] 45% (Core ML/Gateway/Research Complete; Hardware Assembly, CAD, Nepal Cohort & Mobile UI Pending)
-```
+### Delivery Milestones
 
-### Module Breakdown by Assignee
+| Phase | GitHub milestone | Status and exit condition |
+| :--- | :--- | :--- |
+| Pre-procurement readiness | [Pre-Procurement Readiness](https://github.com/Aaradhya-Dev-Tamrakar/SPARK/milestone/1) | **Current.** Complete BOM review, protocol activity mapping, and ethics preparation before ordering. |
+| Procurement and hardware bring-up | [Hardware Bring-Up](https://github.com/Aaradhya-Dev-Tamrakar/SPARK/milestone/2) | **Queued.** Procurement starts next semester after the holidays; assemble and validate the logger after parts arrive. |
+| Integration and validation | [System Integration and Validation](https://github.com/Aaradhya-Dev-Tamrakar/SPARK/milestone/3) | **Later.** Complete dependent gateway, explainability, model-reporting, and integrated validation work. |
 
-| Module / Workstream | Assignee | Status / Progress | Deliverable Reality |
-| :--- | :--- | :---: | :--- |
-| **ML Modeling & Quantization** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | SisFall ingestion, 1D CNN ($0.9185$ AUC-ROC), $18.5\text{ KB}$ INT8 quantizer & C-header export. |
-| **Gateway & SHAP Subsystem** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | BLE client, multi-scenario SHAP explainer, PDF reports, and local REST server. |
-| **Protocol & BOM Architecture** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | `WIRE_FORMAT_v1.md`, `DATA_COLLECTION_PROTOCOL.md`, and order form locked. |
-| **Deep-Research Synthesis (19 Tracks)** | **Aaradhya Dev Tamrakar** | `[████████████████████] 100%` | Novelty claims narrowed (1, 3, 4), ML strategy locked (Focal Loss), protocol mapped (F09–F15, D15–D19), power budget sharpened, DFM guidelines, venue targets (ICACT 2027). |
-| **Physical ESP32-S3 Firmware** | **Rupesh Kadel** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Host C++ tests pass, but **0% physical progress** (awaiting board delivery for on-chip I2C/BLE & silicon inference). |
-| **Enclosure CAD & 3D Printing** | **Sankalpa Lamsal** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Concept art only; **0% CAD progress** (no `.step`/`.stl` parametric model, no TPU slicer profile, no prints). |
-| **Layer 3 Mobile Display Client** | **Sonia Thapa** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Gateway backend REST API ready; **0% mobile UI progress** (no mobile app or frontend client built yet). |
-| **Physical Nepal Trial Collection** | **Team (KEC Cohort)** | `[░░░░░░░░░░░░░░░░░░░░] 0%` | Protocol drafted; **0% trial data recorded** (pending physical hardware assembly & crash-mat sessions). |
+Milestones have no due dates until the next-semester ordering and delivery windows are confirmed.
+
+### Workstream Status
+
+| Module / workstream | Assignee | Status | Current deliverable or next condition |
+| :--- | :--- | :--- | :--- |
+| **ML Modeling & Quantization** | Aaradhya Dev Tamrakar | **Complete** | SisFall ingestion, subject-grouped CNN evaluation, and $18.5\text{ KB}$ INT8 model export. |
+| **Gateway & Explainability** | Aaradhya Dev Tamrakar | **Complete** | BLE receiver, explainability pipeline, PDF reports, and local REST server. |
+| **Protocol & Procurement Preparation** | Aaradhya Dev Tamrakar | **In progress** | Protocol draft and order form exist; activity review, ethics preparation, and order readiness remain. |
+| **Deep-Research Synthesis** | Aaradhya Dev Tamrakar | **Complete** | Research synthesis and documented architecture decisions are available in the research board. |
+| **Physical ESP32-S3 Firmware** | Rupesh Kadel | **Hardware pending** | Host-testable components exist; physical I2C, BLE, and on-device validation follow board receipt. |
+| **Enclosure CAD & 3D Printing** | Sankalpa Lamsal | **Not started** | Parametric model and slicer profile remain; proceed when required parts and interface dimensions are available. |
+| **Layer 3 Mobile Display Client** | Sonia Thapa | **Not started** | Gateway API exists; display client implementation and integration remain. |
+| **Nepal Cohort Trials** | Team (KEC Cohort) | **Not started** | Begin only after institutional approval and logger validation. |
 
 ---
 
@@ -95,7 +101,7 @@ flowchart TD
 
 ## 📌 Active Development Tracking & Remaining Works
 
-### ✅ Completed Milestones
+### ✅ Completed Work
 - [x] **Proposal Defense**: Successfully defended mid-term proposal (Passed July 9, 2026).
 - [x] **BOM & Procurement Lock**: Component order form finalized (`docs/SPARK_Component_Order_Form.xlsx`, Daraz/Himalayan Solution/Giga Nepal).
 - [x] **Electrical Safety & Charging Architecture**: Dual single-purpose USB-C ports locked (Action #38, off-body charging only).

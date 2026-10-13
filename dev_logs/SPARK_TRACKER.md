@@ -3,7 +3,9 @@
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** September 24, 2026 (v57 — Subject-Agnostic Platform Realignment & Humanoid Robotics Integration) ·
+**Last updated:** October 13, 2026 (resumption timing update; v57 project-state snapshot) ·
+
+> **Resumption timing update (October 13, 2026):** Hardware procurement is now expected to start next semester, after the Dashain, Tihar, and Chhath holidays. Until then, prioritize work that does not depend on ordered parts: reconcile the canonical BOM and open sourcing questions, complete and review the data collection protocol, and prepare ethics-submission materials. Hardware assembly, logger bring-up, and volunteer data collection remain gated on parts being available and required institutional approval. The week-based dates in older plans are superseded by this dependency order; schedule calendar dates with the team next semester.
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
@@ -372,6 +374,20 @@ Landed via three raw commits (see above note) — future edits must route throug
 ---
 
 ## §0.5 — Post-Boards Priority Resumption Items (Phase 1)
+
+**Current timing:** Procurement is expected to begin next semester after the Dashain, Tihar, and Chhath holidays (updated October 13, 2026). The sequence below starts with no-purchase preparation; hardware-dependent milestones have no fixed calendar dates yet.
+
+1. **Pre-procurement preparation (now):**
+   - Reconcile the canonical `docs/SPARK_Component_Order_Form.xlsx` with open sourcing/status items in §1; confirm quantities, funding, vendors, and any unresolved safety-critical specifications before submitting the order.
+   - Review `docs/DATA_COLLECTION_PROTOCOL.md`, including the remaining activity mappings and sample-size rationale, and prepare the supervisor/HOD ethics-review package. Do not begin volunteer collection before required approval.
+2. **Procurement (next semester, after Dashain/Tihar/Chhath):**
+   - Place the approved component order and record order/receipt status against Actions #16 and #18 and other applicable BOM actions.
+3. **Hardware bring-up (after required parts arrive):**
+   - Assemble the logger rig and verify stable 200 Hz sensor streaming and recording before cohort sessions.
+4. **Cohort collection (after logger validation and institutional approval):**
+   - Run the approved protocol, then proceed to transfer learning, quantization, firmware deployment, and end-to-end validation.
+
+**Legacy post-boards checklist (historical detail; timing superseded above):**
 
 1. **Protocol Ethics Sign-Off:**
    - Add remaining 12 activity rows (F09–F15 falls, D15–D19 ADLs) & $N=12\text{--}20$ sample size rationale to [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md).
