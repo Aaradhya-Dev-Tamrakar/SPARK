@@ -33,6 +33,27 @@
 
 Milestones have no due dates until the next-semester ordering and delivery windows are confirmed.
 
+### Next-Semester Execution Gates
+
+```mermaid
+flowchart LR
+    prep["Current: reconcile BOM, review protocol, prepare ethics submission"]
+    order["Next semester, after holidays: place approved order"]
+    arrive["Required parts arrive"]
+    bringup["Assemble logger and validate 200 Hz recording"]
+    approval["Institutional approval"]
+    trials["Begin volunteer cohort sessions"]
+    integrate["Integrate firmware, gateway, and reporting; validate end to end"]
+
+    prep --> order --> arrive --> bringup
+    prep --> approval
+    bringup --> trials
+    approval --> trials
+    trials --> integrate
+```
+
+Volunteer sessions wait for both logger validation and institutional approval. Calendar dates will be added after the ordering and delivery windows are confirmed.
+
 ### Workstream Status
 
 | Module / workstream | Assignee | Status | Current deliverable or next condition |
@@ -81,6 +102,25 @@ flowchart TD
     l2 -- "BLE Notification (WIRE_FORMAT_v1)" --> recv
     api -- "Local Network (HTTP / REST)" --> dash
 ```
+
+### Detection Event Flow
+
+```mermaid
+flowchart TD
+    sample["MPU6050 samples motion at 200 Hz"] --> gate{"Layer 1 pre-impact gate triggered?"}
+    gate -- "No: ordinary motion" --> sample
+    gate -- "Yes: capture motion window" --> classifier["Layer 2 quantized CNN on ESP32-S3"]
+    classifier --> event["Emit event and confidence over BLE"]
+    event --> receiver["Laptop gateway receives event"]
+    receiver --> store["Store event as local JSON"]
+    store --> explain["Compute SHAP explanation"]
+    explain --> report["Generate clinical PDF report"]
+    store --> api["Expose event through local REST API"]
+    report --> api
+    api --> client["Phone or web client displays alerts and reports"]
+```
+
+The phone and web client are display-only. BLE reception, event storage, explainability, and PDF generation run on the gateway.
 
 ---
 
