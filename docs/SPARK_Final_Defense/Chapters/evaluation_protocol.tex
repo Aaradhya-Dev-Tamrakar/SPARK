@@ -1,0 +1,48 @@
+\section{Human evaluation protocol awaiting approval and data}
+\Pending{Institutional approval, parts receipt, physical logger validation, recruitment and actual recordings. This section specifies a future study; it contains no collected cohort results.}
+
+The approved protocol must define eligible participants, risk screening, safe supervised activity procedures, consent and withdrawal, handling of identifiable recordings, and permitted retention/sharing. The proposed 12--20-person range is a planning assumption, not a power calculation. The institution must approve the final activity matrix and participant protections before recruitment/recording. Elderly or frail participants must not be assumed to perform the same simulated-fall protocol as healthy young adults.
+
+Maintain separate participant, session, trial, and event identifiers. Document wrist side, sensor attachment/orientation, device settings, timestamps, environmental conditions, and recording failures. Raw sensor traces and independent annotations must be retained with access controls appropriate to the approved protocol. Data used for adaptation cannot also be called untouched evaluation data.
+
+\subsection{Logger acceptance record}
+For each validation recording report intended and actual sample rate, count, duration, missing/duplicate samples, timestamp monotonicity, interval distribution, saturation, sensor configuration, and recorder/schema compatibility. Confirm known static orientations and angular-rate conventions against the device configuration. Validate file hashes and conversion round trips. Freeze the adapter from acquired counts to the trained model inputs, including units and any normalization.
+
+The 200 Hz target is not enough: a CSV carrying a configured rate must also show the observed cadence. Define acceptance tolerances with the supervisor before collection. Reject or flag records that fail those criteria; do not silently interpolate long gaps into plausible motion.
+
+\subsection{Annotation and holdout}
+Annotators should mark activity onset, loss of balance, first fall-related contact, sustained post-fall posture, and recovery from synchronized independent observation. Document ambiguity and disagreement without consulting classifier output. Preserve non-fall observation time, including recovery attempts and vigorous daily activities. If video synchronization is used, record its uncertainty.
+
+Freeze subject-held-out splits before fitting transformations, adaptation, or threshold tuning. Preserve fall/non-fall class counts by participant and trial. If data are sparse, report the study as exploratory and avoid demographic subgroup scores for insufficient samples ($n<30$). Do not treat windows or augmented samples as participant replication.
+
+\subsection{Endpoints and matching}
+Predefine a one-to-one event matching interval relative to annotated onset/contact, duplicate-alarm rules, and the treatment of uncertain labels before evaluation. Report all annotated falls in the denominator, including those never admitted by the gate. Event sensitivity is
+\[
+ S_{event}=\frac{N_{matched}}{N_{annotated\ falls}},\quad
+ \mathrm{FAR}=\frac{N_{unmatched\ alarms}}{H_{valid\ nonfall}}.
+\]
+For offline classifier comparison also report the confusion counts and
+\[
+ S=\frac{TP}{TP+FN},\quad Sp=\frac{TN}{TN+FP},\quad
+ F_1=\frac{2TP}{2TP+FP+FN}.
+\]
+Specify the positive class and analysis unit for each table. AUC evaluates score ordering across thresholds; it does not guarantee the alarm quality of the chosen operating point. Report specificity together with sensitivity and false alarms per hour rather than selecting the most favorable metric.
+
+Use subject-clustered bootstrap 95\% confidence intervals when the cohort supports that analysis. Retain counts and show instability for small samples; an interval calculation does not remove a representativeness gap. Event-level binomial intervals can supplement, but must not hide clustering or short exposure. No confidence interval is invented for the existing archived metrics.
+
+\subsection{Ablations and failure analysis}
+Evaluate gate-only, classifier-only, and integrated gated detection against the same untouched event manifest. Compare FP32 and INT8 outputs with the same adapter and operating threshold policy. If adaptation is tested, report the source model, development data, frozen layers, and adapted hash separately from the baseline. Diagnose misses by gate rejection, model rejection, missing samples, sensor clipping, transport loss, and annotation uncertainty.
+
+Test daily activities that resemble falls, deliberate arm motion, recoverable imbalance, sensor detachment, and connectivity interruption only within the approved safety scope. Report unavailable conditions rather than substituting synthetic fixtures for human recordings. Synthetic fixtures remain useful for software robustness, but they do not enter the human performance table.
+
+\section{Hardware and integration measurements awaiting a device}
+\Pending{Real MCU inference, completed sensor driver, physical transport and power measurements. The following measurements cannot be populated from laptop benchmarks.}
+
+Record the hardware revision, firmware hash, SDK/compiler, clock configuration, model hash, tensor-arena size, stack/heap measurements, and sensor/radio configuration. Measure acquisition/buffering delay, gate decision time, interpreter execution, transmission/reassembly, gateway processing, and display availability separately. Report distributions over recorded events rather than one unexplained latency number.
+
+For power, measure current in acquisition-only, gated inference, transport, idle, and any sleep modes actually implemented. Record usable battery capacity, protection cutoff, regulator behavior, temperature, radio duty cycle, and full-run endurance. State whether current is measured at the cell or a regulated rail. Reconcile enclosure heat and off-body charging constraints with the assembled hardware.
+
+Physical BLE tests must cover complete-payload framing, maximum message size, interruption/reconnect, duplicate records, dropped events, and device-clock rollover. Report parser/storage fixture success separately from over-the-air delivery. No emergency response reliability or clinical decision-support approval follows from generating a PDF.
+
+\section{Submission gate}
+Replace pending blocks only after review of immutable data/run manifests, held-out predictions, software verification, and device records. Keep unmet targets and negative findings in the final text. Confirm the authors' declaration and institutional forms with the named team and supervisor; signatures and dates are completed by the authorized people, not inferred during thesis preparation.

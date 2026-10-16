@@ -1,0 +1,36 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  stage/.style={draw=black!60, rounded corners=2pt, fill=black!3,
+    align=center, text width=5.1cm, minimum height=9mm,
+    inner sep=5pt, font=\small},
+  arrow/.style={-{Stealth[length=2mm]}, thick, draw=black!65}
+]
+\node[stage, text width=7.4cm] (prep) at (0,0)
+  {\textbf{Preparation and protocol review}};
+\node[stage] (order) at (-2.8,-1.35)
+  {\textbf{Procurement}\\Next semester, after holidays};
+\node[stage] (receipt) at (-2.8,-2.75)
+  {Parts receipt and inspection};
+\node[stage] (logger) at (-2.8,-4.0)
+  {Logger validation};
+\node[stage, text width=3.7cm, fill=white] (approval) at (3.5,-1.7)
+  {\textbf{Institutional approval}\\May progress in parallel};
+\node[draw=black!65, diamond, aspect=1.7, inner sep=3pt,
+  font=\small\bfseries] (gate) at (0,-5.2) {AND};
+\node[stage, text width=7.4cm] (collect) at (0,-6.3)
+  {Approved cohort collection};
+\node[stage, text width=7.4cm] (evaluate) at (0,-7.55)
+  {Integrated evaluation\\and final evidence review};
+\draw[arrow] (prep.south) -- ++(0,-.2) -| (order.north);
+\draw[arrow] (prep.south) -- ++(0,-.2) -| (approval.north);
+\draw[arrow] (order) -- (receipt);
+\draw[arrow] (receipt) -- (logger);
+\draw[arrow] (logger.south) |- (gate.west);
+\draw[arrow] (approval.south) |- (gate.east);
+\draw[arrow] (gate) -- (collect);
+\draw[arrow] (collect) -- (evaluate);
+\end{tikzpicture}
+\caption{Completion gates. Volunteer recording begins only after both logger validation and institutional approval.}
+\label{fig:gates}
+\end{figure}

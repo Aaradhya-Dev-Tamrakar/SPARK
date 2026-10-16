@@ -1,0 +1,13 @@
+\section{Requirements and acceptance evidence}
+These requirements describe intended behavior, not completed certification.
+\begin{description}
+\item[FR-01] The logger shall preserve timestamped six-channel recordings and sample-quality metadata.
+\item[FR-02] The classifier shall use a versioned sampling, scaling, shape, and threshold contract tied to a model hash.
+\item[FR-03] The event pipeline shall preserve unique event identity, confidence, units, and model/device provenance.
+\item[FR-04] The gateway shall store events locally and expose reports to a display-only client.
+\item[FR-05] Volunteer recording shall require both institutional approval and logger validation.
+\item[NFR-01] The planned acquisition target shall be 200 Hz (5 ms nominal period); measured gaps/jitter and actual delivered rate shall be reported before collection.
+\item[NFR-02] Existing model input shall be 200 samples at 100 Hz with six channels unless a new model contract is evaluated.
+\item[NFR-03] The archived model-size design budget shall be 120 KB; full firmware flash and RAM shall be measured separately.
+\item[NFR-04] Sensitivity and specificity targets of at least 90\% shall be treated as goals, with counts and uncertainty reported; no current result is declared to satisfy both.
+\end{description}

@@ -1,20 +1,20 @@
 # AGENT.md — Developer & AI Agent Guidelines
 
-This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetics*), a two-layer gated fall detection, kinetic pattern recognition, and explainability system. Validated empirically on human gait for clinical elderly monitoring, the core architecture is designed with modular extensibility to out-of-band bipedal robotic safety modules. All developers and AI coding agents operating on this codebase must adhere to the rules, architecture constraints, and conventions detailed below.
+This repository contains **SPARK** (*Signal Pattern Analysis & Real-time Kinetics*), a proposed two-layer gated human fall detection and explainability system with offline SisFall artifacts and host-testable software. Physical wrist-worn, clinical, and integrated MCU validation remain pending. Robot fall monitoring is an open research extension requiring separate data, adaptation, and validation. All developers and AI coding agents operating on this codebase must adhere to the rules, architecture constraints, and conventions detailed below.
 
 ---
 
 ## 1. Non-Negotiable Project Architecture & Constraints
 
 1. **Two-Layer Gated Fall Detection Pipeline**:
-   - **Layer 1 (Pre-Impact Gate on MCU)**: Fast, host-testable threshold filter ($|a| > 2.5g$, $\Delta t < 300\text{ ms}$) on ESP32-S3 to filter mundane Activities of Daily Living (ADL) without waking heavy ML compute.
-   - **Layer 2 (Post-Impact Classifier on MCU)**: Quantized CNN model running under **TFLite Micro** on ESP32-S3 evaluating the 200 Hz 3-second motion window ($200 \times 6$).
-   - **Gateway (Laptop Compute)**: BLE receiver, local JSON record storage, per-event **SHAP explainability** computation, and automated clinical PDF report generation (`reportlab`).
+   - **Layer 1 (Intended MCU Gate)**: Host-testable threshold code currently triggers at magnitude $\ge 2.5g$ held for $>300\text{ ms}$. This differs from the older short-spike prose and requires design review and recall evaluation before deployment; pre-impact timing is not measured.
+   - **Layer 2 (Intended MCU Classifier)**: Existing training preprocessing uses **100 Hz, 200 samples, six channels (2 s)**. The planned logger uses 200 Hz; a 200 Hz three-second model would require 600 samples and new evaluation. `tflite/inference.cpp` remains a stub, not running TFLite Micro. Resolve unit scaling, window buffering, model generation, and thresholds before integration.
+   - **Gateway (Laptop Compute)**: BLE receiver, local JSON storage, peak-feature explanation fallback, optional raw-window gradient-times-input attribution, and PDF reporting (`reportlab`). Gradient attribution is not exact SHAP; v1 events omit raw windows, so waveform attribution requires a separately validated input path.
    - **Mobile Phone Client**: **Display-only** local-network reader. **DO NOT** implement on-phone BLE drivers or mobile-native SHAP/PDF compilation.
 
 2. **Wire Format Protocol Invariance (`docs/WIRE_FORMAT_v1.md`)**:
    - Firmware-to-gateway event schema is strictly governed by `docs/WIRE_FORMAT_v1.md`.
-   - JSON payload includes `timestamp_ms`, `event_id`, `layer1_triggered`, `confidence` ($P(\text{fall}) = \text{class\_probs}[1]$), and `peak_features` ($a_{\max}, \omega_{\max}$).
+   - v1 JSON payload includes `event_id`, `device_id`, `firmware_version`, `timestamp_ms`, `confidence` ($P(\text{fall}) = \text{class\_probs}[1]$), and six signed per-axis `peak_features` in g and degrees/s. It does not send `layer1_triggered` or a raw waveform; any such addition requires a versioned contract change.
    - Any modification to the protocol requires synchronized updates across both `firmware/` and `gateway/`.
 
 3. **Hardware & Enclosure Locks**:

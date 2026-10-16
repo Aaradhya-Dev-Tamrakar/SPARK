@@ -144,7 +144,17 @@ Input Window (200 x 6)
 
 ## 6. Post-Boards Resumption Roadmap & Action Plan
 
-With the repository frozen for upcoming board examinations, execution will immediately resume in the post-exam semester phase following the structured 5-phase schedule:
+**Timing update (October 13, 2026):** Component procurement is expected to start next semester after the Dashain, Tihar, and Chhath holidays. The dated schedule below is a historical August 2026 estimate and is superseded. Complete BOM/protocol/ethics preparation before ordering; hardware bring-up follows parts arrival, and volunteer data collection requires both logger validation and institutional approval. Set new calendar dates with the team once the next-semester order and delivery window are known.
+
+The intended dependency order is:
+
+1. Reconcile the canonical BOM and prepare the order package.
+2. Complete protocol review and prepare the supervisor/HOD ethics submission; obtain required approval before volunteer recruitment or recording.
+3. Place the order next semester after the holidays and confirm receipt.
+4. Assemble and validate the logger rig after the required parts arrive.
+5. Conduct approved cohort collection, review data quality, then fine-tune, quantize, and run integrated validation.
+
+The schedule below is retained for historical context only:
 
 ```mermaid
 gantt

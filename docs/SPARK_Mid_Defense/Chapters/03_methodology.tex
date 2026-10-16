@@ -1,0 +1,44 @@
+\chapter{Architecture and Methodology}
+\section{System allocation}
+The intended node uses an ESP32-S3 and MPU6050. The laptop gateway owns transport reception, local storage, explanation, and PDF generation. The mobile/display layer reads the gateway API. Figure~\ref{fig:architecture} separates the intended wearable from implemented gateway modules.
+\input{Figures/system_architecture}
+
+\section{Sampling and input contract}
+Let $f_s$ be sampling frequency and $N$ the number of samples. The nominal window duration is $T=N/f_s$. Existing preprocessing sets $f_s=100\,\mathrm{Hz}$ and $N=200$, hence $T=2\,\mathrm{s}$. Model arrays have six channels ordered as acceleration then angular-rate axes. The planned logger targets 200 Hz acquisition; it is not evidence that the model was trained at that rate.
+
+A 200-sample stream at 200 Hz has one second of coverage. A three-second 200 Hz input requires 600 samples. Consequently, the historical combination ``200 Hz, three seconds, 200$\times$6'' is rejected. This report retains the executable model convention and requires a versioned resampling adapter for any higher-rate logger. It does not silently alter the trained model.
+
+The source preparation retains sensor counts in the selected columns; it does not establish a calibrated physical-unit conversion. Before connecting firmware, reconcile accelerometer/gyro scaling, axis signs, normalization, interpolation, anti-aliasing, and quantization. Timestamp gaps, clipping, and non-finite input must be explicit rejection or quality flags.
+
+\section{Gate and classifier}
+The acceleration magnitude is
+\[
+ a_m=\sqrt{a_x^2+a_y^2+a_z^2}.
+\]
+Current host gate code triggers when magnitude is at least 2.5 g and the continuous above-threshold duration exceeds 300 ms. This differs from older prose describing a shorter-than-300 ms spike. The implemented behavior must be evaluated against annotated falls before either condition is accepted as the physical design. No pre-impact lead time is established.
+
+The CNN architecture uses two Conv1D stages, pooling, global average pooling, a dense hidden stage, and two-class softmax output. Class 1 represents FALL and class 0 represents non-fall. For a frozen decision threshold $\tau$, the binary decision is
+\[
+\hat y=\begin{cases}
+1 & \text{if }P(\mathrm{FALL})\ge\tau \quad\text{(fall)},\\
+0 & \text{otherwise} \quad\text{(non-fall)}.
+\end{cases}
+\] Threshold tuning belongs on validation data; test labels must not select $\tau$.
+
+Full-integer quantization maps a float input to $q=\operatorname{clip}(\operatorname{round}(x/s)+z)$ using model-specific scale $s$ and zero point $z$. The loaded artifact must supply these values; they cannot be borrowed across model generations. Quantized output dequantization precedes threshold comparison.
+
+\section{Holdout and evaluation design}
+The training source uses grouped holdouts and asserts subject-set disjointness. Group-based fractions need not yield identical fractions of windows, and the helper is not repeated cross-validation. The first source split reserves a test group fraction of 0.2; the second split uses a validation fraction of $0.1/0.9$ within the retained groups. Do not describe this code as a guaranteed 80/10/10 window split. The October notebook run must be traced separately from the CLI source.
+
+Retain exact subject/episode IDs, class counts, seeds, preprocessing revision, and hashes for each split. Trial-level labels inherited by every window can include pre/post-fall periods; event-level ground truth must eventually resolve onset and contact rather than treating every such window as a separate fall.
+
+\section{Event and explanation contract}
+Wire Format v1 records event identity, device/version, uint32 device timestamp, $P(\mathrm{FALL})$, and six signed peak features in g and degrees/s. It omits the raw waveform. Therefore a v1 live event cannot alone drive the waveform CNN explanation. An approved extension or linked waveform record requires synchronized firmware and gateway changes.
+
+For a supplied raw window, the implemented attribution has the form
+\[
+ A_{t,c}=X_{t,c}\frac{\partial P(\mathrm{FALL})}{\partial X_{t,c}},\qquad
+ r_c=\frac{\sum_t |A_{t,c}|}{\sum_{t,c}|A_{t,c}|}.
+\]
+These normalized channel magnitudes are saliency summaries, not causal biomechanics or exact Shapley values. The fixed temporal segments in the code are not event-aligned impact annotations.
+\input{Chapters/requirements}

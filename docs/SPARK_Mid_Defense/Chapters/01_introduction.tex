@@ -1,0 +1,27 @@
+\chapter{Introduction}
+\section{Problem and motivation}
+SPARK investigates whether a local wearable-and-gateway system can detect human falls and preserve inspectable incident records. The engineering problem includes false alarms during daily activities, incomplete sensor data, limited wearable resources, and the gap between an offline classifier and an integrated device. A classification score alone cannot establish that a complete fall event is detected or delivered to a caregiver.
+
+The intended wearable observes six inertial channels and performs gated classification. The gateway stores event records and prepares explanations and reports locally. This architecture motivates experiments on computation, detection quality, and evidence traceability; it does not establish clinical effectiveness or superiority over commercial systems.
+
+\section{Potential applications}
+If the integrated design is later validated, a wearable alert could support follow-up for older adults or other people at fall risk in settings where a fixed room sensor is unavailable. A local gateway could preserve event records for review and a display client could present alerts to an authorized caregiver. These are intended use cases only. The present software does not contact emergency services, continuously track location, or provide a medical diagnosis. The proposal's broader aquatic and robot applications are deferred and are not evidence-backed extensions of the human fall model.
+
+\section{Objectives and research questions}
+The primary objective is to complete and evaluate human fall detection. The implementation must recover an explicit sampling, units, and model-input contract; replace hardware interfaces with real acquisition and inference; and evaluate event detection after approval of the cohort protocol.
+\begin{enumerate}
+\item Can the implemented gate retain fall events while limiting classifier invocations during non-fall exposure?
+\item What sensitivity, false-alarm rate, timing, and quantization loss occur under a frozen subject/episode holdout?
+\item Can the wearable, gateway, and display preserve event identity and provenance through the reporting pipeline?
+\item What limitations arise when transferring waist-worn public data to the proposed dorsal-wrist placement?
+\end{enumerate}
+
+\section{Scope and limitations}
+The evidence presently concerns SisFall-derived offline windows, stored model outputs, source inspection, and software tests. The proposed Nepal cohort is not a collected dataset. A protocol draft does not constitute institutional approval. Young volunteer simulations would not, by themselves, validate performance in frail older adults or natural falls.
+
+Robotic sensing, emergency-stop interfaces, active fall mitigation, aquatic monitoring, and physical robot experiments are out of scope for the human completion milestone. Appendix~\ref{app:robotics} defines an unexecuted experiment rather than an implemented capability. No first-in-literature or production-readiness claim is made.
+
+\section{Evidence conventions}
+\textbf{Current inspection} means directly observed file contents, artifact identity, array metadata, or checks executed for this preparation. \textbf{Archived measured results} means numerical outputs retained from an earlier experiment and not independently rerun here. \textbf{Historical reported results} means tracker or document narratives without a corresponding raw run record inspected in this preparation. \textbf{Estimates} require assumptions; \textbf{planned work} requires completion evidence before becoming a result.
+
+The appendix evidence register maps claims to repository paths and the local snapshots in this report folder. Source existence does not prove physical deployment. Result-dependent sections remain pending; defense dates and procurement dates are not inferred from old schedules.

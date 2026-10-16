@@ -1,0 +1,49 @@
+\section{Model formulation and experimental controls}
+Figure~\ref{fig:cnn-architecture} shows the proposed convolutional model flow. The diagram is an architecture illustration; its presence does not show a successful firmware invocation.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{cnn_architecture.png}
+\caption{Proposal CNN architecture illustration, retained as model-design context.}
+\label{fig:cnn-architecture}
+\end{figure}
+For a six-channel input $X\in\mathbb{R}^{200\times6}$, a temporal convolution constructs
+\[
+ h_{t,k}=\sigma\left(b_k+\sum_{j=0}^{K-1}\sum_{c=1}^{6}W_{j,c,k}X_{t+j,c}\right).
+\]
+Pooling and a second convolution reduce local temporal features before global average pooling and dense classification. The output softmax is
+\[
+ p_i=\frac{e^{z_i}}{e^{z_0}+e^{z_1}},\qquad i\in\{0,1\}.
+\]
+The intended output is a fall likelihood score used for thresholding; softmax alone does not prove probability calibration. Reliability plots and calibration error remain future evaluation artifacts.
+
+\subsection{Loss, augmentation, and threshold tradeoffs}
+The October run describes asymmetric focal loss. In general binary form,
+\[
+ L=-\alpha y(1-p)^\gamma\log p
+ -(1-\alpha)(1-y)p^\gamma\log(1-p).
+\]
+The retained run metadata records $\gamma=2$ and $\alpha=.75$. A weighting choice changes optimization; it does not guarantee a specific held-out sensitivity. Temporal jitter, sensor scaling, noise, and within-class mixtures must be documented by seed and restricted to training data. Their physiological plausibility and transfer benefit are assumptions to test.
+
+Youden selection uses $J(\tau)=\mathrm{Sensitivity}(\tau)+\mathrm{Specificity}(\tau)-1$ on validation predictions. A sensitivity-constrained threshold is a different operating rule. Report both their development objective and held-out outcomes. Moving from .5 to the October safety column increases reported recall while reducing specificity; these tradeoffs cannot be omitted from a safety-oriented thesis.
+
+\subsection{Quantization and resource accounting}
+Separate three resource quantities: model FlatBuffer bytes, peak interpreter tensor-arena bytes, and full firmware flash/RAM. Only the first is recorded in the archived export reports. A real MCU build also includes runtime/operator code, acquisition buffers, transport, and application stack. Operator registration and tensor allocation must be tested before labeling the model deployable.
+
+Quantization calibration should use representative training/development windows without held-out contamination. The older report specifies 200 class-balanced calibration windows. Applying its scale or threshold to the October artifact would create an unverified experiment. Compare float and INT8 predictions on an identical frozen evaluation manifest to separate quantization changes from different splits or threshold choices.
+
+\subsection{Transfer-learning design}
+The proposal describes partial-freeze transfer learning after approved local data collection. This is a future experiment, not a completed Nepal adaptation. A reproducible design should freeze the source and target model hashes, retain a subject-held-out evaluation group untouched during tuning, and compare at least (i) the SisFall-only baseline, (ii) a locally fine-tuned model, and (iii) a calibration-only or threshold-adjusted baseline where sample size permits. Report whether layers were frozen, optimizer and stopping rule, class support, and performance at both event and window levels. Since participant consent, institutional approval, and logger validation are pending, the current report makes no transfer-performance claim.
+
+\section{Gated-pipeline analysis}
+For annotated fall events let $G$ mean the gate admits the event and $C$ mean the classifier detects it. The pipeline sensitivity obeys
+\[
+ P(G\cap C\mid F)=P(G\mid F)P(C\mid G,F).
+\]
+Classifier recall measured only on admitted events is conditional recall; it does not reveal gate misses. This identity motivates separate gate-only, classifier-only, and end-to-end results on the same event manifest. It is an analytical relation, not an empirical SPARK performance estimate.
+
+Define inference duty fraction as classifier invocations divided by eligible window opportunities under a frozen stride and gate policy. Reducing this count may reduce computation, but battery savings require measured current and acquisition/radio duty cycles. A lower duty fraction must be interpreted alongside missed falls and alarm timing.
+
+\section{Storage and traceability design}
+Every future event record should link its raw recording, preprocessing version, model hash, threshold policy, gate decision, device identity, and independent annotation. Use device timestamps for sensor sequencing and record gateway receipt time separately; do not equate uint32 uptime with a calendar timestamp. Specify rollover and clock-offset handling before latency analysis.
+
+The current v1 parser/storage path is an existing interface, not a complete provenance format. Added waveform or domain metadata requires an explicit versioned extension and synchronized tests. A display client's report view must expose whether an explanation is model-gradient based or a peak-feature heuristic, and whether its input was recorded or synthetic.

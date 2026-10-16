@@ -1,0 +1,87 @@
+{
+  "inspection_date": "2026-10-14",
+  "base_commit": "25660ab523e0e7a0dadaab03a4e8e7f9a3a67bba",
+  "classification": "archived artifacts inspected; no model evaluation rerun",
+  "sources": [
+    {
+      "repository_path": "data/processed_sisfall/model/test_report.txt",
+      "bytes": 712,
+      "sha256": "bebff68e6992c83c15e7975c3bf1d6dc431bb693b16df838ff5a85eac3020952"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/quantization_report.txt",
+      "bytes": 1279,
+      "sha256": "31cbd950c806de111ae85a1fef2d6446e4ca1a59c82fc50a1c7d2c78f7235e45"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/model_config.json",
+      "bytes": 949,
+      "sha256": "cf737dd7c296117a9207e5e3f52e3efdd4dfdc015a58ef2433f8b28ca3203cae"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/spark_cnn.keras",
+      "bytes": 154311,
+      "sha256": "674a2b06fe8dee27307285f0b6900cb1414f345eaa7871bfdbcc3b0804beba72"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/spark_cnn_upgraded.keras",
+      "bytes": 157874,
+      "sha256": "87deda977386faa83e0aa5a6f3598da0ff1be02f932453807abd68f15c457acb"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/spark_cnn_int8.tflite",
+      "bytes": 18904,
+      "sha256": "fd948fa0edea51c11bf6f50cbc09584607f3262fa51fec0e3e3583287f7c1fb6"
+    },
+    {
+      "repository_path": "data/processed_sisfall/model/spark_cnn_int8_upgraded.tflite",
+      "bytes": 18912,
+      "sha256": "dd0e8e3d6b201acba2b524a1f911958f70bf15a52bc6592eb5cec97e78d5a2ea"
+    },
+    {
+      "repository_path": "firmware/main/models/spark_cnn_int8.h",
+      "bytes": 116958,
+      "sha256": "b00e1cba3246ff2d35b72ac825db89f8f472d5f64816e7ed382258f1b5df5710"
+    },
+    {
+      "repository_path": "training/colab_run_output.txt",
+      "bytes": 15753,
+      "sha256": "f5e3527029ca798f6b7f357b837ea84b82d35855fa745b4e1bb5684e1d2e5486"
+    },
+    {
+      "repository_path": "training/data_prep/prepare_sisfall.py",
+      "bytes": 9811,
+      "sha256": "6e6aba47e1e6720d7f557ce9f4b8818fe4cb022f7fb24602c74a035fd1cda26e"
+    },
+    {
+      "repository_path": "training/train_cnn.py",
+      "bytes": 23773,
+      "sha256": "e9fb82b68e028825d6f12f24e57588fdbfc381e9dc99eb37094ecd31df7d9601"
+    },
+    {
+      "repository_path": "firmware/main/layer1/gate.cpp",
+      "bytes": 2027,
+      "sha256": "90c15779a494690f51635b90faee6ab75c069106c0ee6cb50c0044b2ffbd7068"
+    },
+    {
+      "repository_path": "firmware/main/tflite/inference.cpp",
+      "bytes": 1604,
+      "sha256": "8fe1000ed4c8ef61f12a207253a550f9874f84c06f5ace45d5b1b7a1033190e1"
+    },
+    {
+      "repository_path": "firmware/main/drivers/mpu6050.cpp",
+      "bytes": 1265,
+      "sha256": "5ecd2f7f9ecb1dd187e61b9fa2a870cf10168ba7ed799fa38ce6d27290d9f79f"
+    },
+    {
+      "repository_path": "gateway/shap_pipeline/explainer.py",
+      "bytes": 7976,
+      "sha256": "bb4451bd25a51ffd16c9b9ede4a96b880c29ec9f275f3814fba9526d320da5a2"
+    },
+    {
+      "repository_path": "docs/WIRE_FORMAT_v1.md",
+      "bytes": 3388,
+      "sha256": "59a71e155e42bde72af1a264c94a9232853c2b57f06597979802a8d611fcdb9e"
+    }
+  ]
+}

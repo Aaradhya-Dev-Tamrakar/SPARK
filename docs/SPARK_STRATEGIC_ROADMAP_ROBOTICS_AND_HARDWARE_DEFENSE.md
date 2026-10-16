@@ -9,6 +9,8 @@
 
 ## 1. Kinetic Platform Subject-Agnosticism & Humanoid Robotics Duality
 
+> **Scope correction (October 14, 2026):** The discussion below preserves historical proposals, not proof of implemented robot capability. Human fall detection is the primary completion goal. Robot sensing, emergency stops, CAN/ROS interfaces, mitigation timing, synthetic motion generation, and physical robot validation remain unimplemented or unvalidated. The earlier faculty pitch must not be used as a current completion claim: driver/TFLite interfaces are stubs, and virtual MCU, CAD/slicer, battery, and cohort claims need actual artifacts. Use [the audited reports](THESIS_REPORTS.md), including the planned-only MuJoCo protocol, for current defense preparation.
+
 ### 1.1 Foundational Acronym & Title Audit
 * **Project Title:** *SPARK: Explainable Edge AI for Kinetic Pattern Recognition and Distress Signaling* ([`docs/SPARK_Proposal/FrontPages/title.tex`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_Proposal/FrontPages/title.tex))
 * **Core Acronym:** *Signal Pattern Analysis & Real-time Kinetics* ([`AGENT.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/AGENT.md))

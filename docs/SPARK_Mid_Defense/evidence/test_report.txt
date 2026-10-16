@@ -1,0 +1,13 @@
+SPARK 1D CNN -- Held-Out Test Set Evaluation Report
+============================================================
+Test Windows:  6712 (1575 FALL, 5137 NON_FALL)
+Test Subjects: 8
+Optimal Threshold (Youden's J on Val): 0.3919
+
+Metric                          Default (0.50)    Tuned (0.39)
+------------------------------ --------------- ---------------
+  Sensitivity (Recall, FALL)            0.8235          0.8781  (target >= 0.90)
+  Specificity (NON_FALL)                0.8382          0.7818  (target >= 0.90)
+  F1-Score                              0.7005          0.6781
+  AUC-ROC                               0.9185          0.9185
+============================================================
