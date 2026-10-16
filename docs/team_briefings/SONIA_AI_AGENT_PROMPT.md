@@ -54,6 +54,11 @@ Before writing code, inspect the machine's environment and automatically install
      powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
      ```
 
+   - If GitHub CLI (`gh`) is missing:
+     ```powershell
+     winget install GitHub.cli --accept-source-agreements --accept-package-agreements --silent
+     ```
+
 3. **Install & Activate the `github-workflow` Skill from the Repository:**
    The canonical team development workflow skill is bundled directly in the repository at `.gemini/skills/github-workflow/`.
    Install or project this skill into your environment so that all Git and issue tracking rules are actively enforced:
@@ -66,19 +71,21 @@ Before writing code, inspect the machine's environment and automatically install
    - For Claude Code / Cursor users:
      Read and follow `.gemini/skills/github-workflow/SKILL.md` as the authoritative Git SOP.
 
-4. **Configure Sonia's Git & GitHub Identity:**
-   Configure local git config for Sonia's authorized account:
+4. **Configure Sonia's Git & GitHub Identity (`Majorprj79043-Sonia` / `majorprj79043@gmail.com`):**
+   Configure local and global git config for Sonia's authorized account:
    ```powershell
-   git config user.name "Sonia Thapa"
+   git config --global user.name "Majorprj79043-Sonia"
+   git config --global user.email "majorprj79043@gmail.com"
+   git config user.name "Majorprj79043-Sonia"
    git config user.email "majorprj79043@gmail.com"
    ```
    Check GitHub CLI authentication status:
    ```powershell
    gh auth status
    ```
-   If not authenticated, prompt Sonia to log in with `majorprj79043@gmail.com` via `gh auth login`.
+   If not authenticated as `Majorprj79043-Sonia`, run `gh auth login` (or prompt Sonia to complete the one-time browser login with `majorprj79043@gmail.com`).
 
-5. **Branch Off for Issue #5:**
+5. **Branch Off for Issue #5 (`https://github.com/Aaradhya-Dev-Tamrakar/SPARK/issues/5`):**
    Follow `github-workflow` branch isolation rules:
    ```powershell
    git checkout -b feat/layer3-display-client-#5

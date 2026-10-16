@@ -96,17 +96,19 @@ You do not need to write all UI boilerplate by hand. We have prepared an AI Agen
 To ensure smooth collaboration across the KEC engineering team without merge conflicts:
 
 ### A. Your Git & GitHub Account
+* **GitHub Username:** `Majorprj79043-Sonia`
 * **Assigned Account Email:** `majorprj79043@gmail.com`
+* **Assigned Issue:** [Issue #5 — Local Dashboard & Mobile Display Client Interface](https://github.com/Aaradhya-Dev-Tamrakar/SPARK/issues/5)
 * **Configure Git identity once on your laptop:**
   ```powershell
-  git config --global user.name "Sonia Thapa"
+  git config --global user.name "Majorprj79043-Sonia"
   git config --global user.email "majorprj79043@gmail.com"
   ```
 * **Login to GitHub via CLI (or browser prompt on first push):**
   ```powershell
   gh auth login
   ```
-  *(Select GitHub.com -> HTTPS -> Yes to authenticate via web browser -> Log in with `majorprj79043@gmail.com`)*
+  *(Select `GitHub.com` $\to$ `HTTPS` $\to$ `Yes` $\to$ `Login with a web browser` using `Majorprj79043-Sonia` / `majorprj79043@gmail.com`)*
 
 ### B. The Golden Team Sync Rule: Always Use `.\sync.bat`
 * In the SPARK repository, direct `git push` or `git commit` is replaced by our automated sync engine: **`.\sync.bat`** (or `.\sync.ps1`).
