@@ -1,0 +1,24 @@
+\chapter{Evaluation Protocol and Completion Gates}
+\label{ch:remaining}
+The next milestone is a validated human logger and detector, followed by approved collection and integrated evaluation. Figure~\ref{fig:gates} replaces obsolete weekly/calendar schedules. No defense date or delivery date is asserted.
+\input{Figures/dependency_gates}
+
+\section{Preparation before procurement}
+Reconcile the canonical order form with intended hardware, quantities, vendors, interfaces, and safety constraints. Review the collection activity matrix, consent/withdrawal process, annotation definitions, and institutional submission. Recover model/run provenance, resolve the gate duration conflict, and freeze a single input/threshold specification. Complete these tasks without treating parts as already received.
+
+\section{Procurement and parts receipt}
+Place the approved order next semester after the holidays. Record confirmations and actual receipts before scheduling assembly. Receipt inspection must confirm board/sensor variants, battery/protection compatibility, mechanical dimensions, and charging arrangements. BOM prices remain estimates until supported by quotations or invoices; enclosure mass and cost require a real CAD/slicer record.
+
+\section{Logger validation and approval}
+After receipt, implement continuous acquisition and verify rate, gaps, monotonic timestamps, axes, units, sensor range, saturation, file integrity, and recorder compatibility. Record a reproducible validation trace and review it before collecting volunteers. Institutional approval may progress in parallel with preparation, but both approval and logger validation are mandatory collection gates.
+
+\section{Approved cohort and integrated evaluation}
+Only the approved protocol may govern recruitment and recordings. Preserve participant/episode IDs, consent status, valid exposure duration, annotations, and quality flags. Separate subject-held-out development and evaluation. Any adaptation or threshold choice must use development data only. Young controlled-fall data must not be called elderly natural-fall validation.
+
+Evaluate the gate and full pipeline against all annotated falls, with one-to-one matching, false alarms per non-fall hour, and timing relative to onset/contact. Compare FP32/INT8 predictions on the same frozen test data. Measure device inference, sensor buffering, transport delay, firmware memory, and battery current separately. Replace pending thesis sections only when the corresponding run manifests and artifacts exist.
+
+\section{Completion criteria}
+Human completion requires a validated logger, an approved and documented cohort process, real TFLite Micro inference, a functioning event transport and gateway, frozen split/model/threshold provenance, event-level metrics with uncertainty, and measured hardware performance. If sensitivity or specificity goals remain unmet, report that outcome and its limitations instead of moving the threshold with held-out labels.
+
+Robotics is not a condition for completing the human thesis. Its appendix supplies a separately gated research protocol. Any future robot study needs a stable controller, distinct data and model adaptation, simulator validation, and eventually physical robot evaluation.
+\input{Chapters/evaluation_protocol}

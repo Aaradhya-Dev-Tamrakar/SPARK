@@ -1,0 +1,1699 @@
+     Tribhuvan University
+      Institute of Engineering
+   Kathmandu Engineering College
+              Kalimati, Kathmandu
+
+
+
+
+                  Project Report on
+SPARK: Explainable Edge AI for Kinetic Pattern
+     Recognition and Distress Signaling
+                  Final-Defense Thesis Draft
+
+                    SUBMITTED BY:
+              Aaradhya Dev Tamrakar (79001)
+                    Rupesh Kadel (79034)
+                   Sankalpa Lamsal (79039)
+                     Sonia Thapa (79043)
+
+                      SUBMITTED TO:
+ DEPARTMENT OF ELECTRONICS, COMMUNICATION AND
+           INFORMATION ENGINEERING
+
+               Supervisor: Er. Dipen Manandhar
+
+             Evidence snapshot: October 14, 2026
+        Defense date: awaiting institutional confirmation
+                        Report Status and Authorship
+
+This editable thesis draft records implementation and available evidence as inspected on
+October 14, 2026. It is not certification of a completed clinical or hardware evaluation. The
+project title, student names and rolls, supervisor, coordinator, and department leadership are
+retained from the KEC proposal. Result-dependent sections remain explicitly pending until
+hardware and approved cohort evidence are available.
+
+The authors are Aaradhya Dev Tamrakar (79001), Rupesh Kadel (79034), Sankalpa Lamsal
+(79039), and Sonia Thapa (79043). Supervision is by Er. Dipen Manandhar; the project
+coordinator is Er. Sujan Shrestha; the Head of Department is Er. Suramya Sharma Dahal.
+No approval signature or defense date is asserted by this draft.
+
+Primary completion objective: human fall detection with a validated wearable logger,
+approved cohort protocol, and integrated evaluation. Robot fall monitoring is an open
+research extension with separate data, adaptation, and validation requirements.
+
+Evidence labels distinguish current inspection, archived measured results, historical
+reported results, estimates, and planned work. Reading an artifact confirms its existence
+and contents; it does not independently reproduce its reported experiment.
+
+
+
+
+                                              i
+                Approval and Declaration Forms — Draft
+
+Unsigned preparation copy. These fields preserve institutional roles for later completion.
+They do not certify review, submission, approval, originality sign-off, or successful defense.
+The project title is SPARK: Explainable Edge AI for Kinetic Pattern Recognition and Distress
+Signaling.
+
+
+
+
+        Er. Dipen Manandhar                         External examiner: to be appointed
+         (Project Supervisor)                               (External Examiner)
+    Kathmandu Engineering College                        Institution to be confirmed
+
+
+
+
+         Er. Sujan Shrestha                             Er. Suramya Sharma Dahal
+        (Project Coordinator)                            (Head of Department, BEI)
+    Kathmandu Engineering College                      Kathmandu Engineering College
+
+
+Defense/approval date:
+
+Student declaration awaiting author review and signatures. The four students shall
+review the final evidence, citations, and institutional originality wording before signing the
+submitted version.
+
+Aaradhya Dev Tamrakar (79001)
+
+Rupesh Kadel (79034)
+
+Sankalpa Lamsal (79039)
+
+Sonia Thapa (79043)
+
+
+
+
+                                              ii
+                              Acknowledgement
+
+We feel immense pleasure and are thankful for the opportunity to work on this project.
+
+We would like to sincerely thank our supervisor, Er. Dipen Manandhar, for his unlimited
+encouragement and timely support and guidance in helping us with the different aspects of
+the project. We owe our profound gratitude to our project coordinator, Er. Sujan Shrestha,
+who took a keen interest in our project and guided us all along, providing the necessary
+information for developing a robust system.
+
+We would like to thank Er. Suramya Sharma Dahal, Head of the Department of Electronics,
+Communication, and Information Engineering, for providing us with the opportunity to
+perform this project.
+
+We are thankful to and fortunate enough to get constant encouragement, support, con-
+structive criticism, and guidance from all teaching staff of the Department of Electronics,
+Communication, and Information Engineering.
+
+
+
+
+                                            iii
+                                       Abstract
+
+SPARK currently provides offline human-fall model artifacts and tested gateway software,
+while its physical wearable pipeline remains incomplete. The intended system combines a
+threshold gate and quantized convolutional classifier on an ESP32-S3 with local incident
+storage, explanation, and PDF reporting on a laptop gateway. A display client consumes
+gateway records rather than performing BLE reception or explanation on the phone.
+
+The existing model preparation uses 100 Hz, two-second windows of 200 samples and
+six channels. Archived August evaluation reports give 87.81% floating-point sensitivity
+and 0.9185 AUC-ROC on 6,712 held-out windows; the corresponding INT8 report gives
+87.43% sensitivity and 0.8717 AUC-ROC. A separate October Colab log reports 89.81%
+sensitivity and 0.9272 AUC-ROC, with unresolved threshold provenance. These are archived
+experimental records inspected for this report, not rerun evaluations or physical wearable
+results.
+
+Driver, interpreter, and transport stubs prevent a claim of integrated MCU operation.
+Hardware timing, battery endurance, and approved Nepal cohort results remain unavailable.
+This thesis draft develops the system requirements, mathematical formulation, implementation
+audit, result analysis, and future evaluation protocol using established evidence. Hardware-
+and cohort-dependent sections are marked pending. Dependency gates replace calendar
+schedules. Human fall detection remains the completion objective; a planned forty-episode
+MuJoCo study appears only as an exploratory robotics appendix.
+
+
+
+
+                                            iv
+                                Table of Contents
+
+
+Report Status and Authorship                                                                  i
+
+Approval and Declaration Forms — Draft                                                       ii
+
+Acknowledgement                                                                             iii
+
+Abstract                                                                                    iv
+
+List of Abbreviations                                                                        x
+
+1   Introduction                                                                             1
+    1.1 Problem and motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . .       1
+    1.2 Potential applications . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     1
+    1.3 Objectives and research questions . . . . . . . . . . . . . . . . . . . . . .        1
+    1.4 Scope and limitations . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      2
+    1.5 Evidence conventions . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+
+2   Background and Related Work                                                              3
+    2.1 Fall detection and application context . . . . . . . . . . . . . . . . . . . .       3
+    2.2 Comparative literature review . . . . . . . . . . . . . . . . . . . . . . . . .      3
+    2.3 Hardware and software theory . . . . . . . . . . . . . . . . . . . . . . . .         4
+    2.4 Interpretation and study position . . . . . . . . . . . . . . . . . . . . . . .      6
+
+3 Architecture and Methodology                                                          7
+  3.1 System allocation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+  3.2 Sampling and input contract . . . . . . . . . . . . . . . . . . . . . . . . . 7
+  3.3 Gate and classifier . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+  3.4 Holdout and evaluation design . . . . . . . . . . . . . . . . . . . . . . . . 8
+  3.5 Event and explanation contract . . . . . . . . . . . . . . . . . . . . . . . . 9
+  3.6 Requirements and acceptance evidence . . . . . . . . . . . . . . . . . . . . 9
+  3.7 Model formulation and experimental controls . . . . . . . . . . . . . . . . 10
+  3.8 Gated-pipeline analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+  3.9 Storage and traceability design . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+4   Implementation Status                                                                   13
+    4.1 Data and training artifacts . . . . . . . . . . . . . . . . . . . . . . . . . . .   13
+    4.2 Firmware boundaries . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       13
+    4.3 Gateway and reporting . . . . . . . . . . . . . . . . . . . . . . . . . . . .       13
+
+                                              v
+    4.4   Hardware, enclosure, and cohort . . . . . . . . . . . . . . . . . . . . . . . 14
+
+5 Available Results and Limitations                                                         15
+  5.1 Result provenance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       15
+  5.2 Current verification and artifact inspection . . . . . . . . . . . . . . . . . .      16
+  5.3 Historical laptop timings . . . . . . . . . . . . . . . . . . . . . . . . . . .       16
+  5.4 Power and feasibility estimates . . . . . . . . . . . . . . . . . . . . . . . .       16
+  5.5 Statistical and domain limitations . . . . . . . . . . . . . . . . . . . . . . .      16
+
+6   Evaluation Protocol and Completion Gates                                                17
+    6.1 Preparation before procurement . . . . . . . . . . . . . . . . . . . . . . . .      17
+    6.2 Procurement and parts receipt . . . . . . . . . . . . . . . . . . . . . . . .       17
+    6.3 Logger validation and approval . . . . . . . . . . . . . . . . . . . . . . . .      18
+    6.4 Approved cohort and integrated evaluation . . . . . . . . . . . . . . . . . .       18
+    6.5 Completion criteria . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     18
+    6.6 Human evaluation protocol awaiting approval and data . . . . . . . . . . .          18
+    6.7 Hardware and integration measurements awaiting a device . . . . . . . . .           20
+    6.8 Submission gate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     21
+
+7   Feasibility, Resources, and Deliverables                                                22
+    7.1 Technical feasibility and present status . . . . . . . . . . . . . . . . . . . .    22
+    7.2 Hardware and procurement basis . . . . . . . . . . . . . . . . . . . . . . .        22
+    7.3 Software and research deliverables . . . . . . . . . . . . . . . . . . . . . .      22
+
+8   Conclusion and Open Research                                                            25
+    8.1 Established contribution . . . . . . . . . . . . . . . . . . . . . . . . . . .      25
+    8.2 Limits of the present draft . . . . . . . . . . . . . . . . . . . . . . . . . . .   25
+    8.3 Next experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      25
+
+References                                                                                  26
+
+A Evidence Register and Pending Evaluations                                            28
+  A.1 Source paths and artifact identity . . . . . . . . . . . . . . . . . . . . . . . 29
+  A.2 Evidence still required . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+B Planned MuJoCo Humanoid Experiment                                                        31
+  B.1 Motion source and feasibility gates . . . . . . . . . . . . . . . . . . . . . .       31
+  B.2 Forty episodes and frozen split . . . . . . . . . . . . . . . . . . . . . . . .       31
+  B.3 Sensors, units, and preprocessing . . . . . . . . . . . . . . . . . . . . . . .       32
+  B.4 Ground truth independent of predictions . . . . . . . . . . . . . . . . . . .         33
+  B.5 Evaluation endpoints . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        33
+
+
+                                              vi
+B.6 Event-pipeline interoperability and completion . . . . . . . . . . . . . . . 33
+
+
+
+
+                                      vii
+                              List of Figures
+
+3.1   Intended architecture with current implementation boundaries. The figure is
+      a design map, not evidence of integrated device operation. . . . . . . . . . 7
+3.2   Proposal CNN architecture illustration, retained as model-design context. . 10
+
+6.1   Completion gates. Volunteer recording begins only after both logger valida-
+      tion and institutional approval. . . . . . . . . . . . . . . . . . . . . . . . . 17
+
+
+
+
+                                        viii
+                              List of Tables
+
+2.1   Comparison of verified and directly relevant approaches . . . . . . . . . . .   5
+
+5.1   August archived held-out results: 6,712 windows, including 1,575 FALL
+      and 5,137 non-fall; the FP32 report identifies eight test subjects. . . . . . . 15
+5.2   October Colab log, archived FP32 evaluation. Total source windows: 38,426;
+      reported train/validation/test counts: 31,714/3,005/3,707. . . . . . . . . . . 15
+
+7.1   Proposal planning bill of materials; estimates require re-quotation . . . . . 23
+7.2   Deliverable register by current state . . . . . . . . . . . . . . . . . . . . . 23
+
+A.1 Evidence used in this report. . . . . . . . . . . . . . . . . . . . . . . . . . 28
+A.2 Pending evaluation artifacts before a completed human-system thesis. . . . 30
+
+B.1 Proposed episode allocation. No episodes have been generated. . . . . . . . 31
+
+
+
+
+                                         ix
+             List of Abbreviations
+
+
+ADL        Activities of Daily Living
+API        Application Programming Interface
+AUC-ROC    Area Under the Receiver Operating Characteristic Curve
+AVX-VNNI   Vector Neural Network Instructions (AVX)
+BEI        Bachelor of Electronics, Communication and Information Engi-
+           neering
+BLE        Bluetooth Low Energy
+CNN        Convolutional Neural Network
+CORS       Cross-Origin Resource Sharing
+DFM        Design for Manufacturability
+ESP32-S3   Espressif Systems ESP32-S3 Dual-Core Xtensa LX7 SoC
+GATT       Generic Attribute Profile (Bluetooth LE)
+IMU        Inertial Measurement Unit
+INT8       8-bit Integer Quantization
+IOE        Institute of Engineering
+ISO        International Organization for Standardization
+ISR        Interrupt Service Routine
+KEC        Kathmandu Engineering College
+MPU6050    InvenSense MPU-6050 6-axis IMU
+NPU        Neural Processing Unit
+OpenVINO   Open Visual Inference and Neural Network Optimization
+SHAP       SHapley Additive exPlanations
+SPARK      Signal Pattern Analysis & Real-time Kinetics
+TFLite     TensorFlow Lite
+TPU        Thermoplastic Polyurethane
+WHO        World Health Organization
+XAI        Explainable Artificial Intelligence
+
+
+
+
+                              x
+                             Chapter 1: Introduction
+
+
+1.1 Problem and motivation
+
+SPARK investigates whether a local wearable-and-gateway system can detect human falls
+and preserve inspectable incident records. The engineering problem includes false alarms
+during daily activities, incomplete sensor data, limited wearable resources, and the gap
+between an offline classifier and an integrated device. A classification score alone cannot
+establish that a complete fall event is detected or delivered to a caregiver.
+
+The intended wearable observes six inertial channels and performs gated classification. The
+gateway stores event records and prepares explanations and reports locally. This architecture
+motivates experiments on computation, detection quality, and evidence traceability; it does
+not establish clinical effectiveness or superiority over commercial systems.
+
+
+1.2 Potential applications
+
+If the integrated design is later validated, a wearable alert could support follow-up for older
+adults or other people at fall risk in settings where a fixed room sensor is unavailable. A local
+gateway could preserve event records for review and a display client could present alerts to
+an authorized caregiver. These are intended use cases only. The present software does not
+contact emergency services, continuously track location, or provide a medical diagnosis. The
+proposal’s broader aquatic and robot applications are deferred and are not evidence-backed
+extensions of the human fall model.
+
+
+1.3 Objectives and research questions
+
+The primary objective is to complete and evaluate human fall detection. The implementation
+must recover an explicit sampling, units, and model-input contract; replace hardware
+interfaces with real acquisition and inference; and evaluate event detection after approval of
+the cohort protocol.
+
+   1. Can the implemented gate retain fall events while limiting classifier invocations during
+      non-fall exposure?
+
+   2. What sensitivity, false-alarm rate, timing, and quantization loss occur under a frozen
+      subject/episode holdout?
+
+   3. Can the wearable, gateway, and display preserve event identity and provenance through
+      the reporting pipeline?
+
+
+                                               1
+   4. What limitations arise when transferring waist-worn public data to the proposed
+      dorsal-wrist placement?
+
+
+1.4 Scope and limitations
+
+The evidence presently concerns SisFall-derived offline windows, stored model outputs,
+source inspection, and software tests. The proposed Nepal cohort is not a collected dataset.
+A protocol draft does not constitute institutional approval. Young volunteer simulations
+would not, by themselves, validate performance in frail older adults or natural falls.
+
+Robotic sensing, emergency-stop interfaces, active fall mitigation, aquatic monitoring, and
+physical robot experiments are out of scope for the human completion milestone. Appendix B
+defines an unexecuted experiment rather than an implemented capability. No first-in-literature
+or production-readiness claim is made.
+
+
+1.5 Evidence conventions
+
+Current inspection means directly observed file contents, artifact identity, array metadata,
+or checks executed for this preparation. Archived measured results means numerical
+outputs retained from an earlier experiment and not independently rerun here. Historical
+reported results means tracker or document narratives without a corresponding raw run
+record inspected in this preparation. Estimates require assumptions; planned work requires
+completion evidence before becoming a result.
+
+The appendix evidence register maps claims to repository paths and the local snapshots in
+this report folder. Source existence does not prove physical deployment. Result-dependent
+sections remain pending; defense dates and procurement dates are not inferred from old
+schedules.
+
+
+
+
+                                              2
+                Chapter 2: Background and Related Work
+
+
+2.1 Fall detection and application context
+
+Falls are an important source of injury and loss of independence among older adults. A
+wearable detector is intended to identify a suspected event when a person is away from
+fixed cameras or room sensors, preserve a traceable event record, and support a caregiver’s
+follow-up. Such a detector is an assistive alerting tool; it does not diagnose injury, replace
+emergency services, or establish that a person is safe when no alarm occurs. Global context
+motivates the research, but local prevalence and demand are not measured by this project [1].
+
+The research literature spans threshold rules, feature-based classifiers, temporal neural
+networks, edge inference, and systems that send candidate signals to a server. Each choice
+affects more than classification accuracy: sensor placement, event definitions, false alarms
+over ordinary activity, compute and radio duty, notification delay, usability, and evaluation
+population all matter. SisFall is a public benchmark for reproducible development, but its
+waist-mounted signals and largely acted falls do not validate a dorsal-wrist system or natural
+falls [2].
+
+
+2.2 Comparative literature review
+
+Threshold methods are computationally simple and interpretable. Kangas et al. compared
+low-complexity algorithms at waist, wrist, and head placements; their results emphasize
+that the best site and rule depend on placement, and that the wrist signal poses a particular
+challenge [3]. Bourke et al. evaluated tri-axial thresholds using simulated falls and older
+adults’ daily activities, illustrating both the value of trunk signals and the limits of transferring
+a threshold across sensor positions [4]. These studies motivate a gate as a candidate filter,
+not the assumption that a fixed gate preserves every fall.
+
+Learned models can represent temporal patterns that a single magnitude rule cannot. SisFall
+provides 15 fall activities and 19 activities of daily living from 38 participants, with inertial
+sensors; it is a useful public source for offline model development, subject-grouped evaluation,
+and comparison of preprocessing choices [2]. CNN and recurrent approaches represent
+temporal structure differently. Nho et al.’s cited title and the listed Wang et al. citation could
+not be matched to authoritative primary records using the supplied metadata; this report
+therefore does not repeat their performance claims or use them to rank architectures. Those
+entries remain visible in the proposal-reference audit.
+
+Embedded inference literature establishes a feasible runtime route, not a guarantee for
+this board and model. TensorFlow Lite Micro describes an interpreter and evaluation for
+
+                                                 3
+constrained embedded systems; actual RAM, timing, operator coverage, and whole-firmware
+size still require target measurements [5]. Xu et al. provide a directly relevant hybrid example:
+their wearable threshold stage forwards candidate acceleration windows to a server-side CNN,
+so the classifier is not fully local to the wearable [6]. Yu et al. report a TinyCNN wearable
+prototype and an Arduino Nano BLE 33 Sense implementation. Its published record is
+in Biomedical Signal Processing and Control, volume 86, article 105325 (2023), not the
+Measurement citation given in the proposal [7]. Hu et al. report MicroFallNet on UMAFall
+and FallAllD, including an ESP32 implementation; the correct record is Pervasive and
+Mobile Computing, volume 109, article 102046 (2025), not volume 107/article 101980 [8].
+
+Other system designs broaden the comparison beyond classifier topology. Tseng et al.
+describe a finite-state wearable detector with GPS, NB-IoT, and notifications, demonstrating
+a location-aware communication path distinct from SPARK’s local gateway design [9].
+Bhattacharyya et al. describe a CNN-kNN fall detector on a RISC-V system implemented
+on FPGA; this is an accelerator-oriented hardware point of comparison, not evidence that a
+low-cost MCU has equivalent resources [10]. Baños et al.’s mHealthDroid is relevant to
+mobile-health framework context, but SPARK’s phone client is deliberately display-only and
+does not adopt its broader sensor integration architecture [11].
+
+Explainability terminology also constrains the comparison. SHAP defines additive feature
+attributions grounded in Shapley values [12]. The SPARK gateway’s input-times-gradient
+calculation is a different attribution method, while the live v1 event’s peak-feature display is
+a heuristic summary because the packet does not contain a waveform. Neither should be
+labeled SHAP. Yao et al. study ECG heartbeat interpretation using CNN and GRU; that
+biomedical time-series example supplies context but is not fall-detection evidence [13]. Liu et
+al.’s IEEE conference paper concerns explainable wearable human-activity recognition rather
+than fall-event explanation [14]. Kundu et al.’s review is an arXiv preprint submitted in 2026
+(arXiv:2604.09799), rather than a 2025 peer-reviewed article as the proposal bibliography
+says [15].
+
+
+2.3 Hardware and software theory
+
+An inertial measurement unit combines accelerometer and angular-rate measurements. A
+three-axis accelerometer observes specific force in its sensor frame; a gyroscope observes
+angular velocity. Orientation, gravity separation, scale factors, axis alignment, and units
+must be considered before thresholds or models trained on one representation are applied
+to another. The current preprocessing selection retains raw SisFall sensor counts, whereas
+the event protocol describes peak values in g and degrees per second. The exact transform
+linking those representations is unresolved and must be specified before firmware integration.
+
+The intended embedded design uses an ESP32-S3 and MPU6050. Sensor acquisition,
+
+                                               4
+           Table 2.1: Comparison of verified and directly relevant approaches
+
+Approach          Evidence in cited        Design implication       SPARK status and
+                  work                                              boundary
+Threshold rules   Low-complexity in-       Measure gate sensitiv-   Gate code exists; its
+                  ertial algorithms;       ity and false alarms     2.5 g / greater-than-
+                  placement matters        at the intended place-   300 ms behavior
+                  [3, 4]                   ment                     awaits     event-level
+                                                                    evaluation
+Public inertial   SisFall    contains      Use grouped splits       Offline 100 Hz, 200-
+benchmark         falls and daily          and disclose sensor      sample, six-channel
+                  activities from 38       placement and acted-     windows; wrist trans-
+                  people [2]               fall limits              fer remains unvali-
+                                                                    dated
+Embedded run- TFLite Micro tar-            Measure linked tar-      Local model bytes are
+time          gets constrained em-         get memory, opera-       known; MCU infer-
+              bedded inference             tors, and latency        ence remains a stub
+              [5]
+Hybrid   gate Xu et al. send can-      Report compute loca-         SPARK intends lo-
+plus CNN      didate windows to a      tion and communica-          cal inference, but has
+              server CNN [6]           tion dependency ex-          not demonstrated it on
+                                       plicitly                     hardware
+Wearable edge     TinyCNN and Mi- Treat published re-               Different      datasets,
+CNN               croFallNet report sults as feasibility con-       placements, models,
+                  microcontroller im- text, not a head-to-          and protocols prevent
+                  plementations [7, 8] head comparison              direct score compari-
+                                                                    son
+Location and      Tseng       et     al.   Compare     system       Context only; nei-
+FPGA systems      include localiza-        goals and hardware       ther architecture is the
+                  tion/notification;       classes, not only        SPARK implementa-
+                  Vigil uses FPGA-         accuracy                 tion
+                  oriented RISC-V
+                  hardware [9, 10]
+Explanation       SHAP has Shapley-        Name the actual attri- Gradient-times-input
+methods           value semantics;         bution method and in- and       peak-feature
+                  HAR/ECG work             put used               fallback are distinct;
+                  covers      different                           explanation validity is
+                  tasks [12–15]                                   pending
+
+
+
+
+                                             5
+timestamping, buffering, preprocessing, gate evaluation, model invocation, and event
+delivery form a real-time chain. A gateway receives and stores events, generates local reports,
+and offers a display API. The phone is a display client. The architecture is staged to make
+failures inspectable; the current sensor reads, TFLite invocation, transport writes, and logger
+loop are not complete physical implementations.
+
+For six input channels, a temporal convolution computes learned local filters over adjacent
+samples. Pooling reduces temporal resolution, global average pooling summarizes activations,
+and a dense output layer produces two class scores. INT8 quantization represents a real value
+approximately as 𝑥 = 𝑠(𝑞 − 𝑧) using model-specific scale 𝑠 and zero point 𝑧. This reduces
+weight storage but introduces quantization error and does not account for runtime buffers or
+the rest of the firmware. These are engineering mechanisms, not performance guarantees.
+
+
+2.4 Interpretation and study position
+
+SPARK’s defensible present contribution is an inspectable software pipeline, offline model
+artifacts, and an evaluation design that separates archived results from future integrated
+measurements. The literature supports testing threshold filtering, quantized embedded
+inference, event traceability, and local explanation as design questions. It does not establish
+novelty, clinical suitability, power savings, or superiority for this system. The exact source
+records and claim-level disposition for all twenty proposal references are documented in
+docs/thesis_work/PROPOSAL_COVERAGE_AND_REFERENCE_AUDIT.md.
+
+
+
+
+                                              6
+                Chapter 3: Architecture and Methodology
+
+
+3.1 System allocation
+
+The intended node uses an ESP32-S3 and MPU6050. The laptop gateway owns transport
+reception, local storage, explanation, and PDF generation. The mobile/display layer reads
+the gateway API. Figure 3.1 separates the intended wearable from implemented gateway
+modules.
+
+                 Intended wearable path — hardware validation pending
+                       MPU6050 acquisition → timed window buffer
+                      → Layer 1 gate → INT8 CNN → event transport
+             Current driver, interpreter, and transport interfaces contain stubs.
+                                                 ↓
+                      Laptop gateway — software modules available
+                  Event parser → local JSON storage → explanation/report
+                         → local REST API → display-only client
+            v1 peak-feature path differs from raw-waveform gradient attribution.
+
+Figure 3.1: Intended architecture with current implementation boundaries. The figure is a design map,
+                             not evidence of integrated device operation.
+
+
+
+
+3.2 Sampling and input contract
+
+Let 𝑓𝑠 be sampling frequency and 𝑁 the number of samples. The nominal window duration
+is 𝑇 = 𝑁/ 𝑓𝑠 . Existing preprocessing sets 𝑓𝑠 = 100 Hz and 𝑁 = 200, hence 𝑇 = 2 s. Model
+arrays have six channels ordered as acceleration then angular-rate axes. The planned logger
+targets 200 Hz acquisition; it is not evidence that the model was trained at that rate.
+
+A 200-sample stream at 200 Hz has one second of coverage. A three-second 200 Hz input
+requires 600 samples. Consequently, the historical combination “200 Hz, three seconds,
+200×6” is rejected. This report retains the executable model convention and requires a
+versioned resampling adapter for any higher-rate logger. It does not silently alter the trained
+model.
+
+The source preparation retains sensor counts in the selected columns; it does not establish
+a calibrated physical-unit conversion. Before connecting firmware, reconcile accelerom-
+eter/gyro scaling, axis signs, normalization, interpolation, anti-aliasing, and quantization.
+Timestamp gaps, clipping, and non-finite input must be explicit rejection or quality flags.
+
+                                                 7
+3.3 Gate and classifier
+
+The acceleration magnitude is
+                                           √︃
+                                    𝑎𝑚 =        𝑎 2𝑥 + 𝑎 2𝑦 + 𝑎 2𝑧 .
+
+Current host gate code triggers when magnitude is at least 2.5 g and the continuous
+above-threshold duration exceeds 300 ms. This differs from older prose describing a
+shorter-than-300 ms spike. The implemented behavior must be evaluated against annotated
+falls before either condition is accepted as the physical design. No pre-impact lead time is
+established.
+
+The CNN architecture uses two Conv1D stages, pooling, global average pooling, a dense
+hidden stage, and two-class softmax output. Class 1 represents FALL and class 0 represents
+non-fall. For a frozen decision threshold 𝜏, the binary decision is
+
+                                   ⎧
+                                   ⎨1
+                                   ⎪
+                                   ⎪    if 𝑃(FALL) ≥ 𝜏                 (fall),
+                              𝑦ˆ =
+                                   ⎪0
+                                   ⎪    otherwise          (non-fall).
+                                   ⎩
+
+Threshold tuning belongs on validation data; test labels must not select 𝜏.
+
+Full-integer quantization maps a float input to 𝑞 = clip(round(𝑥/𝑠) + 𝑧) using model-specific
+scale 𝑠 and zero point 𝑧. The loaded artifact must supply these values; they cannot be
+borrowed across model generations. Quantized output dequantization precedes threshold
+comparison.
+
+
+3.4 Holdout and evaluation design
+
+The training source uses grouped holdouts and asserts subject-set disjointness. Group-based
+fractions need not yield identical fractions of windows, and the helper is not repeated
+cross-validation. The first source split reserves a test group fraction of 0.2; the second split
+uses a validation fraction of 0.1/0.9 within the retained groups. Do not describe this code as
+a guaranteed 80/10/10 window split. The October notebook run must be traced separately
+from the CLI source.
+
+Retain exact subject/episode IDs, class counts, seeds, preprocessing revision, and hashes for
+each split. Trial-level labels inherited by every window can include pre/post-fall periods;
+event-level ground truth must eventually resolve onset and contact rather than treating every
+such window as a separate fall.
+
+
+
+
+                                                   8
+3.5 Event and explanation contract
+
+Wire Format v1 records event identity, device/version, uint32 device timestamp, 𝑃(FALL),
+and six signed peak features in g and degrees/s. It omits the raw waveform. Therefore a v1
+live event cannot alone drive the waveform CNN explanation. An approved extension or
+linked waveform record requires synchronized firmware and gateway changes.
+
+For a supplied raw window, the implemented attribution has the form
+                                                          ∑︁
+                                   𝜕𝑃(FALL)                   | 𝐴𝑡,𝑐 |
+                       𝐴𝑡,𝑐 = 𝑋𝑡,𝑐          ,      𝑟 𝑐 = ∑︁ 𝑡           .
+                                     𝜕 𝑋𝑡,𝑐                𝑡,𝑐 | 𝐴𝑡,𝑐 |
+
+These normalized channel magnitudes are saliency summaries, not causal biomechanics or
+exact Shapley values. The fixed temporal segments in the code are not event-aligned impact
+annotations.
+
+
+3.6 Requirements and acceptance evidence
+
+These requirements describe intended behavior, not completed certification.
+
+FR-01 The logger shall preserve timestamped six-channel recordings and sample-quality
+     metadata.
+
+FR-02 The classifier shall use a versioned sampling, scaling, shape, and threshold contract
+     tied to a model hash.
+
+FR-03 The event pipeline shall preserve unique event identity, confidence, units, and
+     model/device provenance.
+
+FR-04 The gateway shall store events locally and expose reports to a display-only client.
+
+FR-05 Volunteer recording shall require both institutional approval and logger validation.
+
+NFR-01 The planned acquisition target shall be 200 Hz (5 ms nominal period); measured
+    gaps/jitter and actual delivered rate shall be reported before collection.
+
+NFR-02 Existing model input shall be 200 samples at 100 Hz with six channels unless a
+    new model contract is evaluated.
+
+NFR-03 The archived model-size design budget shall be 120 KB; full firmware flash and
+    RAM shall be measured separately.
+
+NFR-04 Sensitivity and specificity targets of at least 90% shall be treated as goals, with
+    counts and uncertainty reported; no current result is declared to satisfy both.
+
+
+
+
+                                            9
+3.7 Model formulation and experimental controls
+
+Figure 3.2 shows the proposed convolutional model flow. The diagram is an architecture
+illustration; its presence does not show a successful firmware invocation. For a six-channel
+
+
+
+
+       Figure 3.2: Proposal CNN architecture illustration, retained as model-design context.
+
+
+input 𝑋 ∈ R200×6 , a temporal convolution constructs
+
+                                            𝐾−1
+                                            ∑︁ ∑︁6
+                            ℎ𝑡,𝑘 = 𝜎 ­𝑏 𝑘 +
+                                     ©                              ª
+                                                    𝑊 𝑗,𝑐,𝑘 𝑋𝑡+ 𝑗,𝑐 ® .
+                                     «      𝑗=0 𝑐=1                 ¬
+
+Pooling and a second convolution reduce local temporal features before global average
+pooling and dense classification. The output softmax is
+
+                                           𝑒 𝑧𝑖
+                                𝑝𝑖 =               ,   𝑖 ∈ {0, 1}.
+                                       𝑒 𝑧0 + 𝑒 𝑧1
+
+The intended output is a fall likelihood score used for thresholding; softmax alone does not
+prove probability calibration. Reliability plots and calibration error remain future evaluation
+artifacts.
+
+3.7.1 Loss, augmentation, and threshold tradeoffs
+
+The October run describes asymmetric focal loss. In general binary form,
+
+                  𝐿 = −𝛼𝑦(1 − 𝑝) 𝛾 log 𝑝 − (1 − 𝛼)(1 − 𝑦) 𝑝 𝛾 log(1 − 𝑝).
+
+The retained run metadata records 𝛾 = 2 and 𝛼 = .75. A weighting choice changes
+optimization; it does not guarantee a specific held-out sensitivity. Temporal jitter, sensor
+scaling, noise, and within-class mixtures must be documented by seed and restricted to
+training data. Their physiological plausibility and transfer benefit are assumptions to test.
+
+Youden selection uses 𝐽 (𝜏) = Sensitivity(𝜏) + Specificity(𝜏) − 1 on validation predictions. A
+sensitivity-constrained threshold is a different operating rule. Report both their development
+objective and held-out outcomes. Moving from .5 to the October safety column increases
+reported recall while reducing specificity; these tradeoffs cannot be omitted from a safety-
+oriented thesis.
+
+
+
+
+                                                  10
+3.7.2 Quantization and resource accounting
+
+Separate three resource quantities: model FlatBuffer bytes, peak interpreter tensor-arena
+bytes, and full firmware flash/RAM. Only the first is recorded in the archived export reports.
+A real MCU build also includes runtime/operator code, acquisition buffers, transport, and
+application stack. Operator registration and tensor allocation must be tested before labeling
+the model deployable.
+
+Quantization calibration should use representative training/development windows without
+held-out contamination. The older report specifies 200 class-balanced calibration windows.
+Applying its scale or threshold to the October artifact would create an unverified experiment.
+Compare float and INT8 predictions on an identical frozen evaluation manifest to separate
+quantization changes from different splits or threshold choices.
+
+3.7.3 Transfer-learning design
+
+The proposal describes partial-freeze transfer learning after approved local data collection.
+This is a future experiment, not a completed Nepal adaptation. A reproducible design
+should freeze the source and target model hashes, retain a subject-held-out evaluation group
+untouched during tuning, and compare at least (i) the SisFall-only baseline, (ii) a locally
+fine-tuned model, and (iii) a calibration-only or threshold-adjusted baseline where sample
+size permits. Report whether layers were frozen, optimizer and stopping rule, class support,
+and performance at both event and window levels. Since participant consent, institutional
+approval, and logger validation are pending, the current report makes no transfer-performance
+claim.
+
+
+3.8 Gated-pipeline analysis
+
+For annotated fall events let 𝐺 mean the gate admits the event and 𝐶 mean the classifier
+detects it. The pipeline sensitivity obeys
+
+                           𝑃(𝐺 ∩ 𝐶 | 𝐹) = 𝑃(𝐺 | 𝐹)𝑃(𝐶 | 𝐺, 𝐹).
+
+Classifier recall measured only on admitted events is conditional recall; it does not reveal
+gate misses. This identity motivates separate gate-only, classifier-only, and end-to-end results
+on the same event manifest. It is an analytical relation, not an empirical SPARK performance
+estimate.
+
+Define inference duty fraction as classifier invocations divided by eligible window opportu-
+nities under a frozen stride and gate policy. Reducing this count may reduce computation,
+but battery savings require measured current and acquisition/radio duty cycles. A lower duty
+fraction must be interpreted alongside missed falls and alarm timing.
+
+                                              11
+3.9 Storage and traceability design
+
+Every future event record should link its raw recording, preprocessing version, model hash,
+threshold policy, gate decision, device identity, and independent annotation. Use device
+timestamps for sensor sequencing and record gateway receipt time separately; do not equate
+uint32 uptime with a calendar timestamp. Specify rollover and clock-offset handling before
+latency analysis.
+
+The current v1 parser/storage path is an existing interface, not a complete provenance
+format. Added waveform or domain metadata requires an explicit versioned extension and
+synchronized tests. A display client’s report view must expose whether an explanation is
+model-gradient based or a peak-feature heuristic, and whether its input was recorded or
+synthetic.
+
+
+
+
+                                            12
+                     Chapter 4: Implementation Status
+
+
+4.1 Data and training artifacts
+
+The repository contains SisFall preparation, CNN training, quantization, and transfer-training
+scripts. The stored local windows and metadata can be inspected without running a notebook.
+Saved August Keras/INT8 files and a newer October upgraded generation coexist; the shared
+metadata filename is not a guarantee that all adjacent reports describe the same model.
+
+The October log describes focal loss, temporal jitter, magnitude scaling, and augmented
+training windows. Augmentation expands training samples; it does not create new independent
+subjects or increase the held-out cohort. Transfer-training code is available, but code presence
+does not establish completed Nepal fine-tuning.
+
+
+4.2 Firmware boundaries
+
+The Layer 1 magnitude/duration gate, peak extraction, and JSON encoding have concrete
+source implementations. In contrast, mpu6050.cpp returns zeroed samples without an I2C
+transaction, and inference.cpp returns a fixed 0.5/0.5 split without constructing a TFLite
+Micro interpreter. The component definition does not link a real TFLite Micro dependency.
+
+The detector entrypoint reads one sample and supplies a zero-initialized inference window.
+The logger mode contains a single-iteration break rather than a demonstrated timer-driven
+stream. Output encoding exists, while actual UART/BLE writes remain stubbed. Thus a
+flash-resident model header establishes available bytes, not an autonomous detector, validated
+sampling, or real radio delivery.
+
+Awaiting evaluation: Implement and validate the sensor driver, continuous timestamped
+acquisition, ring buffer, unit/model adapter, interpreter/operator registration, threshold
+decision, and actual event transport. Measure MCU memory and timing on the selected
+board.
+
+
+4.3 Gateway and reporting
+
+Gateway code provides BLE/serial receiver interfaces, event parsing, JSON storage, Report-
+Lab incident reports, and a local HTTP API/dashboard. Host tests exercise these functions
+with software fixtures. The BLE callback currently forwards each notification to the parser;
+complete-payload assumptions require verification under the eventual packetization/MTU
+policy.
+
+
+
+                                              13
+The waveform explainer uses input-times-gradient attribution when a compatible model and
+raw window are supplied. Otherwise it falls back to peak-feature summaries. Generated
+synthetic fall examples test report layout and software flow; their attribution percentages are
+not explanations measured on recorded cohort falls.
+
+Awaiting evaluation: Validate real BLE discovery, notification framing/reassembly, recon-
+nect behavior, timestamp interpretation, duplicate handling, and report provenance. Record
+whether each explanation uses a waveform model or peak-feature fallback.
+
+
+4.4 Hardware, enclosure, and cohort
+
+The intended design uses ESP32-S3, MPU6050, an 1100 mAh LiPo, charging/protection
+circuitry, and a dorsal TPU bracer. These are design choices, not evidence of receipt,
+completed assembly, fit, or endurance. BOM estimates and older component alternatives
+need reconciliation before purchase. Charging is off-body only under the retained design
+constraints.
+
+Procurement is planned for next semester after Dashain, Tihar, and Chhath. A collection
+protocol and logger tooling exist; enrollment, institutional approval, physical logger validation,
+and collection remain pending. Cohort targets of 12–20 volunteers are planning values, not
+observed recruitment or sufficient evidence of clinical generalization.
+
+
+
+
+                                               14
+             Chapter 5: Available Results and Limitations
+
+
+5.1 Result provenance
+
+Tables 5.1 and 5.2 report archived output artifacts inspected during this preparation. Model
+inference and training were not rerun. August and October rows are distinct experiments with
+different splits and thresholds; they are not a controlled before/after comparison. Snapshot
+files and hashes are included under evidence/.
+Table 5.1: August archived held-out results: 6,712 windows, including 1,575 FALL and 5,137 non-fall;
+                            the FP32 report identifies eight test subjects.
+
+              Metric         FP32, 𝜏 = .5      FP32, 𝜏 = .3919     INT8, 𝜏 = .3919
+              Sensitivity            .8235                .8781                .8743
+              Specificity            .8382                .7818                .7014
+              F1                     .7005                .6781                .6139
+              AUC-ROC                .9185                .9185                .8717
+
+The corresponding quantization report records 18,904 bytes, input [1, 200, 6], and output
+[1, 2]. It records a 0.0804 absolute specificity reduction and a 0.0468 AUC reduction
+after quantization. Flash-budget compliance concerns the model file alone. No full-device
+memory or latency result follows from this table.
+  Table 5.2: October Colab log, archived FP32 evaluation. Total source windows: 38,426; reported
+                         train/validation/test counts: 31,714/3,005/3,707.
+
+                   Metric         Default .5    Youden .5611      Safety .4236
+                   Sensitivity         .8057             .7390            .8981
+                   Specificity         .8559             .9146            .7621
+                   F1                  .7424             .7560            .7185
+                   AUC-ROC             .9272             .9272            .9272
+
+The October log records 126,856 augmented training windows and an 18,912-byte quantized
+export. The configuration instead lists a safety threshold of 0.4065 alongside the same safety
+metrics, while the log prints 0.4236. This disagreement blocks a settled deployed-threshold
+claim. The October INT8 export size is available; a matching held-out INT8 performance
+report is not established by the older August report. The 89.81% safety sensitivity remains
+below the 90% target.
+
+The 38,426-window corpus count is an inventory, not the denominator of either held-out
+table. Neither retained report supplies a complete immutable list of held-out subject IDs.
+The name of a split helper does not establish class stratification; subject grouping and class
+balance must each be checked from the run manifest.
+
+                                                 15
+5.2 Current verification and artifact inspection
+
+Current local array inspection confirms (38426, 200, 6) float32 windows, 38 subject values,
+and 34 activity codes in the metadata. A byte comparison confirms that the firmware header
+contains the newer 18,912-byte model, not the August 18,904-byte file. These checks confirm
+shape and identity; they do not establish deployed inference.
+
+The current Python suite passed 65 tests with 48 dependency warnings, and the repository
+structural verification passed four checks. Repository-wide Ruff verification failed on 23
+pre-existing findings, and four files failed formatting checks. No unrelated code fixes or
+synchronization were performed as part of these reports. Software-test success does not
+validate actual I2C, physical BLE, battery life, or human evaluation.
+
+
+5.3 Historical laptop timings
+
+The tracker reports OpenVINO timing on an Intel Core Ultra 7 155H gateway over 5,000
+inferences: CPU 0.131 ms, GPU 0.200 ms, and NPU 0.383 ms. These are historical
+reported results; the raw benchmark run and its complete warm-up/timing configuration
+were not reproduced here. They are not ESP32 latency, end-to-end detection delay, or power
+measurements.
+
+
+5.4 Power and feasibility estimates
+
+Using the nominal 1100 mAh capacity and assuming steady 90–130 mA current gives
+an idealized 𝑡 = 𝐶/𝐼 range of about 8.5–12.2 hours. This is an illustrative estimate, not
+measured endurance. Usable capacity, regulator losses, protection thresholds, sampling/radio
+duty cycle, and battery condition change the result. Older 8–11 h and 16–28 h narratives have
+incompatible mode assumptions and must not be presented as measured battery findings.
+
+
+5.5 Statistical and domain limitations
+
+Saved point estimates lack subject-clustered confidence intervals and complete immutable
+split manifests. Correlated windows are not independent volunteers. Future uncertainty
+analysis should resample at the subject or episode level, retaining paired predictions and
+reporting 95% confidence intervals. For demographic cohorts with 𝑛 < 30, flag insufficient
+sample support and avoid subgroup rankings; the overall exploratory pilot must still report
+counts and limitations.
+
+Event sensitivity, false alarms per hour, physical timing, wrist transfer, and elderly clinical
+performance remain unmeasured. Integrated evaluation must include every annotated fall,
+including gate rejections; classifier recall alone conceals gate misses.
+
+                                              16
+      Chapter 6: Evaluation Protocol and Completion Gates
+
+The next milestone is a validated human logger and detector, followed by approved collection
+and integrated evaluation. Figure 6.1 replaces obsolete weekly/calendar schedules. No
+defense date or delivery date is asserted.
+
+                               Preparation and protocol review
+
+                       Procurement                           Institutional approval
+                Next semester, after holidays                     May progress
+                                                                    in parallel
+                Parts receipt and inspection
+
+
+                      Logger validation
+
+
+                                                AND
+
+                                   Approved cohort collection
+
+                                      Integrated evaluation
+                                    and final evidence review
+
+   Figure 6.1: Completion gates. Volunteer recording begins only after both logger validation and
+                                      institutional approval.
+
+
+
+
+6.1 Preparation before procurement
+
+Reconcile the canonical order form with intended hardware, quantities, vendors, interfaces,
+and safety constraints. Review the collection activity matrix, consent/withdrawal process,
+annotation definitions, and institutional submission. Recover model/run provenance, resolve
+the gate duration conflict, and freeze a single input/threshold specification. Complete these
+tasks without treating parts as already received.
+
+
+6.2 Procurement and parts receipt
+
+Place the approved order next semester after the holidays. Record confirmations and actual
+receipts before scheduling assembly. Receipt inspection must confirm board/sensor variants,
+battery/protection compatibility, mechanical dimensions, and charging arrangements. BOM
+prices remain estimates until supported by quotations or invoices; enclosure mass and cost
+require a real CAD/slicer record.
+
+
+                                                17
+6.3 Logger validation and approval
+
+After receipt, implement continuous acquisition and verify rate, gaps, monotonic timestamps,
+axes, units, sensor range, saturation, file integrity, and recorder compatibility. Record a
+reproducible validation trace and review it before collecting volunteers. Institutional approval
+may progress in parallel with preparation, but both approval and logger validation are
+mandatory collection gates.
+
+
+6.4 Approved cohort and integrated evaluation
+
+Only the approved protocol may govern recruitment and recordings. Preserve partici-
+pant/episode IDs, consent status, valid exposure duration, annotations, and quality flags.
+Separate subject-held-out development and evaluation. Any adaptation or threshold choice
+must use development data only. Young controlled-fall data must not be called elderly
+natural-fall validation.
+
+Evaluate the gate and full pipeline against all annotated falls, with one-to-one matching,
+false alarms per non-fall hour, and timing relative to onset/contact. Compare FP32/INT8
+predictions on the same frozen test data. Measure device inference, sensor buffering, transport
+delay, firmware memory, and battery current separately. Replace pending thesis sections
+only when the corresponding run manifests and artifacts exist.
+
+
+6.5 Completion criteria
+
+Human completion requires a validated logger, an approved and documented cohort pro-
+cess, real TFLite Micro inference, a functioning event transport and gateway, frozen
+split/model/threshold provenance, event-level metrics with uncertainty, and measured hard-
+ware performance. If sensitivity or specificity goals remain unmet, report that outcome and
+its limitations instead of moving the threshold with held-out labels.
+
+Robotics is not a condition for completing the human thesis. Its appendix supplies a separately
+gated research protocol. Any future robot study needs a stable controller, distinct data and
+model adaptation, simulator validation, and eventually physical robot evaluation.
+
+
+6.6 Human evaluation protocol awaiting approval and data
+
+Awaiting evaluation: Institutional approval, parts receipt, physical logger validation,
+recruitment and actual recordings. This section specifies a future study; it contains no
+collected cohort results.
+
+The approved protocol must define eligible participants, risk screening, safe supervised
+
+
+                                              18
+activity procedures, consent and withdrawal, handling of identifiable recordings, and
+permitted retention/sharing. The proposed 12–20-person range is a planning assumption, not
+a power calculation. The institution must approve the final activity matrix and participant
+protections before recruitment/recording. Elderly or frail participants must not be assumed
+to perform the same simulated-fall protocol as healthy young adults.
+
+Maintain separate participant, session, trial, and event identifiers. Document wrist side,
+sensor attachment/orientation, device settings, timestamps, environmental conditions, and
+recording failures. Raw sensor traces and independent annotations must be retained with
+access controls appropriate to the approved protocol. Data used for adaptation cannot also
+be called untouched evaluation data.
+
+6.6.1 Logger acceptance record
+
+For each validation recording report intended and actual sample rate, count, duration,
+missing/duplicate samples, timestamp monotonicity, interval distribution, saturation, sensor
+configuration, and recorder/schema compatibility. Confirm known static orientations and
+angular-rate conventions against the device configuration. Validate file hashes and conversion
+round trips. Freeze the adapter from acquired counts to the trained model inputs, including
+units and any normalization.
+
+The 200 Hz target is not enough: a CSV carrying a configured rate must also show the
+observed cadence. Define acceptance tolerances with the supervisor before collection. Reject
+or flag records that fail those criteria; do not silently interpolate long gaps into plausible
+motion.
+
+6.6.2 Annotation and holdout
+
+Annotators should mark activity onset, loss of balance, first fall-related contact, sustained post-
+fall posture, and recovery from synchronized independent observation. Document ambiguity
+and disagreement without consulting classifier output. Preserve non-fall observation time,
+including recovery attempts and vigorous daily activities. If video synchronization is used,
+record its uncertainty.
+
+Freeze subject-held-out splits before fitting transformations, adaptation, or threshold tuning.
+Preserve fall/non-fall class counts by participant and trial. If data are sparse, report the study
+as exploratory and avoid demographic subgroup scores for insufficient samples (𝑛 < 30). Do
+not treat windows or augmented samples as participant replication.
+
+
+
+
+                                               19
+6.6.3 Endpoints and matching
+
+Predefine a one-to-one event matching interval relative to annotated onset/contact, duplicate-
+alarm rules, and the treatment of uncertain labels before evaluation. Report all annotated
+falls in the denominator, including those never admitted by the gate. Event sensitivity is
+
+                                   𝑁𝑚𝑎𝑡𝑐ℎ𝑒𝑑                      𝑁𝑢𝑛𝑚𝑎𝑡𝑐ℎ𝑒𝑑 𝑎𝑙𝑎𝑟𝑚𝑠
+                    𝑆 𝑒𝑣𝑒𝑛𝑡 =                       ,    FAR =                     .
+                                𝑁𝑎𝑛𝑛𝑜𝑡𝑎𝑡𝑒𝑑 𝑓 𝑎𝑙𝑙𝑠                 𝐻𝑣𝑎𝑙𝑖𝑑 𝑛𝑜𝑛 𝑓 𝑎𝑙𝑙
+
+For offline classifier comparison also report the confusion counts and
+
+                      𝑇𝑃                       𝑇𝑁                          2𝑇 𝑃
+               𝑆=           ,        𝑆𝑝 =            ,       𝐹1 =                    .
+                    𝑇𝑃 + 𝐹𝑁                 𝑇 𝑁 + 𝐹𝑃                 2𝑇 𝑃 + 𝐹𝑃 + 𝐹 𝑁
+
+Specify the positive class and analysis unit for each table. AUC evaluates score ordering
+across thresholds; it does not guarantee the alarm quality of the chosen operating point.
+Report specificity together with sensitivity and false alarms per hour rather than selecting
+the most favorable metric.
+
+Use subject-clustered bootstrap 95% confidence intervals when the cohort supports that
+analysis. Retain counts and show instability for small samples; an interval calculation does
+not remove a representativeness gap. Event-level binomial intervals can supplement, but
+must not hide clustering or short exposure. No confidence interval is invented for the existing
+archived metrics.
+
+6.6.4 Ablations and failure analysis
+
+Evaluate gate-only, classifier-only, and integrated gated detection against the same untouched
+event manifest. Compare FP32 and INT8 outputs with the same adapter and operating
+threshold policy. If adaptation is tested, report the source model, development data, frozen
+layers, and adapted hash separately from the baseline. Diagnose misses by gate rejection,
+model rejection, missing samples, sensor clipping, transport loss, and annotation uncertainty.
+
+Test daily activities that resemble falls, deliberate arm motion, recoverable imbalance, sensor
+detachment, and connectivity interruption only within the approved safety scope. Report
+unavailable conditions rather than substituting synthetic fixtures for human recordings.
+Synthetic fixtures remain useful for software robustness, but they do not enter the human
+performance table.
+
+
+6.7 Hardware and integration measurements awaiting a device
+
+Awaiting evaluation: Real MCU inference, completed sensor driver, physical transport
+and power measurements. The following measurements cannot be populated from laptop
+benchmarks.
+
+                                                        20
+Record the hardware revision, firmware hash, SDK/compiler, clock configuration, model
+hash, tensor-arena size, stack/heap measurements, and sensor/radio configuration. Measure
+acquisition/buffering delay, gate decision time, interpreter execution, transmission/reassembly,
+gateway processing, and display availability separately. Report distributions over recorded
+events rather than one unexplained latency number.
+
+For power, measure current in acquisition-only, gated inference, transport, idle, and any sleep
+modes actually implemented. Record usable battery capacity, protection cutoff, regulator
+behavior, temperature, radio duty cycle, and full-run endurance. State whether current is
+measured at the cell or a regulated rail. Reconcile enclosure heat and off-body charging
+constraints with the assembled hardware.
+
+Physical BLE tests must cover complete-payload framing, maximum message size, inter-
+ruption/reconnect, duplicate records, dropped events, and device-clock rollover. Report
+parser/storage fixture success separately from over-the-air delivery. No emergency response
+reliability or clinical decision-support approval follows from generating a PDF.
+
+
+6.8 Submission gate
+
+Replace pending blocks only after review of immutable data/run manifests, held-out predic-
+tions, software verification, and device records. Keep unmet targets and negative findings in
+the final text. Confirm the authors’ declaration and institutional forms with the named team
+and supervisor; signatures and dates are completed by the authorized people, not inferred
+during thesis preparation.
+
+
+
+
+                                              21
+         Chapter 7: Feasibility, Resources, and Deliverables
+
+
+7.1 Technical feasibility and present status
+
+The design uses commodity inertial sensing, a microcontroller, a local gateway, and a
+display client. Their interfaces are plausible engineering choices, but feasibility remains
+conditional on completing sensor acquisition, calibration, input conversion, actual TFLite
+Micro execution, event transport, and integrated testing. Source-level stubs prevent a claim of
+a working wearable detector. The current stored model file and host-side gateway functions
+support continued implementation; they do not establish end-to-end operation.
+
+The existing preprocessing convention is 100 Hz by 200 samples by six channels (two
+seconds). A separately planned logger target of 200 Hz requires a documented adapter or a
+newly evaluated model. Because current model input channels remain in sensor counts while
+the event protocol specifies engineering units, scaling and coordinate mapping are explicit
+design gates. Battery life, radio duty reduction, MCU latency, and thermal behavior are not
+yet measured. The proposal’s laptop OpenVINO timings are historical host benchmarks and
+are not carried forward as MCU evidence.
+
+
+7.2 Hardware and procurement basis
+
+Table 7.1 retains the proposal’s planning quantities and quoted NPR figures for traceability.
+These figures are historical estimates, not fresh supplier quotations or proof of purchase; they
+require review against the current order form and supplier availability before procurement.
+The gateway laptop and phone were listed as already owned in the proposal. No procurement
+date is asserted; the roadmap places ordering next semester after Dashain, Tihar, and Chhath.
+
+The design intent retains an ESP32-S3, MPU6050, 1100 mAh Li-ion cell, charge/protection
+board, and TPU 95A dorsal bracer with hook-and-loop retention. Charging is off-body only,
+using separate single-purpose programming and charging connections. Assembly, enclosure
+fit, charge protection, electrical safety, and runtime remain unverified. Procurement and
+bench bring-up are sequenced after the project preparation gates.
+
+
+7.3 Software and research deliverables
+
+The project completion objective remains human fall detection. A local approved cohort,
+integrated on-device evaluation, and clinical or field validation are future deliverables, not
+current outputs. Robotics is a separate exploratory extension. Publication venue selection,
+event-level acceptance targets, and calendar dates remain open until the corresponding
+
+
+                                              22
+    Table 7.1: Proposal planning bill of materials; estimates require re-quotation
+
+Item                           Quantity    Unit estimate (NPR)     Line estimate (NPR)
+ESP32-S3 development                  3                   1,800                   5,400
+board
+MPU6050 IMU breakout                  1                     350                      350
+1100 mAh Li-ion pouch                 1                     550                      550
+cell
+TP4056 charge/protection              1                       90                      90
+module
+Velcro wrist retention strap          2                     500                    1,000
+Compression arm sleeve                1                     136                      136
+TPU 95A filament (1 kg)               1                   4,000                    4,000
+USB-C cables                          3                     267                      801
+Breadboard and jumper                 2                     325                      650
+sets
+Passives assortment                1 lot                    600                      600
+M2.5 screws                          20                      15                      300
+Planning total                                                                    13,877
+
+
+
+
+                     Table 7.2: Deliverable register by current state
+
+Deliverable              Evidence now                    Remaining acceptance evi-
+                                                         dence
+Human fall classifier    Offline training, preprocess-   Frozen subject/event manifest,
+                         ing, and archived evaluation    rerun results, threshold prove-
+                         artifacts                       nance, and transfer assessment
+Wearable node            Gate and protocol source;       Real sensor driver, validated
+                         model artifact identity in-     units, buffered windows, linked
+                         spected                         MCU inference, timing and
+                                                         memory
+Gateway and report       Host-side event parsing, lo-    Physical transport, packet re-
+path                     cal storage, reports, and API   assembly, reconnect and dupli-
+                         tests                           cate behavior, event traceability
+Display client           Read-only local display ar-     Integrated end-to-end accep-
+                         chitecture                      tance with actual event records
+Nepal cohort             Draft protocol and collec-      Institutional approval plus log-
+                         tion tooling                    ger validation before any volun-
+                                                         teer recording
+Robotics extension       Planned-only forty-episode      Simulation prerequisites, inde-
+                         protocol                        pendent labels, held-out analy-
+                                                         sis, then separate physical vali-
+                                                         dation
+
+
+
+
+                                           23
+evidence and team decisions exist.
+
+
+
+
+                                     24
+              Chapter 8: Conclusion and Open Research
+
+
+8.1 Established contribution
+
+SPARK has an inspectable offline CNN/quantization pipeline, concrete host gate and event-
+encoding logic, and gateway storage/reporting/API software. Archived August and October
+runs provide preliminary fall-classification results with explicit operating-point tradeoffs.
+Their distinct splits, model artifacts, and thresholds prevent presenting them as one final
+validated detector.
+
+The existing two-second, 100 Hz input contract resolves the report-level sampling contradic-
+tion. It does not supply the physical count/units adapter or continuous acquisition needed by
+the intended 200 Hz logger. The newer model bytes are available in the firmware header,
+while real TFLite Micro invocation remains unfinished.
+
+
+8.2 Limits of the present draft
+
+No completed wrist-worn cohort, elderly clinical study, measured battery endurance, physical
+BLE evaluation, or integrated on-device detection result is established here. Gradient-times-
+input and peak-feature explanations have different inputs and meanings; neither should be
+promoted to exact SHAP or causal clinical evidence. The available specificity tradeoffs and
+quantization degradation must remain visible during threshold selection.
+
+The final thesis cannot declare the human system complete until acquisition, approval,
+collection, and integrated evaluation gates are met. Failing to meet a performance target is
+an experimental outcome to analyze, not a reason to rename a threshold or merge unrelated
+metrics.
+
+
+8.3 Next experiments
+
+First recover immutable split and model provenance and resolve the October threshold
+disagreement. Then validate the logger and real interpreter after procurement and parts
+receipt. Collect only under institutional approval, evaluate all annotated falls and non-fall
+exposure, and measure device timing/power directly. These experiments determine whether
+the proposed design achieves its human objective.
+
+The separate robotics question is whether calibrated forearm signals support held-out
+monitoring after domain adaptation. Stable motion and independent annotations are
+prerequisites. Simulation results would still leave physical robot validation and mitigation-
+control safety unresolved.
+
+                                             25
+                                     References
+
+ [1] World Health Organization, “Who global report on falls prevention in older age,” Geneva,
+     2008. [Online]. Available: https://www.who.int/publications/i/item/9789241563536
+
+ [2] A. Sucerquia, J. D. López, and J. F. Vargas-Bonilla, “Sisfall: A fall and movement
+     dataset,” Sensors, vol. 17, no. 1, p. 198, 2017.
+
+ [3] M. Kangas, A. Konttila, P. Lindgren, I. Winblad, and T. Jämsä, “Comparison of
+     low-complexity fall detection algorithms for body attached accelerometers,” Gait &
+     Posture, vol. 28, no. 2, pp. 285–291, 2008.
+
+ [4] A. K. Bourke, J. V. O’Brien, and G. M. Lyons, “Evaluation of a threshold-based tri-axial
+     accelerometer fall detection algorithm,” Gait & Posture, vol. 26, no. 2, pp. 194–199,
+     2007.
+
+ [5] R. David, J. Duke, A. Jain, V. J. Reddi, N. Jeffries, J. Li, N. Kreeger, I. Nappier,
+     M. Natraj, T. Wang, P. Warden, and R. Rhodes, “Tensorflow lite micro: Embedded
+     machine learning for tinyml systems,” in Proceedings of Machine Learning and
+     Systems, vol. 3, 2021. [Online]. Available: https://proceedings.mlsys.org/paper_files/p
+     aper/2021/hash/6c44dc73014d66ba49b28d483a8f8b0d-Abstract.html
+
+ [6] T. Xu, H. Se, and J. Liu, “A fusion fall detection algorithm combining threshold-based
+     method and convolutional neural network,” Microprocessors and Microsystems, vol. 82,
+     p. 103828, 2021.
+
+ [7] X. Yu, S. Park, D. Kim, E. Kim, J. Kim, W. Kim, Y. An, and S. Xiong, “A practical
+     wearable fall detection system based on tiny convolutional neural networks,” Biomedical
+     Signal Processing and Control, vol. 86, p. 105325, 2023.
+
+ [8] J. Hu, F. Cheng, M. Liu, X. Xu, and X. Li, “Microfallnet: A lightweight model for
+     real-time fall detection on smart wristbands,” Pervasive and Mobile Computing, vol.
+     109, p. 102046, 2025.
+
+ [9] C.-K. Tseng, S.-J. Huang, and L.-J. Kau, “Wearable fall detection system with real-time
+     localization and notification capabilities,” Sensors, vol. 25, no. 12, p. 3632, 2025.
+
+[10] T. Bhattacharyya, P. Ghosal, S. Sonam, and S. Deb, “Vigil: A risc-v soc architecture
+     for 2-fold hybrid cnn-knn based fall detector implementation on fpga,” in 2024 37th
+     International Conference on VLSI Design and 2024 23rd International Conference on
+     Embedded Systems, 2024, pp. 372–377.
+
+[11] O. Baños, R. García, J. A. Holgado-Terriza, M. Damas, H. Pomares, I. Rojas, A. Saez,
+
+
+                                            26
+     and C. Villalonga, “mhealthdroid: A novel framework for agile development of mobile
+     health applications,” in Ambient Assisted Living and Home Care, vol. 8868, 2014, pp.
+     91–98.
+
+[12] S. M. Lundberg and S.-I. Lee, “A unified approach to interpreting model predictions,”
+     in Advances in Neural Information Processing Systems, vol. 30, 2017. [Online].
+     Available: https://arxiv.org/abs/1705.07874
+
+[13] G. Yao, X. Mao, N. Li, H. Xu, X. Xu, Y. Jiao, and J. Ni, “Interpretation of electro-
+     cardiogram heartbeat by cnn and gru,” Computational and Mathematical Methods in
+     Medicine, vol. 2021, p. 6534942, 2021.
+
+[14] X. Liu, S. Perumal, L. Cheng, and Y. Xie, “Enhanced human activity recognition
+     framework for wearable devices based on explainable ai,” in 2024 IEEE International
+     Symposium on Consumer Technology, 2024, pp. 385–391. [Online]. Available:
+     https://ieeexplore.ieee.org/document/10791196/
+
+[15] M. Kundu, C. Chen, R. Islam, I. Uysal, and R. Kanjilal, “Explainable human activity
+     recognition: A unified review of concepts and mechanisms,” 2026, arXiv:2604.09799,
+     preprint. [Online]. Available: https://arxiv.org/abs/2604.09799
+
+[16] Farama Foundation, “Gymnasium humanoid environment,” Online documentation,
+     accessed October 14, 2026. [Online]. Available: https://gymnasium.farama.org/envir
+     onments/mujoco/humanoid/
+
+[17] Google DeepMind, “Mujoco xml reference:              Accelerometer and gyro,”
+     Online documentation, accessed October 14, 2026. [Online]. Available:
+     https://mujoco.readthedocs.io/en/stable/XMLreference.html#sensor-accelerometer
+
+[18] Farama Foundation, “Humanoid-v5 environment implementation,” Gymnasium source
+     code, main branch, inspected October 14, 2026; pin a revision before execution.
+     [Online]. Available: https://github.com/Farama-Foundation/Gymnasium/blob/main/gy
+     mnasium/envs/mujoco/humanoid_v5.py
+
+[19] ——, “Humanoid mjcf model asset,” Gymnasium source code, main branch,
+     inspected October 14, 2026; pin a revision before execution. [Online]. Available:
+     https://github.com/Farama-Foundation/Gymnasium/blob/main/gymnasium/envs/muj
+     oco/assets/humanoid.xml
+
+[20] Google DeepMind, “Mujoco overview:              Units are unspecified,”      Online
+     documentation, accessed October 14, 2026. [Online]. Available:                https:
+     //mujoco.readthedocs.io/en/stable/overview.html#units-are-unspecified
+
+
+
+
+                                           27
+       Chapter A: Evidence Register and Pending Evaluations
+
+This register distinguishes reproducible inspection from archived measurements and historical
+reporting. The report folder contains copied result records and a SHA256 source manifest;
+the original raw data/model files remain local repository data rather than dependencies of
+this PDF build.
+                            Table A.1: Evidence used in this report.
+
+
+  ID      Source or local snapshot        Classification and supported claim
+
+  E01     training/data_prep/p Source inspection: 100 Hz target, 200-sample
+          repare_sisfall.py            windows, selected six count-based channels; no
+                                       calibrated wrist-device transform established.
+  E02     training/train_cnn.p Source inspection: CNN, grouped holdout asser-
+          y                            tions, validation threshold selection; implemen-
+                                       tation does not establish a completed device or
+                                       cohort experiment.
+  E03     evidence/test_report August archived FP32 report, 6,712 windows /
+          .txt                         eight test subjects, default and tuned metrics. No
+                                       model evaluation rerun.
+  E04     evidence/quantizatio August archived INT8 report: 18,904 bytes and
+          n_report.txt                 degraded test metrics. Not a report for the newer
+                                       export.
+  E05     evidence/october_col October archived log: split counts, threshold
+          ab_excerpt.txt               0.4236, FP32 metrics. Its results are separate
+                                       from August.
+  E06     evidence/model_confi October metadata: threshold 0.4065 and export
+          g.json                       size. Threshold disagrees with E05.
+  E07     evidence/current_ins Current array/metadata inspection, header-byte
+          pection.txt                  identity, 65 passing tests, structural checks, and
+                                       baseline lint failures.
+  E08     Firmware driver, inference, Source inspection: real host gate/encoding; zero-
+          entrypoint and transport sample driver, fixed-probability inference and ac-
+          sources                      tual transport stubs.
+  E09     Gateway receiver, explainer, Source inspection and software tests: v1 event
+          storage, report and server flow, peak fallback and optional gradient attribu-
+          sources                      tion. Not physical or clinical validation.
+
+
+
+
+                                              28
+  ID      Source or local snapshot        Classification and supported claim
+
+  E10     Tracker      and     resump- Historical reported laptop timings, estimated bat-
+          tion/strategic plans          tery/BOM values, and proposed cohort/robotics
+                                        work.
+  E11     Official bibliography entries Verified external source identity and documen-
+                                        tary simulator mechanisms. No SPARK robot
+                                        experiment executed.
+
+
+
+A.1 Source paths and artifact identity
+
+E03/E04/E06 originals are under data/processed_sisfall/model/. E05 is extracted
+from training/colab_run_output.txt, omitting unrelated private Drive paths. The
+source_manifest.json file records inspected byte lengths and SHA256 values for model
+generations and relevant implementation files.
+
+Firmware sources
+
+    • Sensor driver: firmware/main/drivers/mpu6050.cpp
+    • Threshold gate: firmware/main/layer1/gate.cpp
+    • Model interface: firmware/main/tflite/inference.cpp
+    • Application entrypoint: firmware/main/app_main.cpp
+    • Event encoding and transport: firmware/main/comms/output.cpp
+
+Gateway sources
+
+    • Event schema: gateway/receiver/wire_format.py
+    • Transport reception: gateway/receiver/receiver.py
+    • Attribution: gateway/shap_pipeline/explainer.py
+    • Local storage: gateway/storage/json_store.py
+    • Incident reports: gateway/report/pdf_report.py
+    • Local API: gateway/server.py
+
+Locked event contract: docs/WIRE_FORMAT_v1.md.
+
+Current measured header-byte identity is 18,912 bytes with SHA256 recorded in the inspection
+snapshot. The firmware byte array equals the local upgraded FlatBuffer. This is artifact
+evidence, not an interpreter execution test. Historical results from the 18,904-byte file do not
+automatically apply to those bytes.
+
+
+
+
+                                              29
+          Table A.2: Pending evaluation artifacts before a completed human-system thesis.
+
+   Area                         Required evidence
+   Model provenance             Immutable model/split/preprocessing manifests, threshold
+                                resolution, matched FP32/INT8 predictions and uncer-
+                                tainty.
+   Logger/hardware              Real sensor traces, rate/jitter/gap statistics, axes/units veri-
+                                fication, tensor arena and timing records.
+   Approval/cohort              Institutional approval record, approved protocol, consent
+                                handling, cohort manifest and independent event annota-
+                                tions.
+   Integrated pipeline          Real transport/reconnect/framing results, event identities,
+                                onset/contact matching, false alarms per non-fall hour and
+                                timing.
+   Battery/enclosure            Measured current/runtime, actual capacity/operating
+                                modes, CAD dimensions/fit and slicer/print record.
+   Robotics                     Separate future simulation protocol execution and held-out
+                                analysis; physical robot study remains deferred.
+
+
+A.2 Evidence still required
+
+The preparation used Scout evidence extraction, intelligence review, isolated Writer synthesis,
+and Lead integration. Mechanical formatting follows reviewed drafting. These workflow
+steps do not change the evidence classification of the source experiments.
+
+
+
+
+                                                30
+       Chapter B: Planned MuJoCo Humanoid Experiment
+
+Protocol status: proposed, not executed. Human fall detection remains the primary
+completion objective. This appendix defines a separate exploratory study; it supplies no
+robot result, mitigation claim, or physical safety certification.
+
+
+B.1 Motion source and feasibility gates
+
+A proposed motion source is the Gymnasium Humanoid-v5 model in MuJoCo. Official
+documentation exposes a custom xml_file and configurable unhealthy termination [16].
+MuJoCo supplies accelerometer and gyro sensors aligned to an MJCF site [17]. These
+interfaces support documentary feasibility, not a tested SPARK simulator integration.
+
+Before generating data, pin the simulator, environment, MJCF and controller revisions,
+integrator, timestep, contact settings, and seeds. A reproducible controller must demonstrate
+stable walking and recovery on development-only seeds; the stock environment is not itself
+a validated locomotion controller or a fall dataset. Random actions do not satisfy the
+stable-locomotion condition. Verify controller licensing and provenance separately.
+
+The inspected model timestep is 0.003 s and the environment defaults to five physics steps
+per action, implying 0.015 s between actions [18, 19]. Source and runtime settings must
+prevail over inconsistent timing prose in documentation. Instrument physics substeps;
+an observation once per action is insufficient for the proposed 200 Hz archive. Set
+terminate_when_unhealthy=False and an explicit 30 s episode limit to retain contact
+and recovery. Reject non-finite or unstable trajectories. No simulator was installed or run for
+this report.
+
+
+B.2 Forty episodes and frozen split
+
+             Table B.1: Proposed episode allocation. No episodes have been generated.
+
+           Condition                                       Development       Held out
+           Stable locomotion                                             5              5
+           Recoverable disturbances                                      5              5
+           Slips ending in falls                                         5              5
+           Other falls                                                   5              5
+           Total                                                       20           20
+
+Target ten accepted 30 s episodes per condition. Use mild bounded torso disturbances for
+recovery, reduced-friction patches for slips, and stronger directional impulses or controlled
+
+                                               31
+actuator disturbances for other falls. Calibrate magnitudes on development trajectories only.
+A slip label requires load-bearing foot displacement followed by independently annotated
+falling; low friction alone is not ground truth.
+
+Reserve five IDs per condition before adaptation or threshold tuning. Separate reset/controller
+seeds and perturbation realizations across the two sets; do not split overlapping windows of
+one episode across sets. Freeze model, preprocessing, thresholds, controller, and annotation
+rules before held-out evaluation. Limit candidate attempts to twenty per condition and retain
+an attempt log, invalid traces, and condition mismatches. Report inability to fill a condition
+instead of selecting episodes based on detector success.
+
+
+B.3 Sensors, units, and preprocessing
+
+Place the primary co-located accelerometer/gyro site on the dorsal distal forearm of one fixed
+lower-arm body, near the wrist. Record site position, quaternion, and a right-handed mapping
+to (𝑎 𝑥 , 𝑎 𝑦 , 𝑎 𝑧 , 𝜔𝑥 , 𝜔 𝑦 , 𝜔 𝑧 ). The stock model has no independently articulated wrist; disclose
+the approximation. A torso site is an auxiliary placement experiment, not interchangeable
+with the forearm stream.
+
+Choose a consistent metre-kilogram-second model convention; MuJoCo does not prescribe
+SI model units [20]. Archive acceleration in m/s2 , angular velocity in rad/s, and time in
+seconds. Record gravity and validate stationary and free-fall signs before claiming MPU6050
+equivalence. Convert event peaks using 𝑔0 = 9.80665 m/s2 and 180/𝜋 degrees per radian.
+Preserve site-local acceleration including gravity; do not subtract or add gravity without a
+verified sensor convention.
+
+Save physics-substep timestamps and sensor values, then apply a documented low-pass
+anti-alias filter before resampling to a 200 Hz archive. Record filter delay, missing values,
+gaps, assumed bias/noise, and clipping. Sensor noise is a simulation assumption rather than
+measured MPU6050 behavior.
+
+For exploratory comparison with the current model, propose a separately versioned adapter
+to 100 Hz, 200 samples, six channels, and two seconds. Shape parity alone is insufficient:
+current SisFall preparation retains integer sensor counts and does not establish a physical-unit
+transform. Recover scaling, normalization, channel order, and quantization from the specific
+model before transfer. Fit changed preprocessing only on development data and label it a
+new experiment. Failure to recover this contract blocks evaluation. A 200 Hz three-second
+model would require 600 samples and new training.
+
+
+
+
+                                                  32
+B.4 Ground truth independent of predictions
+
+Save torso pose, height, foot motion, contact body pairs, and synchronized video independently
+of classifier scores. Annotators review those records without detector output. Record
+disturbance time, loss-of-balance onset, first fall contact, sustained collapse, recovery
+onset/completion, and ambiguity.
+
+For development calibration only, propose onset at torso tilt above 45◦ or height below 0.7
+times upright height; require subsequent torso/head/pelvis floor contact or collapsed posture
+lasting at least 0.5 s for a fall. Recovery proposes height above 0.9 times upright height and
+tilt below 20◦ for 2 s without meeting the fall criterion. These are operational hypotheses,
+not established biomechanics. Freeze final rules and handling of kneeling, hand support, and
+delayed recovery before held-out annotation.
+
+
+B.5 Evaluation endpoints
+
+Use one-to-one event matching from annotated onset to 2 s after first fall contact; define
+a separate endpoint for contact-free collapse. Freeze a 2 s duplicate-alarm merge rule.
+Additional unmatched alarms remain false alarms. Report
+
+                             matched detected falls                unmatched alarms
+        Sensitivity𝑒𝑣𝑒𝑛𝑡 =                          ,     FAR =                        .
+                              all annotated falls                 valid non-fall hours
+
+If each held-out fall episode has one event, ten falls form the pooled denominator. Report
+slips and other falls separately, counts, misses, and binomial confidence intervals. This small
+exploratory sample does not support deployment claims. Ten 30 s non-fall episodes provide
+at most 300 s of exposure (0.0833 h); report actual valid duration and alarms separately
+for stable and recoverable conditions. Zero observed alarms over this exposure does not
+establish a low operational rate.
+
+For matched events report 𝑡 𝑎𝑙𝑎𝑟𝑚 − 𝑡 𝑜𝑛𝑠𝑒𝑡 and 𝑡 𝑎𝑙𝑎𝑟𝑚 − 𝑡 𝑐𝑜𝑛𝑡𝑎𝑐𝑡 separately, including median,
+interquartile range, range, and count. Negative contact-relative delay denotes a pre-contact
+alarm. Report misses separately, and disclose buffering/filter delay. Simulator-time delay is
+not ESP32 inference latency or BLE delivery time.
+
+
+B.6 Event-pipeline interoperability and completion
+
+A future replay adapter shall emit existing v1 fields: event_id, device_id, firmware_v
+ersion, uint32 timestamp_ms, confidence 𝑃(FALL), and signed per-channel maximum-
+magnitude peaks in g and degrees/s. Identify synthetic devices explicitly. Keep episode,
+simulator, model, and domain provenance in a linked sidecar. v1 does not carry the raw
+window; subject_type=bipedal_robot is a proposed extension, not a validated v1
+
+                                               33
+routing feature.
+
+Future fixtures must verify parser, storage, and report interoperability against the unchanged
+event contract. Those checks do not validate physical BLE or robot-specific explanations.
+Completion requires reproducible motion, calibrated timing/units, forty accepted episodes,
+a frozen split and annotations, recovered model preprocessing, held-out event/exposure
+metrics, and passing replay checks.
+
+Human-model transfer remains exploratory. Report zero-shot and adapted performance
+separately; different body geometry, placements, controllers, and synthetic sensors may
+defeat transfer. Physical robot sensing, disturbance evaluation, onboard timing, mitigation
+control, and safety validation remain future work.
+
+
+
+
+                                             34
+

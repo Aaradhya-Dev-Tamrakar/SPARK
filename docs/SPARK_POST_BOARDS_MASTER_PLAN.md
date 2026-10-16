@@ -11,6 +11,8 @@
 
 ## 1. Executive Snapshot (State as of 2026-08-22)
 
+> **Thesis evidence correction (October 14, 2026):** This snapshot is historical. See [the current thesis reports](THESIS_REPORTS.md) for audited scope. The firmware driver and TFLite path remain stubs; a model header is not deployed inference. August model results must remain separate from the October run. Laptop inference timings below are historical tracker-reported results, not MCU timing or power measurements. Battery durations and cohort sizes below are estimates or plans, not completed evaluations. The existing model preprocessing is 100 Hz / 200 samples / 2 s; 200 Hz describes the planned logger.
+
 The SPARK project is paused in a healthy, fully verified, and mathematically defensible state across all three tiers:
 
 ```[ ESP32-S3 Wearable Node ]  ──(BLE GATT / UART)──>  [ Local Companion Gateway ]  ──(REST/CORS)──>  [ Web/Mobile UI ]

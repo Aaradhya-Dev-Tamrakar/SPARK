@@ -2,7 +2,7 @@
 
 > **A Two-Layer Gated Edge-AI Fall Detection & Kinetic Pattern Recognition System with Explainable Telemetry**  
 > Major Project (8th Semester) — Department of Electronics & Computer Engineering, Kathmandu Engineering College (KEC), Institute of Engineering (IOE), Tribhuvan University, Nepal.  
-> *Empirically validated on human gait; architecturally extensible to out-of-band bipedal/humanoid robotics safety modules.*
+> *Human fall detection is the primary completion objective. Offline SisFall results are available; physical wrist-worn and cohort evaluation remain pending. Robot fall monitoring is an open research extension.*
 
 ---
 
@@ -33,6 +33,10 @@
 
 Milestones have no due dates until the next-semester ordering and delivery windows are confirmed.
 
+### Thesis reports
+
+The [report index](docs/THESIS_REPORTS.md) links the independent [mid-defense progress report](docs/SPARK_Mid_Defense/main.pdf) and [final-defense thesis draft](docs/SPARK_Final_Defense/main.pdf), their editable sources, evidence snapshots, and build instructions. The [proposal](docs/SPARK_Proposal/ThesisReports/thesis_report.tex) remains preserved.
+
 ### Next-Semester Execution Gates
 
 ```mermaid
@@ -58,8 +62,8 @@ Volunteer sessions wait for both logger validation and institutional approval. C
 
 | Module / workstream | Assignee | Status | Current deliverable or next condition |
 | :--- | :--- | :--- | :--- |
-| **ML Modeling & Quantization** | Aaradhya Dev Tamrakar | **Complete** | SisFall ingestion, subject-grouped CNN evaluation, and $18.5\text{ KB}$ INT8 model export. |
-| **Gateway & Explainability** | Aaradhya Dev Tamrakar | **Complete** | BLE receiver, explainability pipeline, PDF reports, and local REST server. |
+| **ML Modeling & Quantization** | Aaradhya Dev Tamrakar | **Offline artifacts available; review pending** | August and October model generations have separate results. October threshold provenance and deployed model identity require reconciliation; on-device evaluation remains pending. |
+| **Gateway & Explainability** | Aaradhya Dev Tamrakar | **Software implemented; integration pending** | Parser, storage, reporting, and REST modules exist. Waveform gradient attribution is distinct from exact SHAP; v1 events support peak-feature fallback. Physical BLE validation remains. |
 | **Protocol & Procurement Preparation** | Aaradhya Dev Tamrakar | **In progress** | Protocol draft and order form exist; activity review, ethics preparation, and order readiness remain. |
 | **Deep-Research Synthesis** | Aaradhya Dev Tamrakar | **Complete** | Research synthesis and documented architecture decisions are available in the research board. |
 | **Physical ESP32-S3 Firmware** | Rupesh Kadel | **Hardware pending** | Host-testable components exist; physical I2C, BLE, and on-device validation follow board receipt. |

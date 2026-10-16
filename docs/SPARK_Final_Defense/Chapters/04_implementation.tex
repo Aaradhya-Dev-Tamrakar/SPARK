@@ -1,0 +1,24 @@
+\chapter{Implementation Status}
+\section{Data and training artifacts}
+The repository contains SisFall preparation, CNN training, quantization, and transfer-training scripts. The stored local windows and metadata can be inspected without running a notebook. Saved August Keras/INT8 files and a newer October upgraded generation coexist; the shared metadata filename is not a guarantee that all adjacent reports describe the same model.
+
+The October log describes focal loss, temporal jitter, magnitude scaling, and augmented training windows. Augmentation expands training samples; it does not create new independent subjects or increase the held-out cohort. Transfer-training code is available, but code presence does not establish completed Nepal fine-tuning.
+
+\section{Firmware boundaries}
+The Layer 1 magnitude/duration gate, peak extraction, and JSON encoding have concrete source implementations. In contrast, \texttt{mpu6050.cpp} returns zeroed samples without an I2C transaction, and \texttt{inference.cpp} returns a fixed 0.5/0.5 split without constructing a TFLite Micro interpreter. The component definition does not link a real TFLite Micro dependency.
+
+The detector entrypoint reads one sample and supplies a zero-initialized inference window. The logger mode contains a single-iteration break rather than a demonstrated timer-driven stream. Output encoding exists, while actual UART/BLE writes remain stubbed. Thus a flash-resident model header establishes available bytes, not an autonomous detector, validated sampling, or real radio delivery.
+
+\Pending{Implement and validate the sensor driver, continuous timestamped acquisition, ring buffer, unit/model adapter, interpreter/operator registration, threshold decision, and actual event transport. Measure MCU memory and timing on the selected board.}
+
+\section{Gateway and reporting}
+Gateway code provides BLE/serial receiver interfaces, event parsing, JSON storage, ReportLab incident reports, and a local HTTP API/dashboard. Host tests exercise these functions with software fixtures. The BLE callback currently forwards each notification to the parser; complete-payload assumptions require verification under the eventual packetization/MTU policy.
+
+The waveform explainer uses input-times-gradient attribution when a compatible model and raw window are supplied. Otherwise it falls back to peak-feature summaries. Generated synthetic fall examples test report layout and software flow; their attribution percentages are not explanations measured on recorded cohort falls.
+
+\Pending{Validate real BLE discovery, notification framing/reassembly, reconnect behavior, timestamp interpretation, duplicate handling, and report provenance. Record whether each explanation uses a waveform model or peak-feature fallback.}
+
+\section{Hardware, enclosure, and cohort}
+The intended design uses ESP32-S3, MPU6050, an 1100 mAh LiPo, charging/protection circuitry, and a dorsal TPU bracer. These are design choices, not evidence of receipt, completed assembly, fit, or endurance. BOM estimates and older component alternatives need reconciliation before purchase. Charging is off-body only under the retained design constraints.
+
+Procurement is planned for next semester after Dashain, Tihar, and Chhath. A collection protocol and logger tooling exist; enrollment, institutional approval, physical logger validation, and collection remain pending. Cohort targets of 12--20 volunteers are planning values, not observed recruitment or sufficient evidence of clinical generalization.

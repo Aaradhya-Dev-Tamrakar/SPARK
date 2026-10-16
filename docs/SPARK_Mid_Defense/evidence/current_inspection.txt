@@ -1,0 +1,24 @@
+Inspection date: 2026-10-14
+Repository base: 25660ab523e0e7a0dadaab03a4e8e7f9a3a67bba
+Method: numpy.load(..., mmap_mode='r') for array headers; csv.DictReader for metadata;
+hex-byte extraction from firmware header and byte comparison with local FlatBuffers.
+No training or model inference executed for these observations.
+
+data/processed_sisfall/windows.npy: shape (38426, 200, 6), dtype float32
+data/processed_sisfall/labels.npy: shape (38426,)
+data/processed_sisfall/meta.csv: 38426 rows, 38 subject values, 34 activity codes
+firmware/main/models/spark_cnn_int8.h: 18912 extracted bytes
+Extracted-model SHA256: dd0e8e3d6b201acba2b524a1f911958f70bf15a52bc6592eb5cec97e78d5a2ea
+Matches data/processed_sisfall/model/spark_cnn_int8_upgraded.tflite: true
+Matches data/processed_sisfall/model/spark_cnn_int8.tflite (18904 bytes): false
+
+uv run pytest -q: 65 passed, 48 dependency warnings, 57.11 seconds
+uv run python scripts/verify.py: 4 checks passed, 0 errors
+uv run ruff check: FAIL, 23 pre-existing findings
+uv run ruff format --check: FAIL, 4 pre-existing files would be reformatted
+Failures are baseline findings in scripts/sync_drive.py, scripts/verify.py,
+training/train_cnn.py; formatting also includes tests/test_train_cnn.py.
+No fixes or sync/commit/push were performed for these unrelated findings.
+
+Passing tests are software verification, not evidence of physical BLE, real I2C,
+TFLite Micro deployment, battery life, cohort collection, or robot performance.

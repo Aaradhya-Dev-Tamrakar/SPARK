@@ -1,0 +1,18 @@
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}{0.88\textwidth}\centering
+\textbf{Intended wearable path --- hardware validation pending}\\[2mm]
+MPU6050 acquisition $\rightarrow$ timed window buffer\\
+$\rightarrow$ Layer 1 gate $\rightarrow$ INT8 CNN $\rightarrow$ event transport\\[2mm]
+\textit{Current driver, interpreter, and transport interfaces contain stubs.}
+\end{minipage}}
+\par\vspace{3mm}$\downarrow$\par\vspace{3mm}
+\fbox{\begin{minipage}{0.88\textwidth}\centering
+\textbf{Laptop gateway --- software modules available}\\[2mm]
+Event parser $\rightarrow$ local JSON storage $\rightarrow$ explanation/report\\
+$\rightarrow$ local REST API $\rightarrow$ display-only client\\[2mm]
+\textit{v1 peak-feature path differs from raw-waveform gradient attribution.}
+\end{minipage}}
+\caption{Intended architecture with current implementation boundaries. The figure is a design map, not evidence of integrated device operation.}
+\label{fig:architecture}
+\end{figure}

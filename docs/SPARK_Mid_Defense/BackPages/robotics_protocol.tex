@@ -1,0 +1,57 @@
+\chapter{Planned MuJoCo Humanoid Experiment}
+\label{app:robotics}
+\textbf{Protocol status: proposed, not executed.} Human fall detection remains the primary completion objective. This appendix defines a separate exploratory study; it supplies no robot result, mitigation claim, or physical safety certification.
+
+\section{Motion source and feasibility gates}
+A proposed motion source is the Gymnasium Humanoid-v5 model in MuJoCo. Official documentation exposes a custom \texttt{xml\_file} and configurable unhealthy termination \cite{gymHumanoid}. MuJoCo supplies accelerometer and gyro sensors aligned to an MJCF site \cite{mujocoSensors}. These interfaces support documentary feasibility, not a tested SPARK simulator integration.
+
+Before generating data, pin the simulator, environment, MJCF and controller revisions, integrator, timestep, contact settings, and seeds. A reproducible controller must demonstrate stable walking and recovery on development-only seeds; the stock environment is not itself a validated locomotion controller or a fall dataset. Random actions do not satisfy the stable-locomotion condition. Verify controller licensing and provenance separately.
+
+The inspected model timestep is 0.003 s and the environment defaults to five physics steps per action, implying 0.015 s between actions \cite{gymHumanoidSource,gymHumanoidAsset}. Source and runtime settings must prevail over inconsistent timing prose in documentation. Instrument physics substeps; an observation once per action is insufficient for the proposed 200 Hz archive. Set \texttt{terminate\_when\_unhealthy=False} and an explicit 30 s episode limit to retain contact and recovery. Reject non-finite or unstable trajectories. No simulator was installed or run for this report.
+
+\section{Forty episodes and frozen split}
+\begin{table}[htbp]
+\centering\caption{Proposed episode allocation. No episodes have been generated.}
+\begin{tabular}{@{}p{7cm}rr@{}}\toprule
+Condition & Development & Held out\\\midrule
+Stable locomotion & 5 & 5\\
+Recoverable disturbances & 5 & 5\\
+Slips ending in falls & 5 & 5\\
+Other falls & 5 & 5\\\midrule
+Total & 20 & 20\\\bottomrule
+\end{tabular}
+\end{table}
+Target ten accepted 30 s episodes per condition. Use mild bounded torso disturbances for recovery, reduced-friction patches for slips, and stronger directional impulses or controlled actuator disturbances for other falls. Calibrate magnitudes on development trajectories only. A slip label requires load-bearing foot displacement followed by independently annotated falling; low friction alone is not ground truth.
+
+Reserve five IDs per condition before adaptation or threshold tuning. Separate reset/controller seeds and perturbation realizations across the two sets; do not split overlapping windows of one episode across sets. Freeze model, preprocessing, thresholds, controller, and annotation rules before held-out evaluation. Limit candidate attempts to twenty per condition and retain an attempt log, invalid traces, and condition mismatches. Report inability to fill a condition instead of selecting episodes based on detector success.
+
+\section{Sensors, units, and preprocessing}
+Place the primary co-located accelerometer/gyro site on the dorsal distal forearm of one fixed lower-arm body, near the wrist. Record site position, quaternion, and a right-handed mapping to $(a_x,a_y,a_z,\omega_x,\omega_y,\omega_z)$. The stock model has no independently articulated wrist; disclose the approximation. A torso site is an auxiliary placement experiment, not interchangeable with the forearm stream.
+
+Choose a consistent metre-kilogram-second model convention; MuJoCo does not prescribe SI model units \cite{mujocoUnits}. Archive acceleration in $\mathrm{m/s^2}$, angular velocity in $\mathrm{rad/s}$, and time in seconds. Record gravity and validate stationary and free-fall signs before claiming MPU6050 equivalence. Convert event peaks using $g_0=9.80665\,\mathrm{m/s^2}$ and $180/\pi$ degrees per radian. Preserve site-local acceleration including gravity; do not subtract or add gravity without a verified sensor convention.
+
+Save physics-substep timestamps and sensor values, then apply a documented low-pass anti-alias filter before resampling to a 200 Hz archive. Record filter delay, missing values, gaps, assumed bias/noise, and clipping. Sensor noise is a simulation assumption rather than measured MPU6050 behavior.
+
+For exploratory comparison with the current model, propose a separately versioned adapter to 100 Hz, 200 samples, six channels, and two seconds. Shape parity alone is insufficient: current SisFall preparation retains integer sensor counts and does not establish a physical-unit transform. Recover scaling, normalization, channel order, and quantization from the specific model before transfer. Fit changed preprocessing only on development data and label it a new experiment. Failure to recover this contract blocks evaluation. A 200 Hz three-second model would require 600 samples and new training.
+
+\section{Ground truth independent of predictions}
+Save torso pose, height, foot motion, contact body pairs, and synchronized video independently of classifier scores. Annotators review those records without detector output. Record disturbance time, loss-of-balance onset, first fall contact, sustained collapse, recovery onset/completion, and ambiguity.
+
+For development calibration only, propose onset at torso tilt above $45^\circ$ or height below 0.7 times upright height; require subsequent torso/head/pelvis floor contact or collapsed posture lasting at least 0.5 s for a fall. Recovery proposes height above 0.9 times upright height and tilt below $20^\circ$ for 2 s without meeting the fall criterion. These are operational hypotheses, not established biomechanics. Freeze final rules and handling of kneeling, hand support, and delayed recovery before held-out annotation.
+
+\section{Evaluation endpoints}
+Use one-to-one event matching from annotated onset to 2 s after first fall contact; define a separate endpoint for contact-free collapse. Freeze a 2 s duplicate-alarm merge rule. Additional unmatched alarms remain false alarms. Report
+\[
+\mathrm{Sensitivity}_{event}=\frac{\text{matched detected falls}}{\text{all annotated falls}},\qquad
+\mathrm{FAR}=\frac{\text{unmatched alarms}}{\text{valid non-fall hours}}.
+\]
+If each held-out fall episode has one event, ten falls form the pooled denominator. Report slips and other falls separately, counts, misses, and binomial confidence intervals. This small exploratory sample does not support deployment claims. Ten 30 s non-fall episodes provide at most 300 s of exposure (0.0833 h); report actual valid duration and alarms separately for stable and recoverable conditions. Zero observed alarms over this exposure does not establish a low operational rate.
+
+For matched events report $t_{alarm}-t_{onset}$ and $t_{alarm}-t_{contact}$ separately, including median, interquartile range, range, and count. Negative contact-relative delay denotes a pre-contact alarm. Report misses separately, and disclose buffering/filter delay. Simulator-time delay is not ESP32 inference latency or BLE delivery time.
+
+\section{Event-pipeline interoperability and completion}
+A future replay adapter shall emit existing v1 fields: \path{event_id}, \path{device_id}, \path{firmware_version}, uint32 \path{timestamp_ms}, confidence $P(\mathrm{FALL})$, and signed per-channel maximum-magnitude peaks in g and degrees/s. Identify synthetic devices explicitly. Keep episode, simulator, model, and domain provenance in a linked sidecar. v1 does not carry the raw window; \path{subject_type=bipedal_robot} is a proposed extension, not a validated v1 routing feature.
+
+Future fixtures must verify parser, storage, and report interoperability against the unchanged event contract. Those checks do not validate physical BLE or robot-specific explanations. Completion requires reproducible motion, calibrated timing/units, forty accepted episodes, a frozen split and annotations, recovered model preprocessing, held-out event/exposure metrics, and passing replay checks.
+
+Human-model transfer remains exploratory. Report zero-shot and adapted performance separately; different body geometry, placements, controllers, and synthetic sensors may defeat transfer. Physical robot sensing, disturbance evaluation, onboard timing, mitigation control, and safety validation remain future work.

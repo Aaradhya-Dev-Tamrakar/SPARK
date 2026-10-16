@@ -1,0 +1,43 @@
+\documentclass[12pt,a4paper]{report}
+\input{utils.tex}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric}
+\hypersetup{pdftitle={SPARK: Explainable Edge AI for Kinetic Pattern Recognition and Distress Signaling},pdfauthor={Aaradhya Dev Tamrakar; Rupesh Kadel; Sankalpa Lamsal; Sonia Thapa}}
+\graphicspath{{Figures/}}
+\newcommand{\ReportStage}{Final-Defense Thesis Draft}
+\newcommand{\Pending}[1]{\par\noindent\textbf{Awaiting evaluation:} #1\par}
+\begin{document}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\hypersetup{pageanchor=false}
+\input{FrontPages/title}
+\clearpage\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\input{FrontPages/status}
+\input{FrontPages/approval}
+\input{FrontPages/acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+\input{Chapters/abstract}
+\setcounter{tocdepth}{1}
+\tableofcontents
+\listoffigures
+\listoftables
+\input{FrontPages/abbreviations}
+\clearpage\pagenumbering{arabic}
+\input{Chapters/01_introduction}
+\input{Chapters/02_background}
+\input{Chapters/03_methodology}
+\input{Chapters/04_implementation}
+\input{Chapters/05_results}
+\input{Chapters/06_remaining_work}
+\input{Chapters/08_feasibility_and_outputs}
+\input{Chapters/07_conclusion}
+\clearpage\phantomsection\addcontentsline{toc}{chapter}{References}
+\bibliographystyle{IEEEtran}
+\bibliography{BackPages/references}
+\appendix
+\input{BackPages/evidence_register}
+\input{BackPages/robotics_protocol}
+\end{document}
