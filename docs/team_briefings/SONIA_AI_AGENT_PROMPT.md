@@ -54,7 +54,37 @@ Before writing code, inspect the machine's environment and automatically install
      powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
      ```
 
-3. **Auto-Seed Simulated Gateway Data & Verify API Server:**
+3. **Install & Activate the `github-workflow` Skill from the Repository:**
+   The canonical team development workflow skill is bundled directly in the repository at `.gemini/skills/github-workflow/`.
+   Install or project this skill into your environment so that all Git and issue tracking rules are actively enforced:
+   - For Antigravity / Gemini CLI users:
+     Verify `.gemini/skills/github-workflow/SKILL.md` is present, or copy to user profile:
+     ```powershell
+     New-Item -ItemType Directory -Path "$HOME\.gemini\config\skills\github-workflow" -Force
+     Copy-Item -Path ".gemini\skills\github-workflow\*" -Destination "$HOME\.gemini\config\skills\github-workflow" -Recurse -Force
+     ```
+   - For Claude Code / Cursor users:
+     Read and follow `.gemini/skills/github-workflow/SKILL.md` as the authoritative Git SOP.
+
+4. **Configure Sonia's Git & GitHub Identity:**
+   Configure local git config for Sonia's authorized account:
+   ```powershell
+   git config user.name "Sonia Thapa"
+   git config user.email "majorprj79043@gmail.com"
+   ```
+   Check GitHub CLI authentication status:
+   ```powershell
+   gh auth status
+   ```
+   If not authenticated, prompt Sonia to log in with `majorprj79043@gmail.com` via `gh auth login`.
+
+5. **Branch Off for Issue #5:**
+   Follow `github-workflow` branch isolation rules:
+   ```powershell
+   git checkout -b feat/layer3-display-client-#5
+   ```
+
+6. **Auto-Seed Simulated Gateway Data & Verify API Server:**
    Ensure the local gateway environment is immediately populated:
    ```powershell
    # Seed simulated fall events and mock PDFs without extra packages

@@ -56,7 +56,7 @@ def check_synthetic_shas():
     violations = []
     for file in ROOT.rglob("*"):
         if file.is_file() and file.suffix.lower() in text_extensions:
-            if any(part in file.parts for part in (".git", ".venv", ".ruff_cache", ".pytest_cache", ".dist", "spark.egg-info", "scripts")):
+            if any(part in file.parts for part in (".git", ".gemini", ".venv", ".ruff_cache", ".pytest_cache", ".dist", "spark.egg-info", "scripts")):
                 continue
             try:
                 content = file.read_text(encoding="utf-8", errors="ignore")
