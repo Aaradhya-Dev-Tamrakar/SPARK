@@ -4,7 +4,7 @@ The proposal is preserved in [SPARK_Proposal](SPARK_Proposal/ThesisReports/thesi
 
 | Report | Editable source | PDF | Purpose |
 |---|---|---|---|
-| Mid-defense | [main.tex](SPARK_Mid_Defense/main.tex) | [Progress report](SPARK_Mid_Defense/main.pdf), 40 pages | Completed software work, available results, limitations, and remaining tasks |
+| Mid-defense | [main.tex](SPARK_Mid_Defense/main.tex) | [Progress report](SPARK_Mid_Defense/main.pdf), 41 pages | Completed software work, available results, limitations, and remaining tasks |
 | Final-defense | [main.tex](SPARK_Final_Defense/main.tex) | [Thesis draft](SPARK_Final_Defense/main.pdf), 46 pages | Full draft with hardware, cohort, and integrated evaluation explicitly pending |
 
 Each folder contains local KEC formatting, front pages, chapter sources, figures, BibTeX references, source-hash manifests, and archived result excerpts. Neither report reads files from the proposal or its sibling at build time. Run `build.bat` inside the selected folder with TeX Live and latexmk available. The PDF is generated as `main.pdf`; LaTeX intermediate files are ignored.
