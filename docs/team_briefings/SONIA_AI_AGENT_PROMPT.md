@@ -187,7 +187,7 @@ You may build this application using one of the following stacks (recommend Reac
 ### UI / UX Specifications & Acceptance Criteria
 
 1. **Dashboard / Live Alert Feed:**
-   - Display prominent header showing connection state: `🟢 GATEWAY ACTIVE` vs `🔴 OFFLINE / RECONNECTING`.
+   - Display prominent header showing connection state: ` GATEWAY ACTIVE` vs ` OFFLINE / RECONNECTING`.
    - Settings gear to set custom gateway host URL (e.g. `http://192.168.1.75:8000`), persisted to `localStorage`.
    - Incident cards showing:
      - Prominent priority badge:
@@ -211,7 +211,7 @@ You may build this application using one of the following stacks (recommend Reac
    - **Raw Peak Kinematics Table:** Displays the 6 values from `payload.peak_features` with engineering units ($g$ for acceleration, $^\circ/\text{s}$ for gyroscope).
 
 3. **Clinical PDF Viewer / Action:**
-   - Clean "📄 View Clinical Report (PDF)" button.
+   - Clean " View Clinical Report (PDF)" button.
    - Opens the report directly from `GET /api/reports/<event_id>` in an embedded iframe or modal with native download/share controls.
 
 ---

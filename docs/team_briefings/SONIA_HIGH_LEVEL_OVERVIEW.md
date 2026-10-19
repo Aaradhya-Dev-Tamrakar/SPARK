@@ -82,7 +82,7 @@ Open `http://localhost:8000` in Edge/Chrome on Windows 11. You will immediately 
 ## 4. How to Use the AI Prompt File
 
 You do not need to write all UI boilerplate by hand. We have prepared an AI Agent prompt specification for you:
-👉 **[`SONIA_AI_AGENT_PROMPT.md`](SONIA_AI_AGENT_PROMPT.md)**
+ **[`SONIA_AI_AGENT_PROMPT.md`](SONIA_AI_AGENT_PROMPT.md)**
 
 **How to use it:**
 1. Open your preferred AI coding tool (Claude Code, Cursor, GitHub Copilot Workspace, Antigravity, or ChatGPT/Gemini).

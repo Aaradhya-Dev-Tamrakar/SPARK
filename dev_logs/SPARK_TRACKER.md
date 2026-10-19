@@ -851,28 +851,28 @@ Landed via three raw commits (see above note) — future edits must route throug
 1. **Aaradhya Dev Tamrakar (Supervisor: Er. Dipen Manandhar)**
    - **Role:** Project Lead, ML Training, SHAP Integration, Gateway Pipeline, Protocol Architecture
    - **WBS status:**
-     - WP 0: Proposal & mid-term defense (✅ Completed July 9, 2026)
-     - WP 1: Literature review, wire format specification (`WIRE_FORMAT_v1.md`), and Nepal data collection protocol (`DATA_COLLECTION_PROTOCOL.md` ✓ v53)
-     - WP 2: Training & Quantization pipeline (`prepare_sisfall.py` ✓, `train_cnn.py` ✓, `quantize_model.py` ✓ v49, C-header export ✓)
-     - WP 3: Gateway ingestion, BLE GATT client (`BleReceiver` ✓), multi-scenario SHAP explainer (`explainer.py` ✓), clinical PDF generator (`pdf_report.py` ✓), and local REST & web dashboard server (`server.py` ✓ v53)
-     - WP 4: Hardware acceleration benchmark (Intel Core Ultra 7 155H NPU/iGPU OpenVINO ✓ v52), demo pipelines, and thesis architecture
+     - WP 0: Proposal & mid-term defense ( Completed July 9, 2026)
+     - WP 1: Literature review, wire format specification (`WIRE_FORMAT_v1.md`), and Nepal data collection protocol (`DATA_COLLECTION_PROTOCOL.md`  v53)
+     - WP 2: Training & Quantization pipeline (`prepare_sisfall.py` , `train_cnn.py` , `quantize_model.py`  v49, C-header export )
+     - WP 3: Gateway ingestion, BLE GATT client (`BleReceiver` ), multi-scenario SHAP explainer (`explainer.py` ), clinical PDF generator (`pdf_report.py` ), and local REST & web dashboard server (`server.py`  v53)
+     - WP 4: Hardware acceleration benchmark (Intel Core Ultra 7 155H NPU/iGPU OpenVINO  v52), demo pipelines, and thesis architecture
 
 2. **Rupesh Kadel (ID: 79034)**
    - **Role:** Firmware, Wearable Integration, Hardware Validation
    - **WBS status:**
-     - WP 1 / WP 2 (Scaffold): Host C++ unit tests (21/21 passed ✓) and INT8 model header integration (`spark_cnn_int8.h` ✓)
+     - WP 1 / WP 2 (Scaffold): Host C++ unit tests (21/21 passed ) and INT8 model header integration (`spark_cnn_int8.h` )
      - WP 2 / WP 3 (Physical Hardware Bring-Up): **0% / Not Started (Pending Board Delivery)** — on-device MPU6050 I2C communication, real-time Layer 1 threshold triggering on silicon, on-chip BLE advertising/notification stack, and battery power profiling.
 
 3. **Sankalpa Lamsal (ID: 79039)**
    - **Role:** Enclosure Design, Hardware Assembly, BOM Sourcing
    - **WBS status:**
-     - WP 1: Concept render and geometric wrist measurement estimate (✓ v38)
+     - WP 1: Concept render and geometric wrist measurement estimate ( v38)
      - WP 2 / WP 3 (3D CAD & Manufacturing): **0% / Not Started (Pending Model Build)** — parametric CAD design (`.step`/`.stl`), M2.5 screw boss wall thickness verification, TPU 95A slicer tuning, physical 3D printing at KEC Makerspace, and wearable strap assembly.
 
 4. **Sonia Thapa (ID: 79043)**
    - **Role:** Data Collection, Clinical Requirement Gathering, Mobile Display Client
    - **WBS status:**
-     - WP 1: Clinical fall taxonomy input (✓ documented in protocol)
+     - WP 1: Clinical fall taxonomy input ( documented in protocol)
      - WP 2 / WP 3 (Mobile Client & Clinical Trials): **0% / Not Started** — Layer 3 smartphone/web display client UI (to consume `gateway/server.py` REST API) and physical volunteer crash-mat fall data recording runs at KEC.
 
 ---
@@ -883,18 +883,18 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 1. **WP 0 — Proposal (COMPLETED)**
    - Deadline: July 9, 2026 (defence)
-   - Status: ✅ Submitted (v33 July 2, v35 July 6), defence occurred July 9 as scheduled, panel optimistic
+   - Status:  Submitted (v33 July 2, v35 July 6), defence occurred July 9 as scheduled, panel optimistic
    - Handoff: Aaradhya designs, Rupesh firmware specs
 
 2. **WP 1 — Setup & Literature Review (July–August 2026)**
    - Deadline: August 31, 2026
-   - Scope: GitHub repo scaffold (✅ v22), dataset protocol (HOD discussion held v22, confirmation pending), layer 1 thresholding design (locked §2.5), hardware procurement (Action #16/#18/#19 — Tier 2)
+   - Scope: GitHub repo scaffold ( v22), dataset protocol (HOD discussion held v22, confirmation pending), layer 1 thresholding design (locked §2.5), hardware procurement (Action #16/#18/#19 — Tier 2)
    - Gate: Confirm dataset protocol (Action #23), finalize BOM, order boards
    - Handoff: Training code (via WP 2)
 
 3. **WP 2 — Training & Quantization (September–October 2026)**
    - Deadline: October 31, 2026
-   - Scope: Prepare SisFall (✅ v23), classical-ML baseline (✅ v24–v25), CNN training, INT8 quantization (Rupesh), SHAP gateway code (Aaradhya), clinical PDF template (Sonia)
+   - Scope: Prepare SisFall ( v23), classical-ML baseline ( v24–v25), CNN training, INT8 quantization (Rupesh), SHAP gateway code (Aaradhya), clinical PDF template (Sonia)
    - Gate: Achieve Sensitivity ≥90% & Specificity ≥90% on test set
    - Handoff: Quantized models to firmware (Rupesh)
 

@@ -6,7 +6,7 @@
 
 ---
 
-## 👥 Project Team & Supervision
+##  Project Team & Supervision
 
 | Role | Name | Primary Focus |
 | :--- | :--- | :--- |
@@ -18,7 +18,7 @@
 
 ---
 
-## 📊 Project Progress & Roadmap
+##  Project Progress & Roadmap
 
 > [!NOTE]
 > Procurement is expected to begin next semester, after the Dashain, Tihar, and Chhath holidays. The current phase is pre-procurement readiness: reconcile the order package and finish protocol and ethics preparation. Hardware bring-up follows parts arrival; volunteer recording requires logger validation and institutional approval. See the [resumption plan](docs/SPARK_POST_BOARDS_MASTER_PLAN.md).
@@ -73,7 +73,7 @@ Volunteer sessions wait for both logger validation and institutional approval. C
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```mermaid
 flowchart TD
@@ -128,16 +128,16 @@ The phone and web client are display-only. BLE reception, event storage, explain
 
 ---
 
-## 🌿 Branching & Workstreams
+##  Branching & Workstreams
 
 | Branch | Lead / Assignee | Workstream Scope | Status |
 | :--- | :--- | :--- | :---: |
-| `main` | Team | Production stable, integrated deliverables & LaTeX reports | **STABLE** 🟢 |
-| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 physical firmware, MPU6050 I2C driver & on-device TFLite Micro | **NOT STARTED / 0%** 🔴 |
-| `feat/enclosure-cad` | `@SankalpaLamsal` | Parametric 3D CAD modeling, TPU 95A slicer tuning & physical print | **NOT STARTED / 0%** 🔴 |
-| `feat/gateway-dashboard` | `@SoniaThapa` | Mobile display client UI & live gateway frontend | **NOT STARTED / 0%** 🔴 |
-| `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer | **MERGED** ✅ |
-| `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report | **MERGED** ✅ |
+| `main` | Team | Production stable, integrated deliverables & LaTeX reports | **STABLE**  |
+| `feat/firmware-layer1` | `@RupeshKadel` | ESP32-S3 physical firmware, MPU6050 I2C driver & on-device TFLite Micro | **NOT STARTED / 0%**  |
+| `feat/enclosure-cad` | `@SankalpaLamsal` | Parametric 3D CAD modeling, TPU 95A slicer tuning & physical print | **NOT STARTED / 0%**  |
+| `feat/gateway-dashboard` | `@SoniaThapa` | Mobile display client UI & live gateway frontend | **NOT STARTED / 0%**  |
+| `feat/training-pipeline` | `@AaradhyaDT` | SisFall raw ingestion, CNN architecture, and TFLite model quantizer | **MERGED**  |
+| `feat/gateway-shap` | `@AaradhyaDT` | BLE receiver, wire format parser, SHAP feature attribution & PDF report | **MERGED**  |
 
 ---
 
@@ -145,7 +145,7 @@ The phone and web client are display-only. BLE reception, event storage, explain
 
 ##  Active Development Tracking & Remaining Works
 
-### ✅ Completed Work
+###  Completed Work
 - [x] **Proposal Defense**: Successfully defended mid-term proposal (Passed July 9, 2026).
 - [x] **BOM & Procurement Lock**: Component order form finalized (`docs/SPARK_Component_Order_Form.xlsx`, Daraz/Himalayan Solution/Giga Nepal).
 - [x] **Electrical Safety & Charging Architecture**: Dual single-purpose USB-C ports locked (Action #38, off-body charging only).
@@ -165,7 +165,7 @@ The phone and web client are display-only. BLE reception, event storage, explain
 
 ---
 
-## 📂 Repository Directory Layout
+##  Repository Directory Layout
 
 ```
 SPARK/
@@ -274,7 +274,7 @@ latexmk -pdf thesis_report.tex
 
 ---
 
-## 🔄 Local Git Workflow (`sync.ps1`)
+##  Local Git Workflow (`sync.ps1`)
 
 To maintain clean conventional commits and keep `SPARK_TRACKER.md` synchronized, use the provided PowerShell sync script:
 
@@ -294,6 +294,6 @@ To maintain clean conventional commits and keep `SPARK_TRACKER.md` synchronized,
 
 ---
 
-## 📜 License
+##  License
 
 This project is licensed under the MIT License — see the [`LICENSE`](LICENSE) file for details.
