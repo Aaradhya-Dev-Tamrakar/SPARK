@@ -143,7 +143,7 @@ The phone and web client are display-only. BLE reception, event storage, explain
 
 ---
 
-## 📌 Active Development Tracking & Remaining Works
+##  Active Development Tracking & Remaining Works
 
 ### ✅ Completed Work
 - [x] **Proposal Defense**: Successfully defended mid-term proposal (Passed July 9, 2026).
@@ -236,7 +236,7 @@ SPARK/
 
 ---
 
-## 🛠️ Development & Tooling
+##  Development & Tooling
 
 This project uses [`uv`](https://github.com/astral-sh/uv) for fast, deterministic Python environment management and linting.
 

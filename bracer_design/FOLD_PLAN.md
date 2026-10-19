@@ -24,7 +24,7 @@
 
 ---
 
-## 🎯 Component Fit (Validated)
+##  Component Fit (Validated)
 
 | Component | Spec | Module | Pocket/Groove | Margin |
 |-----------|------|--------|---------------|--------|
@@ -177,7 +177,7 @@ RESULT: Flat diffuser cover
 
 ---
 
-## ⚡ Assembly Sequence (30 sec, no tools)
+##  Assembly Sequence (30 sec, no tools)
 
 ```
 PREP: Fold all 6 modules per above
@@ -315,4 +315,4 @@ Swap `module_a_forearm.py` for any other module file in `bracer_design/`.
 3. Print all 6 in parallel
 4. Fold, snap, glow
 
-**No screws. No glue. Pure origami engineering.** ⚡
+**No screws. No glue. Pure origami engineering.** 
