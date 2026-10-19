@@ -8,6 +8,9 @@ Populates data/gateway_events with realistic simulated fall events (JSON)
 and a dummy placeholder PDF so Sonia can run gateway.server immediately on fresh Windows 11.
 """
 
+# Keep PDF cross-reference entry whitespace intact; it is part of the PDF byte format.
+# ruff: noqa: W291
+
 from __future__ import annotations
 
 import json

@@ -4,12 +4,12 @@ scripts/verify.py - Deterministic Verification Gate for SPARK
 Verifies Python syntax, project layout, sync scripts, SHA invariants, and workflows.
 """
 
-import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
 
 def check_structure():
     print("[1/4] Checking project structure and core files...")
@@ -30,6 +30,7 @@ def check_structure():
     print("  [PASS] All core project files and sync wrappers exist.")
     return True
 
+
 def check_python_syntax():
     print("[2/4] Checking python syntax across project modules...")
     py_files = []
@@ -37,10 +38,10 @@ def check_python_syntax():
         dirpath = ROOT / d
         if dirpath.exists():
             py_files.extend(dirpath.rglob("*.py"))
-            
+
     for pf in py_files:
         try:
-            with open(pf, "r", encoding="utf-8") as f:
+            with open(pf, encoding="utf-8") as f:
                 compile(f.read(), str(pf), "exec")
         except Exception as e:
             print(f"[FAIL] Syntax error in {pf.relative_to(ROOT)}: {e}")
@@ -48,15 +49,42 @@ def check_python_syntax():
     print(f"  [PASS] Syntax compiled cleanly across {len(py_files)} Python files.")
     return True
 
+
 def check_synthetic_shas():
     print("[3/4] Enforcing zero synthetic commit SHAs...")
-    synthetic_pattern = re.compile(r'\b(rel\d+|upg\d+|xtool\d+|dummy_sha|fake_sha|placeholder_sha)\b', re.IGNORECASE)
-    text_extensions = {".md", ".py", ".toml", ".json", ".yml", ".yaml", ".ps1", ".bat", ".ino", ".cpp", ".h"}
-    
+    synthetic_pattern = re.compile(
+        r"\b(rel\d+|upg\d+|xtool\d+|dummy_sha|fake_sha|placeholder_sha)\b", re.IGNORECASE
+    )
+    text_extensions = {
+        ".md",
+        ".py",
+        ".toml",
+        ".json",
+        ".yml",
+        ".yaml",
+        ".ps1",
+        ".bat",
+        ".ino",
+        ".cpp",
+        ".h",
+    }
+
     violations = []
     for file in ROOT.rglob("*"):
         if file.is_file() and file.suffix.lower() in text_extensions:
-            if any(part in file.parts for part in (".git", ".gemini", ".venv", ".ruff_cache", ".pytest_cache", ".dist", "spark.egg-info", "scripts")):
+            if any(
+                part in file.parts
+                for part in (
+                    ".git",
+                    ".gemini",
+                    ".venv",
+                    ".ruff_cache",
+                    ".pytest_cache",
+                    ".dist",
+                    "spark.egg-info",
+                    "scripts",
+                )
+            ):
                 continue
             try:
                 content = file.read_text(encoding="utf-8", errors="ignore")
@@ -74,6 +102,7 @@ def check_synthetic_shas():
     print("  [PASS] Zero synthetic commit SHAs detected.")
     return True
 
+
 def check_workflows():
     print("[4/4] Verifying GitHub workflows...")
     wf_dir = ROOT / ".github" / "workflows"
@@ -87,6 +116,7 @@ def check_workflows():
     print(f"  [PASS] Verified {len(workflows)} CI workflow definitions.")
     return True
 
+
 def main():
     print(f"Running deterministic verification in {ROOT}\n")
     checks = [
@@ -95,7 +125,7 @@ def main():
         check_synthetic_shas,
         check_workflows,
     ]
-    
+
     passed = 0
     errors = 0
     for check in checks:
@@ -104,7 +134,7 @@ def main():
         else:
             errors += 1
         print()
-        
+
     print("=" * 50)
     print(f"Passed: {passed}   Errors: {errors}")
     if errors == 0:
@@ -113,6 +143,7 @@ def main():
     else:
         print(f"\nVERIFICATION FAILED WITH {errors} ERROR(S).")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

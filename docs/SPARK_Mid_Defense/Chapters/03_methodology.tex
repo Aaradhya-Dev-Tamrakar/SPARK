@@ -1,6 +1,6 @@
 \chapter{Architecture and Methodology}
 \section{System allocation}
-The intended node uses an ESP32-S3 and MPU6050. The laptop gateway owns transport reception, local storage, explanation, and PDF generation. The mobile/display layer reads the gateway API. Figure~\ref{fig:architecture} separates the intended wearable from implemented gateway modules.
+The intended node uses an ESP32-S3 and MPU6050. The laptop gateway owns transport reception, local storage, explanation, and PDF generation. The mobile/display layer reads the gateway API. Figure~\ref{fig:architecture} is a conceptual system architecture and data-flow diagram: follow the wearable path left-to-right, the dashed handoff downward, and the gateway path right-to-left toward the display client. Dashed boxes and connectors mark intended, unvalidated device stages; solid gateway boxes show software modules available, not an integrated device pipeline.
 \input{Figures/system_architecture}
 
 \section{Sampling and input contract}

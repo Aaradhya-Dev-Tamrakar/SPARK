@@ -14,7 +14,6 @@ import re
 import subprocess
 import sys
 
-
 CHECKBOX_RE = re.compile(r"^(\s*[-*]\s*\[)([\sxX])(\]\s+)(.*)$")
 
 
@@ -51,12 +50,14 @@ def parse_tasks(body: str) -> list[dict]:
         if match:
             is_checked = match.group(2).lower() == "x"
             task_text = match.group(4).strip()
-            tasks.append({
-                "line_idx": idx,
-                "checked": is_checked,
-                "text": task_text,
-                "raw_line": line,
-            })
+            tasks.append(
+                {
+                    "line_idx": idx,
+                    "checked": is_checked,
+                    "text": task_text,
+                    "raw_line": line,
+                }
+            )
     return tasks
 
 
@@ -79,12 +80,14 @@ def update_issue_body(
                 content = match.group(4)
                 old_checked = match.group(2).lower() == "x"
                 lines[idx] = f"{prefix}{char}{suffix}{content}"
-                updated_tasks.append({
-                    "line_idx": idx,
-                    "old_state": old_checked,
-                    "new_state": target_state,
-                    "text": content.strip(),
-                })
+                updated_tasks.append(
+                    {
+                        "line_idx": idx,
+                        "old_state": old_checked,
+                        "new_state": target_state,
+                        "text": content.strip(),
+                    }
+                )
 
     return "\n".join(lines), updated_tasks
 
@@ -94,8 +97,12 @@ def main() -> int:
         description="Toggle task checklist items in GitHub issue bodies via gh CLI."
     )
     parser.add_argument("--issue", "-i", type=int, required=True, help="GitHub issue number.")
-    parser.add_argument("--repo", "-R", type=str, default=None, help="Target GitHub repository (owner/repo).")
-    parser.add_argument("--task", "-t", type=str, default=None, help="Case-insensitive substring match for task.")
+    parser.add_argument(
+        "--repo", "-R", type=str, default=None, help="Target GitHub repository (owner/repo)."
+    )
+    parser.add_argument(
+        "--task", "-t", type=str, default=None, help="Case-insensitive substring match for task."
+    )
     parser.add_argument("--index", type=int, default=None, help="1-based index of task to toggle.")
     parser.add_argument("--all", action="store_true", help="Toggle all tasks in the issue.")
     parser.add_argument(
@@ -104,8 +111,12 @@ def main() -> int:
         default="done",
         help="Target checkbox state: 'done' ([x]) or 'undone' ([ ]). Default is 'done'.",
     )
-    parser.add_argument("--list", action="store_true", help="List all tasks and exit without modifying.")
-    parser.add_argument("--dry-run", action="store_true", help="Print resulting markdown body without saving.")
+    parser.add_argument(
+        "--list", action="store_true", help="List all tasks and exit without modifying."
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print resulting markdown body without saving."
+    )
 
     args = parser.parse_args()
 
@@ -146,7 +157,9 @@ def main() -> int:
             if query in t["text"].lower():
                 matched_line_indices.add(t["line_idx"])
         if not matched_line_indices:
-            sys.stderr.write(f"No task matched query: '{args.task}'. Use --list to see available tasks.\n")
+            sys.stderr.write(
+                f"No task matched query: '{args.task}'. Use --list to see available tasks.\n"
+            )
             return 1
     else:
         sys.stderr.write("Error: Must specify --task, --index, --all, or --list.\n")
