@@ -17,7 +17,7 @@ These briefing files define the exact, independent deliverables each team member
 
 ### Onboarding Guides (Start Here)
 Every team member has a dedicated high-level starter guide explaining their subsystem in plain language with system architecture diagrams, first-day checklists, and key specifications:
-- **Rupesh Kadel (Firmware):** [`RUPESH_START_HERE.md`](RUPESH_START_HERE.md)
+- **Rupesh Kadel (Firmware):** [`RUPESH_START_HERE.md`](RUPESH_START_HERE.md) & [`RUPESH_FIRMWARE_STARTER_REVIEW.md`](RUPESH_FIRMWARE_STARTER_REVIEW.md)
 - **Sankalpa Lamsal (Hardware/CAD):** [`SANKALPA_START_HERE.md`](SANKALPA_START_HERE.md)
 - **Sonia Thapa (Display Client & Clinical):** [`SONIA_START_HERE.md`](SONIA_START_HERE.md)
 

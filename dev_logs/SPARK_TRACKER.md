@@ -1,16 +1,34 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v58)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v59)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
 > **Thesis audit snapshot (October 14, 2026; Issue #13):** Independent [mid-defense](../docs/SPARK_Mid_Defense/main.tex) and [final-defense draft](../docs/SPARK_Final_Defense/main.tex) sources preserve KEC metadata and the proposal. See [report index](../docs/THESIS_REPORTS.md) for PDFs and evidence boundaries. Current model preprocessing is 100 Hz, 200×6, 2 s; a 200 Hz logger is a separate planned acquisition path. Driver/TFLite code is stubbed, so model embedding does not establish on-device execution. October model/config results and the August test/quantization reports are separate generations; October safety threshold 0.4236 in the Colab log conflicts with 0.4065 in metadata. Laptop timing and battery estimates do not establish wearable measurements. Human fall detection remains primary; robotics is a planned, unexecuted protocol. Calendar dates remain unset.
 
-**Last updated:** October 20, 2026 (v58 — Complete Team Onboarding Infrastructure, Full-Lifecycle Task Briefings, Kinetics Stress Harness & Repo Governance Skills) ·
+**Last updated:** October 20, 2026 (v59 — Comprehensive Project State vs. Final Deliverable Audit & Subsystem Gap Analysis) ·
 
 > **Resumption timing update (October 13, 2026):** Hardware procurement is now expected to start next semester, after the Dashain, Tihar, and Chhath holidays. Until then, prioritize work that does not depend on ordered parts: reconcile the canonical BOM and open sourcing questions, complete and review the data collection protocol, and prepare ethics-submission materials. Hardware assembly, logger bring-up, and volunteer data collection remain gated on parts being available and required institutional approval. The week-based dates in older plans are superseded by this dependency order; schedule calendar dates with the team next semester.
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+
+**v59 change log (October 20, 2026 — Comprehensive Project State vs. Final Deliverable Audit & Subsystem Gap Analysis):**
+
+- **Project State vs. Final Deliverable Audit Completed:**
+  - Formulated full-scope audit artifact across 6 primary subsystems to establish true progress baseline:
+    1. *Machine Learning*: **75%** (SisFall Conv1D trained, 18.5 KB INT8 model quantized, C-header generated, transfer learning fine-tuning pipeline prepared. Gaps: Physical-unit calibration, 100 Hz vs 200 Hz windowing reconciliation, KEC volunteer data collection).
+    2. *Gateway Daemon*: **85%** (Bleak BLE receiver, FastAPI REST/dashboard server, peak-feature/gradient attribution engine, ReportLab clinical PDF generator passing all unit tests. Gaps: End-to-end live testing with real ESP32-S3 BLE transmitter).
+    3. *Academic Thesis & Evidence*: **70%** (Proposal, 41-page Mid-Defense, and 46-page Final Defense LaTeX drafts, 19 research tracks, ethics protocol, and onboarding guides completed. Gaps: Empirical replacement of offline benchmarks with real wearable trials and cohort data; faculty committee signatures).
+    4. *Embedded Firmware*: **40%** (Clean C++ interfaces, Layer 1 hysteresis gate, 200 Hz logger scaffold, wire format serialization. Gaps: mpu6050.cpp and tflite/inference.cpp remain stubs awaiting real I2C registers and TFLM tensor arena integration).
+    5. *Wearable Mechanical & Enclosure*: **30%** (BOM finalized, parametric Fusion 360 C-shell Python scripts in place. Gaps: Post-holiday hardware procurement, TPU 95A printing at KEC Makerspace, assembly/soldering).
+    6. *Caregiver Mobile Client*: **10%** (Architecture locked, team onboarding briefing written. Gaps: Zero frontend codebase; requires lightweight React Native / Flutter / PWA app consuming Gateway API).
+  - Overall progress baseline calculated at **~50% total completion**.
+- **Pre-Hardware Unblocked Critical Path Prioritized:**
+  - Priority 1: Caregiver display UI implementation (Sonia's track) using Gateway replay API.
+  - Priority 2: Firmware TFLM MicroInterpreter and tensor arena integration in QEMU/Wokwi (Rupesh's track).
+  - Priority 3: Sensor count to physical unit scaling (g, deg/s) and 100 Hz vs 200 Hz windowing standardization.
+- **Verification Milestone:**
+  - Verified 69/69 automated unit tests passing cleanly (uv run pytest).
 
 **v58 change log (October 20, 2026 — Complete Team Onboarding Infrastructure, Full-Lifecycle Task Briefings, Kinetics Stress Harness & Repo Governance Skills):**
 
