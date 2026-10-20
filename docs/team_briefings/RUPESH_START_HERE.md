@@ -12,39 +12,35 @@
 
 It's a **wearable fall detection system** for elderly people. A small device worn on the wrist detects if the person has fallen, and instantly sends an alert with an AI-generated clinical report to a caregiver's laptop.
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        HOW SPARK WORKS                                  │
-│                                                                         │
-│   👤 Person wears device on wrist                                       │
-│         │                                                               │
-│         ▼                                                               │
-│   ┌─────────────────────┐                                               │
-│   │  ESP32-S3 Wearable  │  ◄── YOUR WORK LIVES HERE                    │
-│   │  • MPU6050 IMU      │      (firmware/ directory)                    │
-│   │  • Layer 1: Is this │                                               │
-│   │    a possible fall?  │                                               │
-│   │  • Layer 2: AI CNN  │                                               │
-│   │    confirms fall     │                                               │
-│   └────────┬────────────┘                                               │
-│            │ BLE Bluetooth                                              │
-│            ▼                                                            │
-│   ┌─────────────────────┐                                               │
-│   │  Laptop Gateway     │  ◄── Aaradhya's work                         │
-│   │  • Receives alert   │      (gateway/ directory)                     │
-│   │  • Runs SHAP AI     │                                               │
-│   │    explainability    │                                               │
-│   │  • Generates 1-page │                                               │
-│   │    clinical PDF      │                                               │
-│   └────────┬────────────┘                                               │
-│            │ Local WiFi / REST API                                      │
-│            ▼                                                            │
-│   ┌─────────────────────┐                                               │
-│   │  Phone/Web Display  │  ◄── Sonia's work                            │
-│   │  • Shows fall events│      (gateway/server.py)                      │
-│   │  • Downloads PDF    │                                               │
-│   └─────────────────────┘                                               │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph WEARABLE["🔧 ESP32-S3 Wearable Node — YOUR WORK (firmware/)"]
+        IMU["MPU6050 6-Axis IMU\n200 Hz Sampling"]
+        L1{"Layer 1 Gate\n|a| > 2.5g, Δt < 300ms"}
+        L2["Layer 2 CNN\n18.5 KB INT8 Model"]
+        BLE["BLE GATT Notification\nWire Format v1 JSON"]
+        IMU --> L1
+        L1 -- "No Impact" --> IMU
+        L1 -- "Trigger" --> L2
+        L2 --> BLE
+    end
+
+    subgraph GATEWAY["💻 Laptop Gateway — Aaradhya's work (gateway/)"]
+        RX["BLE / Serial Receiver"]
+        SHAP["SHAP Explainability\nInput × ∇ Attribution"]
+        PDF["Clinical PDF Report\nReportLab Engine"]
+        API["REST API + Web Dashboard"]
+        RX --> SHAP
+        SHAP --> PDF
+        SHAP --> API
+    end
+
+    subgraph DISPLAY["📱 Phone / Web Display — Sonia's work"]
+        UI["Dashboard UI\nEvent List + PDF Download"]
+    end
+
+    BLE --> RX
+    API --> UI
 ```
 
 ### The Two-Layer Gate — Why It Matters
