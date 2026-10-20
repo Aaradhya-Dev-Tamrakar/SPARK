@@ -13,7 +13,9 @@ Due to departmental procurement timelines, physical silicon (ESP32-S3 boards, MP
 
 **This does NOT put development on hold.** Industry engineering teams develop 90% of embedded and IoT products in **Model-in-the-Loop (MIL)** and **Software-in-the-Loop (SIL)** virtual environments before touching physical silicon. 
 
-These briefing files define the exact, independent deliverables each team member must execute and verify before hardware delivery:
+These briefing files define the exact, independent deliverables each team member must execute and verify:
+
+> **New team members:** Start with [`RUPESH_START_HERE.md`](RUPESH_START_HERE.md) for a high-level project overview and quickstart guide before diving into the detailed task briefing.
 
 | Team Member | Subsystem Ownership | Standalone Briefing Document | Primary Deliverable |
 | :--- | :--- | :--- | :--- |
