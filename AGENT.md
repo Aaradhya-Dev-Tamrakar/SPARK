@@ -76,11 +76,11 @@ SPARK/
 
 To maintain code hygiene, cross-platform stability, and architectural rigor across multi-agent pair programming and developer contributions, the following ecosystem skills govern this codebase:
 
-| Skill | Primary Scope & Enforced Directives | Reference |
+| Skill | Primary Scope & Enforced Directives | In-Repo Path |
 | :--- | :--- | :--- |
-| **`github-workflow`** | Issue anchoring (`#<id>`), feature branch isolation (`<type>/<slug>-#<id>`), conventional commits, deterministic multi-remote sync, and squash PR governance. | `.gemini/skills/github-workflow/` |
-| **`background-task-governance`** | Prevents deadlocked processes on Windows. Zero interactive prompts, zero elevated UAC commands, script-first execution, and proactive 60s timeout watchdogs. | `~/.gemini/config/skills/background-task-governance/` |
-| **`edge-ai-model-forge`** | Quantization clipping prevention, asymmetric focal loss, sub-100KB INT8 FlatBuffers, and ESP-NN vector kernel linkage on ESP32-S3. | `~/.gemini/config/skills/edge-ai-model-forge/` |
-| **`latex-thesis-architect`** | Academic thesis defense compilation (`docs/SPARK_Mid_Defense/`, `docs/SPARK_Final_Defense/`), CPM DAG orchestration, and evidence audit registers. | `~/.gemini/config/skills/latex-thesis-architect/` |
-| **`compliance-report-harmonizer`** | Formatting and standardization of clinical volunteer consent forms and 34-activity clipboard logs (`docs/cohort_forms/`). | `~/.gemini/config/skills/compliance-report-harmonizer/` |
-| **`design-taste-gui`** | Caregiver Layer 3 mobile/web UI ergonomics, clinical priority badges, and calm telemetry data visualizations. | `~/.gemini/config/skills/design-taste-gui/` |
+| **`github-workflow`** | Issue anchoring (`#<id>`), feature branch isolation (`<type>/<slug>-#<id>`), conventional commits, deterministic multi-remote sync, and squash PR governance. | [`.gemini/skills/github-workflow/`](.gemini/skills/github-workflow/) |
+| **`background-task-governance`** | Prevents deadlocked processes on Windows. Zero interactive prompts, zero elevated UAC commands, script-first execution, and proactive 60s timeout watchdogs. | [`.gemini/skills/background-task-governance/`](.gemini/skills/background-task-governance/) |
+| **`edge-ai-model-forge`** | Quantization clipping prevention, asymmetric focal loss, sub-100KB INT8 FlatBuffers, and ESP-NN vector kernel linkage on ESP32-S3. | [`.gemini/skills/edge-ai-model-forge/`](.gemini/skills/edge-ai-model-forge/) |
+| **`latex-thesis-architect`** | Academic thesis defense compilation (`docs/SPARK_Mid_Defense/`, `docs/SPARK_Final_Defense/`), CPM DAG orchestration, and evidence audit registers. | [`.gemini/skills/latex-thesis-architect/`](.gemini/skills/latex-thesis-architect/) |
+| **`compliance-report-harmonizer`** | Formatting and standardization of clinical volunteer consent forms and 34-activity clipboard logs (`docs/cohort_forms/`). | [`.gemini/skills/compliance-report-harmonizer/`](.gemini/skills/compliance-report-harmonizer/) |
+| **`design-taste-gui`** | Caregiver Layer 3 mobile/web UI ergonomics, clinical priority badges, and calm telemetry data visualizations. | [`.gemini/skills/design-taste-gui/`](.gemini/skills/design-taste-gui/) |
