@@ -3,7 +3,11 @@
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
-**Last updated:** September 24, 2026 (v57 — Subject-Agnostic Platform Realignment & Humanoid Robotics Integration) ·
+> **Thesis audit snapshot (October 14, 2026; Issue #13):** Independent [mid-defense](../docs/SPARK_Mid_Defense/main.tex) and [final-defense draft](../docs/SPARK_Final_Defense/main.tex) sources preserve KEC metadata and the proposal. See [report index](../docs/THESIS_REPORTS.md) for PDFs and evidence boundaries. Current model preprocessing is 100 Hz, 200×6, 2 s; a 200 Hz logger is a separate planned acquisition path. Driver/TFLite code is stubbed, so model embedding does not establish on-device execution. October model/config results and the August test/quantization reports are separate generations; October safety threshold 0.4236 in the Colab log conflicts with 0.4065 in metadata. Laptop timing and battery estimates do not establish wearable measurements. Human fall detection remains primary; robotics is a planned, unexecuted protocol. Calendar dates remain unset.
+
+**Last updated:** October 13, 2026 (resumption timing update; v57 project-state snapshot) ·
+
+> **Resumption timing update (October 13, 2026):** Hardware procurement is now expected to start next semester, after the Dashain, Tihar, and Chhath holidays. Until then, prioritize work that does not depend on ordered parts: reconcile the canonical BOM and open sourcing questions, complete and review the data collection protocol, and prepare ethics-submission materials. Hardware assembly, logger bring-up, and volunteer data collection remain gated on parts being available and required institutional approval. The week-based dates in older plans are superseded by this dependency order; schedule calendar dates with the team next semester.
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
@@ -372,6 +376,20 @@ Landed via three raw commits (see above note) — future edits must route throug
 ---
 
 ## §0.5 — Post-Boards Priority Resumption Items (Phase 1)
+
+**Current timing:** Procurement is expected to begin next semester after the Dashain, Tihar, and Chhath holidays (updated October 13, 2026). The sequence below starts with no-purchase preparation; hardware-dependent milestones have no fixed calendar dates yet.
+
+1. **Pre-procurement preparation (now):**
+   - Reconcile the canonical `docs/SPARK_Component_Order_Form.xlsx` with open sourcing/status items in §1; confirm quantities, funding, vendors, and any unresolved safety-critical specifications before submitting the order.
+   - Review `docs/DATA_COLLECTION_PROTOCOL.md`, including the remaining activity mappings and sample-size rationale, and prepare the supervisor/HOD ethics-review package. Do not begin volunteer collection before required approval.
+2. **Procurement (next semester, after Dashain/Tihar/Chhath):**
+   - Place the approved component order and record order/receipt status against Actions #16 and #18 and other applicable BOM actions.
+3. **Hardware bring-up (after required parts arrive):**
+   - Assemble the logger rig and verify stable 200 Hz sensor streaming and recording before cohort sessions.
+4. **Cohort collection (after logger validation and institutional approval):**
+   - Run the approved protocol, then proceed to transfer learning, quantization, firmware deployment, and end-to-end validation.
+
+**Legacy post-boards checklist (historical detail; timing superseded above):**
 
 1. **Protocol Ethics Sign-Off:**
    - Add remaining 12 activity rows (F09–F15 falls, D15–D19 ADLs) & $N=12\text{--}20$ sample size rationale to [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md).
@@ -833,28 +851,28 @@ Landed via three raw commits (see above note) — future edits must route throug
 1. **Aaradhya Dev Tamrakar (Supervisor: Er. Dipen Manandhar)**
    - **Role:** Project Lead, ML Training, SHAP Integration, Gateway Pipeline, Protocol Architecture
    - **WBS status:**
-     - WP 0: Proposal & mid-term defense (✅ Completed July 9, 2026)
-     - WP 1: Literature review, wire format specification (`WIRE_FORMAT_v1.md`), and Nepal data collection protocol (`DATA_COLLECTION_PROTOCOL.md` ✓ v53)
-     - WP 2: Training & Quantization pipeline (`prepare_sisfall.py` ✓, `train_cnn.py` ✓, `quantize_model.py` ✓ v49, C-header export ✓)
-     - WP 3: Gateway ingestion, BLE GATT client (`BleReceiver` ✓), multi-scenario SHAP explainer (`explainer.py` ✓), clinical PDF generator (`pdf_report.py` ✓), and local REST & web dashboard server (`server.py` ✓ v53)
-     - WP 4: Hardware acceleration benchmark (Intel Core Ultra 7 155H NPU/iGPU OpenVINO ✓ v52), demo pipelines, and thesis architecture
+     - WP 0: Proposal & mid-term defense ( Completed July 9, 2026)
+     - WP 1: Literature review, wire format specification (`WIRE_FORMAT_v1.md`), and Nepal data collection protocol (`DATA_COLLECTION_PROTOCOL.md`  v53)
+     - WP 2: Training & Quantization pipeline (`prepare_sisfall.py` , `train_cnn.py` , `quantize_model.py`  v49, C-header export )
+     - WP 3: Gateway ingestion, BLE GATT client (`BleReceiver` ), multi-scenario SHAP explainer (`explainer.py` ), clinical PDF generator (`pdf_report.py` ), and local REST & web dashboard server (`server.py`  v53)
+     - WP 4: Hardware acceleration benchmark (Intel Core Ultra 7 155H NPU/iGPU OpenVINO  v52), demo pipelines, and thesis architecture
 
 2. **Rupesh Kadel (ID: 79034)**
    - **Role:** Firmware, Wearable Integration, Hardware Validation
    - **WBS status:**
-     - WP 1 / WP 2 (Scaffold): Host C++ unit tests (21/21 passed ✓) and INT8 model header integration (`spark_cnn_int8.h` ✓)
+     - WP 1 / WP 2 (Scaffold): Host C++ unit tests (21/21 passed ) and INT8 model header integration (`spark_cnn_int8.h` )
      - WP 2 / WP 3 (Physical Hardware Bring-Up): **0% / Not Started (Pending Board Delivery)** — on-device MPU6050 I2C communication, real-time Layer 1 threshold triggering on silicon, on-chip BLE advertising/notification stack, and battery power profiling.
 
 3. **Sankalpa Lamsal (ID: 79039)**
    - **Role:** Enclosure Design, Hardware Assembly, BOM Sourcing
    - **WBS status:**
-     - WP 1: Concept render and geometric wrist measurement estimate (✓ v38)
+     - WP 1: Concept render and geometric wrist measurement estimate ( v38)
      - WP 2 / WP 3 (3D CAD & Manufacturing): **0% / Not Started (Pending Model Build)** — parametric CAD design (`.step`/`.stl`), M2.5 screw boss wall thickness verification, TPU 95A slicer tuning, physical 3D printing at KEC Makerspace, and wearable strap assembly.
 
 4. **Sonia Thapa (ID: 79043)**
    - **Role:** Data Collection, Clinical Requirement Gathering, Mobile Display Client
    - **WBS status:**
-     - WP 1: Clinical fall taxonomy input (✓ documented in protocol)
+     - WP 1: Clinical fall taxonomy input ( documented in protocol)
      - WP 2 / WP 3 (Mobile Client & Clinical Trials): **0% / Not Started** — Layer 3 smartphone/web display client UI (to consume `gateway/server.py` REST API) and physical volunteer crash-mat fall data recording runs at KEC.
 
 ---
@@ -865,18 +883,18 @@ Landed via three raw commits (see above note) — future edits must route throug
 
 1. **WP 0 — Proposal (COMPLETED)**
    - Deadline: July 9, 2026 (defence)
-   - Status: ✅ Submitted (v33 July 2, v35 July 6), defence occurred July 9 as scheduled, panel optimistic
+   - Status:  Submitted (v33 July 2, v35 July 6), defence occurred July 9 as scheduled, panel optimistic
    - Handoff: Aaradhya designs, Rupesh firmware specs
 
 2. **WP 1 — Setup & Literature Review (July–August 2026)**
    - Deadline: August 31, 2026
-   - Scope: GitHub repo scaffold (✅ v22), dataset protocol (HOD discussion held v22, confirmation pending), layer 1 thresholding design (locked §2.5), hardware procurement (Action #16/#18/#19 — Tier 2)
+   - Scope: GitHub repo scaffold ( v22), dataset protocol (HOD discussion held v22, confirmation pending), layer 1 thresholding design (locked §2.5), hardware procurement (Action #16/#18/#19 — Tier 2)
    - Gate: Confirm dataset protocol (Action #23), finalize BOM, order boards
    - Handoff: Training code (via WP 2)
 
 3. **WP 2 — Training & Quantization (September–October 2026)**
    - Deadline: October 31, 2026
-   - Scope: Prepare SisFall (✅ v23), classical-ML baseline (✅ v24–v25), CNN training, INT8 quantization (Rupesh), SHAP gateway code (Aaradhya), clinical PDF template (Sonia)
+   - Scope: Prepare SisFall ( v23), classical-ML baseline ( v24–v25), CNN training, INT8 quantization (Rupesh), SHAP gateway code (Aaradhya), clinical PDF template (Sonia)
    - Gate: Achieve Sensitivity ≥90% & Specificity ≥90% on test set
    - Handoff: Quantized models to firmware (Rupesh)
 

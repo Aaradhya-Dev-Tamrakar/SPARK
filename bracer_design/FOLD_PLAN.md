@@ -7,7 +7,7 @@
 
 ---
 
-## 📦 Module Inventory (6 STLs)
+##  Module Inventory (6 STLs)
 
 > Scripts: `bracer_design/module_*.py` — run via `tools/fusion_mcp.py` from project root.
 
@@ -24,21 +24,21 @@
 
 ---
 
-## 🎯 Component Fit (Validated)
+##  Component Fit (Validated)
 
 | Component | Spec | Module | Pocket/Groove | Margin |
 |-----------|------|--------|---------------|--------|
 | **WS2812B 5050 strip** | 10×2 mm | D | 12 mm groove × 2.5 mm deep | +2 mm |
 | **303040 LiPo (500 mAh)** | 30×30×4 mm | E | 35×35 mm pocket × 2 | +5 mm |
-| **402030 LiPo (500 mAh)** | 40×20×3 mm | E | fits in 35×35 pocket | ✅ |
+| **402030 LiPo (500 mAh)** | 40×20×3 mm | E | fits in 35×35 pocket |  |
 | **Seeed XIAO ESP32C3** | 21×17.5×3.5 mm | E | 25×20 mm pocket × 2 | +4 mm |
-| **Qt Py / Feather** | 22×18×5 mm | E | fits in 25×20 pocket | ✅ |
-| **JST-PH 2.0 / wiring** | ~8×6 mm | E | open pocket space | ✅ |
+| **Qt Py / Feather** | 22×18×5 mm | E | fits in 25×20 pocket |  |
+| **JST-PH 2.0 / wiring** | ~8×6 mm | E | open pocket space |  |
 | **Tray stack height** | XIAO + LiPo ≈ 7.5 mm | E | 15 mm wall height | 2× margin |
 
 ---
 
-## 📐 Folding Instructions
+##  Folding Instructions
 
 ### **Module A — Forearm Segment** (Miura-ori panel)
 ```
@@ -177,7 +177,7 @@ RESULT: Flat diffuser cover
 
 ---
 
-## ⚡ Assembly Sequence (30 sec, no tools)
+##  Assembly Sequence (30 sec, no tools)
 
 ```
 PREP: Fold all 6 modules per above
@@ -218,7 +218,7 @@ PREP: Fold all 6 modules per above
 
 ---
 
-## 🖨️ Print Settings (Optimized)
+##  Print Settings (Optimized)
 
 | Setting | Value | Notes |
 |---------|-------|-------|
@@ -235,7 +235,7 @@ PREP: Fold all 6 modules per above
 
 ---
 
-## 🔧 Post-Process
+##  Post-Process
 
 | Step | Action |
 |------|--------|
@@ -250,7 +250,7 @@ PREP: Fold all 6 modules per above
 
 ---
 
-## 📏 Parametric Adjustments (edit scripts)
+##  Parametric Adjustments (edit scripts)
 
 | Parameter | Script | Default | Adjust For |
 |-----------|--------|---------|------------|
@@ -266,7 +266,7 @@ PREP: Fold all 6 modules per above
 
 ---
 
-## 🔄 Revision History
+##  Revision History
 
 | Version | Date | Changes |
 |---------|------|---------|
@@ -275,7 +275,7 @@ PREP: Fold all 6 modules per above
 
 ---
 
-## 📄 Files
+##  Files
 
 All design-plan files live in `bracer_design/`:
 
@@ -308,11 +308,11 @@ Swap `module_a_forearm.py` for any other module file in `bracer_design/`.
 
 ---
 
-## ✅ Ready to Print
+##  Ready to Print
 
 1. Export STLs from Fusion (right-click body → Save as STL)
 2. Slice with settings above
 3. Print all 6 in parallel
 4. Fold, snap, glow
 
-**No screws. No glue. Pure origami engineering.** ⚡
+**No screws. No glue. Pure origami engineering.** 

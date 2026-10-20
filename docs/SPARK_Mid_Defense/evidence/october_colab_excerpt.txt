@@ -1,0 +1,28 @@
+=== Cell 6 (sec3_split) ===
+Loading SisFall windows...
+  Total Windows: 38426, Window Shape: (200, 6)
+  FALL: 12586, NON_FALL: 25840
+  Train: 31714 | Val: 3005 | Test: 3707
+
+
+
+=== Cell 14 (sec7_thresh) ===
+[1m94/94[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 11ms/step
+[*] Default Threshold:            0.5000
+[*] Youden's J Threshold:         0.5611
+[*] Safety-Constrained Threshold: 0.4236 (Sens >= 90%)
+
+
+=== Cell 16 (sec8_eval) ===
+===========================================================================
+HELD-OUT TEST SET EVALUATION MATRIX
+===========================================================================
+Metric                     Default (0.50)   Youden (0.56)   Safety (0.42)
+---------------------------------------------------------------------------
+Sensitivity (FALL)                 0.8057          0.7390          0.8981  [Target >= 0.90]
+Specificity (NON_FALL)             0.8559          0.9146          0.7621  [Target >= 0.90]
+F1-Score                           0.7424          0.7560          0.7185
+AUC-ROC                            0.9272          0.9272          0.9272
+===========================================================================
+
+

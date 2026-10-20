@@ -9,6 +9,8 @@
 
 ## Executive Overview for the Team
 
+> **Current evidence boundary (October 14, 2026):** These briefings specify assignments; they do not certify completion. The historical pitch below overstates firmware emulation, CAD/slicing, and explainability validation. Use the [thesis report index](../THESIS_REPORTS.md) for audited status. Hardware procurement begins next semester after holidays; collection requires both institutional approval and a validated logger. No virtual MCU or physical robot result is asserted by the new reports.
+
 Due to departmental procurement timelines, physical silicon (ESP32-S3 boards, MPU6050 breakouts, LiPo cells) arrives in the upcoming semester. 
 
 **This does NOT put development on hold.** Industry engineering teams develop 90% of embedded and IoT products in **Model-in-the-Loop (MIL)** and **Software-in-the-Loop (SIL)** virtual environments before touching physical silicon. 
@@ -19,7 +21,7 @@ These briefing files define the exact, independent deliverables each team member
 | :--- | :--- | :--- | :--- |
 | **Rupesh Kadel** *(79034)* | Embedded Systems & Firmware | [`RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md`](RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md) | Virtual ESP32-S3 firmware execution (QEMU/Wokwi), INT8 TFLite Micro tensor arena profiling, cycle-count benchmarks. |
 | **Sankalpa Lamsal** *(79039)* | Hardware & Mechanical CAD | [`SANKALPA_CAD_ENCLOSURE_GUIDE.md`](SANKALPA_CAD_ENCLOSURE_GUIDE.md) | Parametric 3D CAD bracer model (`.step`/`.stl`), virtual assembly with PCB footprints, TPU 95A slicer toolpaths & mass check. |
-| **Sonia Thapa** *(79043)* | Display Client & Validation | [`SONIA_MOBILE_CLIENT_GUIDE.md`](SONIA_MOBILE_CLIENT_GUIDE.md) | Layer 3 mobile/web UI, real-time event listener consuming `gateway/server.py`, interactive SHAP bar charts, PDF viewer. |
+| **Sonia Thapa** *(79043)* | Display Client & Validation | [`SONIA_HIGH_LEVEL_OVERVIEW.md`](SONIA_HIGH_LEVEL_OVERVIEW.md) (Human overview) & [`SONIA_AI_AGENT_PROMPT.md`](SONIA_AI_AGENT_PROMPT.md) (AI task prompt) | Layer 3 mobile/web UI, real-time event listener consuming `gateway/server.py`, interactive SHAP bar charts, PDF viewer, cohort trial docs. |
 
 ---
 

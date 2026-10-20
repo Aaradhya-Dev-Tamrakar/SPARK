@@ -14,6 +14,7 @@
     .\sync.ps1 -m "feat(training): message"  # Uses custom conventional commit message
     .\sync.ps1 -Build                        # Build thesis_report.tex PDF first, then sync
     .\sync.ps1 -PullOnly                     # Only pull without committing/pushing
+    .\sync.ps1 -DryRun                       # Preview changes and commit message without modifying git (-WhatIf)
 #>
 
 param (
@@ -22,7 +23,10 @@ param (
 
     [switch]$PullOnly,
 
-    [switch]$Build
+    [switch]$Build,
+
+    [Alias("WhatIf")]
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = "Continue"
@@ -314,6 +318,37 @@ if (Test-Path $verifyScript) {
         Write-Host "[Git Sync] Verification failed. Commit aborted." -ForegroundColor Red
         exit 1
     }
+}
+
+# Dry run / WhatIf simulation mode
+if ($DryRun) {
+    Write-Host "[Git Sync] [DryRun] Simulation mode active (-DryRun / -WhatIf)." -ForegroundColor Magenta
+    Write-Host "[Git Sync] [DryRun] Target Branch: $currentBranch" -ForegroundColor Cyan
+    Write-Host "[Git Sync] [DryRun] Configured Remotes:" -ForegroundColor Cyan
+    foreach ($target in $TargetRemotes) {
+        Write-Host "           - $($target.Name): $($target.Url)" -ForegroundColor DarkCyan
+    }
+
+    $rawStatus = @(git status --porcelain 2>$null)
+    if ($rawStatus -and $rawStatus.Count -gt 0) {
+        Write-Host "[Git Sync] [DryRun] Active working tree changes ($($rawStatus.Count) item(s)):" -ForegroundColor Yellow
+        git status --short
+        $proposedMsg = if (-not [string]::IsNullOrWhiteSpace($Message)) { $Message } else { Get-AutoCommitMessage }
+        if ($proposedMsg) {
+            Write-Host "[Git Sync] [DryRun] Proposed commit message: '$proposedMsg'" -ForegroundColor Green
+        } else {
+            Write-Host "[Git Sync] [DryRun] No commit message could be determined." -ForegroundColor Yellow
+        }
+        $trackerPath = "dev_logs/SPARK_TRACKER.md"
+        if (Test-Path $trackerPath) {
+            Write-Host "[Git Sync] [DryRun] dev_logs/SPARK_TRACKER.md timestamp would be updated." -ForegroundColor Cyan
+        }
+    } else {
+        Write-Host "[Git Sync] [DryRun] Working tree is clean; no commit would be generated." -ForegroundColor Green
+    }
+
+    Write-Host "[Git Sync] [DryRun] Dry run simulation complete. Zero changes written to git." -ForegroundColor Green
+    exit 0
 }
 
 $hasRemoteOrigin = [bool](git remote get-url origin 2>$null)

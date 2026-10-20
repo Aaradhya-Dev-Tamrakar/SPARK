@@ -1,7 +1,7 @@
 # SPARK — Nepal Cohort Data Collection Setup & Execution Master Plan
 
 **Document Status:** High-Priority Post-Boards Execution Plan  
-**Target Window:** Week 1 (Days 4–7) to Week 2 Post-Board Exams  
+**Target Window:** No fixed dates. Procurement is expected to start next semester after Dashain, Tihar, and Chhath; logger setup follows receipt of required parts.
 **Location:** Kathmandu Engineering College (KEC) Robotics & Electronics Lab  
 **Lead Author:** Aaradhya Dev Tamrakar  
 **Related Documents:** [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md), [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///d:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md)
@@ -152,12 +152,20 @@ A dedicated Python tool for the recording operator:
 
 ## 6. Execution Checklist & Resumption Timeline
 
-| Step | Action Item | Target Window |
+The previous week-based schedule assumed near-term hardware availability and is superseded. Use these dependency gates instead; calendar dates should be set once next-semester ordering and delivery dates are known:
+
+- **Before ordering:** Reconcile the canonical BOM, finish the data-collection protocol and ethics-review package, and resolve outstanding sourcing/compatibility questions.
+- **Next semester, after Dashain/Tihar/Chhath:** Place the approved order and confirm delivery.
+- **After required parts arrive:** Assemble the rig, implement/verify logger streaming and recording, then run a controlled dry-run.
+- **After logger validation and institutional approval:** Schedule and conduct volunteer collection under the approved protocol.
+- **After data quality review:** Prepare the cohort dataset, fine-tune, re-quantize, and validate the integrated system.
+
+| Step | Action Item | Dependency / Target Window |
 | :--- | :--- | :--- |
-| **1** | Assemble physical ESP32-S3 + MPU6050 dorsal wrist rig with Velcro strap | Week 1, Day 4 |
-| **2** | Implement `firmware/main/data_logger.cpp` & test 921600 baud streaming | Week 1, Day 5 |
-| **3** | Build `tools/record_cohort_data.py` & verify 0-drop loopback recording | Week 1, Day 6 |
-| **4** | Conduct crash-mat dry-run with team members at KEC | Week 1, Day 7 |
-| **5** | Execute 34-activity collection across $N=12\text{--}20$ volunteers | Week 2 (Days 1–5) |
-| **6** | Run `prepare_nepal_cohort.py` and execute Partial-Freeze Fine-Tuning | Week 3, Days 1–3 |
-| **7** | Re-quantize INT8 model, flash autonomous firmware, and run live mat validation | Week 3, Days 4–7 |
+| **1** | Reconcile BOM, sourcing, and procurement package | Before next-semester ordering |
+| **2** | Complete protocol review and prepare institutional ethics submission | Before volunteer recruitment/recording |
+| **3** | Place order and confirm receipt | Next semester, after Dashain, Tihar, and Chhath |
+| **4** | Assemble ESP32-S3 + MPU6050 dorsal wrist logger rig | After required parts arrive |
+| **5** | Verify 200 Hz streaming and zero-drop recording; run controlled dry-run | After assembly; before cohort sessions |
+| **6** | Execute approved 34-activity collection across $N=12\text{--}20$ volunteers | After logger validation and institutional approval |
+| **7** | Review data quality, prepare cohort data, fine-tune, re-quantize, and validate | After collection and data quality review |

@@ -3,12 +3,15 @@
 **Document Status:** Locked Milestone & Context Preservation Archive  
 **Freeze Date:** August 22, 2026  
 **Target Resumption:** Post-Board Examination Period (8th Semester B.E. Final Phase)  
+**Timing update (October 13, 2026):** Procurement is expected to start next semester after Dashain, Tihar, and Chhath. Complete no-purchase preparation before ordering; hardware setup and cohort work follow parts arrival and institutional approval. The relative week labels below are historical planning estimates, not current calendar commitments.
 **Project:** SPARK (*Signal Pattern Analysis & Real-time Kinetics*)  
 **Institution:** Kathmandu Engineering College (KEC), Tribhuvan University  
 
 ---
 
 ## 1. Executive Snapshot (State as of 2026-08-22)
+
+> **Thesis evidence correction (October 14, 2026):** This snapshot is historical. See [the current thesis reports](THESIS_REPORTS.md) for audited scope. The firmware driver and TFLite path remain stubs; a model header is not deployed inference. August model results must remain separate from the October run. Laptop inference timings below are historical tracker-reported results, not MCU timing or power measurements. Battery durations and cohort sizes below are estimates or plans, not completed evaluations. The existing model preprocessing is 100 Hz / 200 samples / 2 s; 200 Hz describes the planned logger.
 
 The SPARK project is paused in a healthy, fully verified, and mathematically defensible state across all three tiers:
 
@@ -52,57 +55,55 @@ The 19 research tracks conducted in August 2026 established the following locked
 
 ## 3. Post-Boards Step-by-Step Execution Roadmap
 
-When resuming after board exams, follow this ordered 5-phase execution plan:
+When resuming, follow this dependency-ordered 5-phase plan. Procurement timing has moved to next semester, after the Dashain, Tihar, and Chhath holidays; no calendar dates are committed here.
 
 ```mermaid
 graph TD
-    subgraph Phase 1: Institutional & Protocol Lockdown "Week 1 (Days 1-3)"
-        P1[Complete DATA_COLLECTION_PROTOCOL.md] --> P2[Supervisor & Ethics Approval at KEC]
-        P2 --> P3[Update LaTeX Thesis Chapters 1-6]
+    subgraph Phase 1: Pre-procurement preparation
+        P1[Reconcile BOM, quantities, sources, and order package]
+        P2[Complete and review DATA_COLLECTION_PROTOCOL.md]
+        P3[Prepare ethics submission; obtain institutional approval before collection]
+        P4[Complete thesis edits that do not depend on cohort results]
     end
 
-    subgraph Phase 2: Hardware Logger Rig "Week 1 (Days 4-7)"
-        H1[Assemble ESP32-S3 + MPU6050 Wrist Strap] --> H2[Flash SPARK_MODE_DATA_LOGGER Firmware]
-        H2 --> H3[Verify 200Hz BLE/Serial CSV Stream to Gateway]
+    subgraph Phase 2: Procurement next semester after holidays
+        O1[Place approved component order] --> O2[Confirm receipt and inspect parts]
     end
 
-    subgraph Phase 3: Cohort Data Collection "Week 2"
-        C1[Execute 34-Activity Protocol at KEC Gym] --> C2[Collect N=12 to 20 Nepali Volunteers]
-        C2 --> C3[Extract & Label Raw Dorsal Wrist CSVs]
+    subgraph Phase 3: Hardware logger rig after parts arrive
+        H1[Assemble ESP32-S3 + MPU6050 logger rig] --> H2[Verify stable 200 Hz stream and recordings]
     end
 
-    subgraph Phase 4: Transfer Learning & Quantization "Week 3"
+    subgraph Phase 4: Approved cohort data collection
+        C1[Run approved protocol after institutional clearance] --> C2[Collect and label cohort recordings]
+    end
+
+    subgraph Phase 5: Transfer Learning, Quantization & Validation
         M1[Partial-Freeze Fine-Tuning on Nepal CSVs] --> M2[Push Sensitivity to >= 90% via Focal Loss]
         M2 --> M3[Re-Quantize INT8 & Export spark_cnn_int8.h]
-        M3 --> M4[Flash Autonomous Firmware Layer 1 + Layer 2]
+        M3 --> M4[Flash and validate integrated system]
     end
 
-    subgraph Phase 5: End-to-End Live Validation & Defense "Week 4"
-        D1[Conduct Live Wearable Fall Trials on Crash Mat] --> D2[Verify Real-Time Gateway Incident PDFs]
-        D2 --> D3[Final Thesis Report & Slides Delivery]
-    end
-
-    Phase 1 --> Phase 2 --> Phase 3 --> Phase 4 --> Phase 5
+    P1 --> O1
+    P2 --> P3
+    P3 --> C1
+    O2 --> H1 --> C1
+    C2 --> M1
 ```
 
 ---
 
-### Phase 1: Academic & Protocol Lockdown (Week 1, Days 1–3)
+### Phase 1: Pre-procurement preparation (before next-semester orders)
 
-1. **Complete Protocol Document ([`docs/DATA_COLLECTION_PROTOCOL.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md))**:
-   * Add the remaining 12 unmapped rows from Track 7 (**F09–F15** falls & **D15–D19** ADLs).
-   * Include the sample size rationale ($N=12\text{--}20$) and Klenk lean-and-release protocol.
-   * Submit to Supervisor (Er. Dipen Manandhar) / HOD for ethics sign-off.
-2. **Update LaTeX Thesis Proposal ([`docs/SPARK_Proposal/Chapters/`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_Proposal/Chapters/))**:
-   * **Chapters 1 & 2**: Integrate narrowed Claim 1 text and the 130-paper literature matrix.
-   * **Chapters 3 & 5**: Integrate narrowed Claim 3 ($\text{Input} \times \nabla$) and the OpenVINO NPU/iGPU gateway benchmark numbers.
-   * **Chapter 6**: Write structured sections for Multi-Modal Vision Fusion, Aquatic Safety Roadmap, and Client-Encrypted Cold Storage.
-3. **BOM Reconciliation**:
-   * Confirm dropping or adjusting the NPR 1,000 separate Velcro line in [`SPARK_BOM_Procurement.xlsx`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_BOM_Procurement.xlsx).
+1. **Reconcile the order package:** Use `docs/SPARK_Component_Order_Form.xlsx` as the canonical BOM. Confirm quantity, vendor, funding, price, and receipt-status fields against open tracker Actions #16, #18, #37–#39 and other applicable sourcing items. Resolve safety-critical fit/interface questions where possible before purchasing.
+2. **Complete and review the protocol:** Add remaining F09–F15 and D15–D19 activity mappings and the N=12–20 rationale to `docs/DATA_COLLECTION_PROTOCOL.md`; prepare the supervisor/HOD ethics submission. Cohort recruitment or recording must wait for required institutional approval.
+3. **Complete independent academic edits:** Integrate literature and architecture updates that do not depend on cohort results. Record any later result-dependent revisions as follow-up work.
 
----
+### Phase 2: Procurement (next semester, after Dashain, Tihar, and Chhath)
 
-### Phase 2: Hardware Prototyping & Logger Setup (Week 1, Days 4–7)
+Place the reviewed and approved component order when procurement resumes. Track confirmations and delivery; do not schedule hardware milestones against unconfirmed deliveries.
+
+### Phase 3: Hardware Prototyping & Logger Setup (after required parts arrive)
 
 1. **Physical Prototype Assembly**:
    * Mount ESP32-S3 and MPU6050 on the dorsal wrist reference using an elastic/Velcro strap.
@@ -113,7 +114,7 @@ graph TD
 
 ---
 
-### Phase 3: Nepali Cohort Data Collection at KEC (Week 2)
+### Phase 4: Nepali Cohort Data Collection at KEC (after logger validation and institutional approval)
 
 1. **Setup**:
    * KEC Robotics / Electronics Lab with high-density gymnastic crash mats ($20\text{ cm}$ thickness).
@@ -123,7 +124,7 @@ graph TD
 
 ---
 
-### Phase 4: Transfer Learning & Model Quantization (Week 3)
+### Phase 5: Transfer Learning & Model Quantization (after cohort data is prepared)
 
 1. **Fine-Tuning**:
    * Load pretrained `spark_cnn.keras` base weights.
@@ -136,7 +137,7 @@ graph TD
 
 ---
 
-### Phase 5: Real-Time Live Validation & Final Defense (Week 4)
+### Integrated Validation & Final Defense (after model deployment)
 
 1. **Live Crash-Mat Validation**:
    * Perform live test falls wearing the autonomous device.

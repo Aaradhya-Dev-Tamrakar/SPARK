@@ -1,0 +1,33 @@
+SPARK 1D CNN -- INT8 Quantization Report
+==================================================
+
+Model Files:
+  Keras (FP32):    spark_cnn.keras (154,311 bytes)
+  TFLite (INT8):   spark_cnn_int8.tflite (18,904 bytes)
+  Size reduction:  87.7%
+  Flash target:    [PASS] (<= 120 KB, actual 18.5 KB)
+
+Quantization Configuration:
+  Calibration windows: 200 (Class-balanced 50% FALL / 50% NON_FALL)
+  Optimization: INT8 full-integer quantization
+  Decision Threshold:  0.3919
+
+Input Tensor:
+  Shape: [1, 200, 6]
+  Dtype: <class 'numpy.int8'>
+  Quantization (scale, zero_point): (83.71497344970703, -22)
+
+Output Tensor:
+  Shape: [1, 2]
+  Dtype: <class 'numpy.int8'>
+  Quantization (scale, zero_point): (0.00390625, -128)
+
+Accuracy Comparison (test set: 6712 windows @ threshold 0.39):
+==================================================
+
+Metric                               FP32       INT8      Delta
+------------------------------ ---------- ---------- ----------
+  Sensitivity (Recall, FALL)       0.8781     0.8743    -0.0038 (target >= 0.90)
+  Specificity (Recall, NON_FALL)     0.7818     0.7014    -0.0804 (target >= 0.90)
+  F1-score                         0.6781     0.6139    -0.0642
+  AUC-ROC                          0.9185     0.8717    -0.0468

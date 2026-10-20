@@ -1,0 +1,35 @@
+{
+  "architecture": "SPARK_1D_CNN",
+  "optimal_threshold": 0.4065,
+  "default_threshold": 0.5,
+  "dropout_rate": 0.2,
+  "use_batch_norm": false,
+  "loss_function": "AsymmetricFocalLoss(gamma=2.0, alpha=0.75)",
+  "augmentation": "Mixup(alpha=0.2) + TemporalJitter(+/-5) + MagnitudeScaling(0.05)",
+  "training_accelerator": "Colab Pro NVIDIA A100-SXM4-40GB",
+  "total_augmented_windows": 126856,
+  "quantization": "Full INT8 PTQ with Class-Balanced Calibration",
+  "flash_bytes": 18912,
+  "flash_kb": 18.47,
+  "metrics_default": {
+    "threshold": 0.5,
+    "sensitivity": 0.8057,
+    "specificity": 0.8559,
+    "f1": 0.7424,
+    "auc_roc": 0.9272
+  },
+  "metrics_safety_tuned": {
+    "threshold": 0.4065,
+    "sensitivity": 0.8981,
+    "specificity": 0.7621,
+    "f1": 0.7185,
+    "auc_roc": 0.9272
+  },
+  "metrics_youden": {
+    "threshold": 0.5611,
+    "sensitivity": 0.7390,
+    "specificity": 0.9146,
+    "f1": 0.7560,
+    "auc_roc": 0.9272
+  }
+}

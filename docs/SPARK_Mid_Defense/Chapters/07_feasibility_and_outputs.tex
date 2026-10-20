@@ -1,0 +1,58 @@
+\chapter{Feasibility, Resources, and Deliverables}
+\label{ch:feasibility}
+
+\section{Technical feasibility and present status}
+The design uses commodity inertial sensing, a microcontroller, a local gateway, and a display client. Their interfaces are plausible engineering choices, but feasibility remains conditional on completing sensor acquisition, calibration, input conversion, actual TFLite Micro execution, event transport, and integrated testing. Source-level stubs prevent a claim of a working wearable detector. The current stored model file and host-side gateway functions support continued implementation; they do not establish end-to-end operation.
+
+The existing preprocessing convention is 100 Hz by 200 samples by six channels (two seconds). A separately planned logger target of 200 Hz requires a documented adapter or a newly evaluated model. Because current model input channels remain in sensor counts while the event protocol specifies engineering units, scaling and coordinate mapping are explicit design gates. Battery life, radio duty reduction, MCU latency, and thermal behavior are not yet measured. The proposal's laptop OpenVINO timings are historical host benchmarks and are not carried forward as MCU evidence.
+
+\section{Hardware and procurement basis}
+Table~\ref{tab:planning-bom} retains the proposal's planning quantities and quoted NPR figures for traceability. These figures are historical estimates, not fresh supplier quotations or proof of purchase; they require review against the current order form and supplier availability before procurement. The gateway laptop and phone were listed as already owned in the proposal. No procurement date is asserted; the roadmap places ordering next semester after Dashain, Tihar, and Chhath.
+
+\begin{table}[H]
+\centering\small
+\caption{Proposal planning bill of materials; estimates require re-quotation}
+\label{tab:planning-bom}
+\begin{tabular}{p{4cm}r r r}
+\hline
+Item & Quantity & Unit estimate (NPR) & Line estimate (NPR) \\
+\hline
+ESP32-S3 development board & 3 & 1,800 & 5,400 \\
+MPU6050 IMU breakout & 1 & 350 & 350 \\
+1100 mAh Li-ion pouch cell & 1 & 550 & 550 \\
+TP4056 charge/protection module & 1 & 90 & 90 \\
+Velcro wrist retention strap & 2 & 500 & 1,000 \\
+Compression arm sleeve & 1 & 136 & 136 \\
+TPU 95A filament (1 kg) & 1 & 4,000 & 4,000 \\
+USB-C cables & 3 & 267 & 801 \\
+Breadboard and jumper sets & 2 & 325 & 650 \\
+Passives assortment & 1 lot & 600 & 600 \\
+M2.5 screws & 20 & 15 & 300 \\
+\hline
+Planning total & & & 13,877 \\
+\hline
+\end{tabular}
+\end{table}
+
+The design intent retains an ESP32-S3, MPU6050, 1100 mAh Li-ion cell, charge/protection board, and TPU 95A dorsal bracer with hook-and-loop retention. Charging is off-body only, using separate single-purpose programming and charging connections. Assembly, enclosure fit, charge protection, electrical safety, and runtime remain unverified. Procurement and bench bring-up are sequenced after the project preparation gates.
+
+\section{Software and research deliverables}
+\begin{table}[H]
+\centering\small
+\caption{Deliverable register by current state}
+\label{tab:deliverables}
+\begin{tabular}{p{3.2cm}p{4.2cm}p{4.7cm}}
+\hline
+Deliverable & Evidence now & Remaining acceptance evidence \\
+\hline
+Human fall classifier & Offline training, preprocessing, and archived evaluation artifacts & Frozen subject/event manifest, rerun results, threshold provenance, and transfer assessment \\
+Wearable node & Gate and protocol source; model artifact identity inspected & Real sensor driver, validated units, buffered windows, linked MCU inference, timing and memory \\
+Gateway and report path & Host-side event parsing, local storage, reports, and API tests & Physical transport, packet reassembly, reconnect and duplicate behavior, event traceability \\
+Display client & Read-only local display architecture & Integrated end-to-end acceptance with actual event records \\
+Nepal cohort & Draft protocol and collection tooling & Institutional approval plus logger validation before any volunteer recording \\
+Robotics extension & Planned-only forty-episode protocol & Simulation prerequisites, independent labels, held-out analysis, then separate physical validation \\
+\hline
+\end{tabular}
+\end{table}
+
+The project completion objective remains human fall detection. A local approved cohort, integrated on-device evaluation, and clinical or field validation are future deliverables, not current outputs. Robotics is a separate exploratory extension. Publication venue selection, event-level acceptance targets, and calendar dates remain open until the corresponding evidence and team decisions exist.

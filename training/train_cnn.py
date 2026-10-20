@@ -181,8 +181,8 @@ def mixup_augment_windows(
         lam = np.maximum(lam, 1.0 - lam)
         for i, idx in enumerate(cls_idx):
             partner_idx = shuffled[i]
-            l = float(lam[i])
-            mixed_windows[idx] = l * windows[idx] + (1.0 - l) * windows[partner_idx]
+            mix_ratio = float(lam[i])
+            mixed_windows[idx] = mix_ratio * windows[idx] + (1.0 - mix_ratio) * windows[partner_idx]
 
     return mixed_windows.astype(np.float32), mixed_labels
 
@@ -507,9 +507,7 @@ def main():
     # For Focal Loss, alpha handles class imbalance internally
     fit_class_weight = None if args.loss == "focal" else class_weight
     if args.loss == "focal":
-        print(
-            f"Loss: Asymmetric Focal Loss (gamma={args.focal_gamma}, alpha={args.focal_alpha})"
-        )
+        print(f"Loss: Asymmetric Focal Loss (gamma={args.focal_gamma}, alpha={args.focal_alpha})")
     else:
         print(
             f"Class weights (imbalance correction with {args.pos_weight_boost:.2f}x boost): {class_weight}"
@@ -533,7 +531,9 @@ def main():
         monitor="val_loss", patience=EARLY_STOP_PATIENCE, restore_best_weights=True
     )
 
-    print(f"Training (lr={LEARNING_RATE}, schedule={args.lr_schedule}, batch={BATCH_SIZE}, max {EPOCHS} epochs)...")
+    print(
+        f"Training (lr={LEARNING_RATE}, schedule={args.lr_schedule}, batch={BATCH_SIZE}, max {EPOCHS} epochs)..."
+    )
     history = model.fit(
         X_train_fit,
         y_train_fit,
@@ -564,9 +564,11 @@ def main():
     safety_threshold = find_safety_constrained_threshold(
         y_val, val_probs, target_sensitivity=args.target_sensitivity
     )
-    print(f"  Default threshold:               0.5000")
+    print("  Default threshold:               0.5000")
     print(f"  Youden's J optimal threshold:    {optimal_threshold:.4f}")
-    print(f"  Safety-constrained threshold:    {safety_threshold:.4f} (target sens >= {args.target_sensitivity:.2f})")
+    print(
+        f"  Safety-constrained threshold:    {safety_threshold:.4f} (target sens >= {args.target_sensitivity:.2f})"
+    )
 
     # Evaluate on held-out test set
     print("\nEvaluating on held-out test set...")
