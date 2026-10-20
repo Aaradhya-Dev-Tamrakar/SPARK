@@ -1,16 +1,46 @@
-# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v57)
+# SPARK — Signal Pattern Analysis & Real-time Kinetics — Project Tracker (v58)
 
 _Optimized for day-to-day use. Full history/rationale archive moved to §7
 (Appendix) — read once, not needed for weekly tracking._
 
 > **Thesis audit snapshot (October 14, 2026; Issue #13):** Independent [mid-defense](../docs/SPARK_Mid_Defense/main.tex) and [final-defense draft](../docs/SPARK_Final_Defense/main.tex) sources preserve KEC metadata and the proposal. See [report index](../docs/THESIS_REPORTS.md) for PDFs and evidence boundaries. Current model preprocessing is 100 Hz, 200×6, 2 s; a 200 Hz logger is a separate planned acquisition path. Driver/TFLite code is stubbed, so model embedding does not establish on-device execution. October model/config results and the August test/quantization reports are separate generations; October safety threshold 0.4236 in the Colab log conflicts with 0.4065 in metadata. Laptop timing and battery estimates do not establish wearable measurements. Human fall detection remains primary; robotics is a planned, unexecuted protocol. Calendar dates remain unset.
 
-**Last updated:** October 13, 2026 (resumption timing update; v57 project-state snapshot) ·
+**Last updated:** October 20, 2026 (v58 — Complete Team Onboarding Infrastructure, Full-Lifecycle Task Briefings, Kinetics Stress Harness & Repo Governance Skills) ·
 
 > **Resumption timing update (October 13, 2026):** Hardware procurement is now expected to start next semester, after the Dashain, Tihar, and Chhath holidays. Until then, prioritize work that does not depend on ordered parts: reconcile the canonical BOM and open sourcing questions, complete and review the data collection protocol, and prepare ethics-submission materials. Hardware assembly, logger bring-up, and volunteer data collection remain gated on parts being available and required institutional approval. The week-based dates in older plans are superseded by this dependency order; schedule calendar dates with the team next semester.
 
 > [!NOTE]
 > **Board Exam Pause Notice (August 22, 2026)**: Research, thesis proposal documentation, and data collection software infrastructure locked for board examinations. See [`docs/SPARK_POST_BOARDS_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/SPARK_POST_BOARDS_MASTER_PLAN.md) and [`docs/DATA_COLLECTION_MASTER_PLAN.md`](file:///D:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_MASTER_PLAN.md) for full context snapshot and execution roadmaps.
+
+**v58 change log (October 20, 2026 — Complete Team Onboarding Infrastructure, Full-Lifecycle Task Briefings, Kinetics Stress Harness & Repo Governance Skills):**
+
+- **Team Onboarding Starter Guides Deployed (`docs/team_briefings/`):**
+  - `RUPESH_START_HERE.md`: Plain-language overview, Mermaid system architecture diagram, two firmware modes (Autonomous vs. Data Logger), first-day setup checklist, hardware specs table, and defense Q&A summary.
+  - `SANKALPA_START_HERE.md`: Mechanical CAD and physical assembly overview, 270° C-shell two-zone bracer diagram, Fusion 360 onboarding guide, DFM specs, and KEC Makerspace TPU 95A 3D printing parameters.
+  - `SONIA_START_HERE.md`: Layer 3 Caregiver UI guide, REST API consumption flowchart, clinical priority tiers (High Red $\ge 0.85$, Moderate Amber $0.75\text{--}0.85$, Routine Blue $<0.75$), and crash-mat trial logistics.
+- **Full-Lifecycle Task Briefings Synchronized:**
+  - `RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md`: Expanded with post-hardware Phase 2–5 tasks (I2C wiring on GPIO 4/5/6, 200 Hz data logging, ESP-IDF build & static memory audit, BLE GATT alerting, live crash-mat validation) and updated defense Q&A.
+  - `SANKALPA_CAD_ENCLOSURE_GUIDE.md`: Expanded with Makerspace 3D printing, M2.5 brass heat-set insert installation (210°C), internal wiring harness, drop-impact testing, and updated defense Q&A.
+  - `SONIA_MOBILE_CLIENT_GUIDE.md`: Expanded with live BLE event streaming, cohort consent forms (`docs/cohort_forms/`), clipboard tracking, and live defense demonstration.
+  - `docs/team_briefings/README.md`: Master index updated to v2.2 with comprehensive deliverables matrix across all subsystems.
+- **GitHub Issue Tracking Synchronized:**
+  - Updated and linked work packages across Issue #1 (Firmware), Issue #4 (Hardware/CAD), Issue #5 (Gateway/UI), Issue #11 (ESP-IDF memory audit), and Issue #17 (Onboarding).
+- **Adversarial Kinetics Stress Harness Integrated (PR #16 / Issue #15):**
+  - Deployed `tools/spark_kinetics_stress_harness.py` implementing 200 Hz IMU kinematics, $2.5g$ trigger hysteresis, FreeRTOS queue starvation, and burst jitter.
+  - Added `tests/test_kinetics_stress_harness.py` (4 unit tests, all passing).
+- **Thesis Roadmap & Defense Reports Polished (PR #14 / Issue #13):**
+  - Independent mid-defense (41 pages) and final-defense (46 pages) LaTeX drafts and evidence manifests aligned with next-semester procurement timeline.
+- **Repository Maintenance & Governance Skills Registered:**
+  - `github-workflow`: Bundled in `.gemini/skills/github-workflow/` for multi-remote synchronization (`sync.bat`/`sync.ps1`), deterministic issue tracking, conventional commits, and squash PR governance.
+  - `background-task-governance`: Enforcing headless Windows CLI guards, non-interactive execution, PowerShell script-first rules, and 60s timeout watchdogs.
+  - `edge-ai-model-forge`: Guiding sub-100KB INT8 neural networks, tensor arena budgeting, asymmetric focal loss, and ESP-NN vector kernel linkage.
+  - `latex-thesis-architect`: Governing 41-page mid-defense and 46-page final-defense LaTeX compilations, CPM DAG orchestration, and evidence audit registers.
+  - `compliance-report-harmonizer`: Calibrating KEC institutional trial consent forms and 34-activity clipboard logs.
+- **Verification Milestone:**
+  - Confirmed **69/69 automated unit tests** passing cleanly (`uv run pytest`).
+  - Confirmed clean Ruff linting pass across 91 files (`uv run ruff check .`).
+  - Confirmed deterministic verification pass (`python scripts/verify.py`, 4/4 checks).
+  - All open PRs (#14, #16, #18) squashed and merged into `main`.
 
 **v57 change log (September 24, 2026 — Subject-Agnostic Platform Realignment & Humanoid Robotics Integration):**
 
