@@ -76,7 +76,7 @@ Single-piece open-back forearm enclosure, silhouette inspired by a bracer/vambra
 **Updated cost estimate (3.5 mm walls):** ~70–75 cm³, ~85–91 g, NPR 360–400 (8–11 hr print). Previous 18.5 cm³ / NPR 90 estimate invalidated.
 
 **Open blockers before Fusion 360:**
-1. ⚠ ESP32-S3 power input path (TP4056 outputs raw 3.0–4.2V, not regulated 5V).
+1.  ESP32-S3 power input path (TP4056 outputs raw 3.0–4.2V, not regulated 5V).
 ---
 
 ## DI-04 — Slotted Modular Enclosure Concept (Interlocking / Rail-Slotted Architecture)

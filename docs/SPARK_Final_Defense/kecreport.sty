@@ -1,0 +1,164 @@
+% ===================================================
+% kecreport.sty
+% Custom style file for KEC Project/Thesis reports
+% ===================================================
+
+\ProvidesPackage{kecreport}[2026/02/14 v1.0 KEC report style]
+
+% ========== Packages ==========
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{url}
+\usepackage{cite}
+
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+
+\graphicspath{{../Figures/}}
+
+\usepackage{datetime}
+\usepackage{parskip}
+
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+\titlespacing*{\chapter}{0pt}{2\baselineskip}{1.5\baselineskip}
+\titleformat{\chapter}
+{\normalfont\Huge\bfseries\centering}
+{Chapter \thechapter:}
+{0.5em}
+{}
+
+\usepackage{makeidx}
+\makeindex
+% ---------- List of Abbreviations (dynamic -- no makeindex required) ----------
+\usepackage{longtable}
+% Internal key list (requires etoolbox, loaded later in this sty)
+\newcommand{\kec@abbrlist}{}
+% \regabbr{KEY}{Expansion} -- silent registration, no inline output
+%   Stores expansion and appends KEY to the internal list
+\newcommand{\regabbr}[2]{%
+  \expandafter\gdef\csname kec@abbr@#1\endcsname{#2}%
+  \ifdefempty{\kec@abbrlist}{%
+    \gdef\kec@abbrlist{#1}%
+  }{%
+    \expandafter\gdef\expandafter\kec@abbrlist\expandafter{\kec@abbrlist,#1}%
+  }%
+}
+% \abbr{KEY}{Expansion} -- inline first-use: prints "Expansion (KEY)"
+\newcommand{\abbr}[2]{#2 (#1)}
+% \printabbreviations -- renders all registered entries in insertion order
+\newcommand{\kec@printone}[1]{%
+  \textbf{#1} & \csname kec@abbr@#1\endcsname \\[4pt]%
+}
+\newcommand{\printabbreviations}{%
+  \chapter*{\scshape List of Abbreviations}%
+  \begin{longtable}{@{}p{3cm}p{11.5cm}@{}}%
+    \forlistcsloop{\kec@printone}{kec@abbrlist}%
+  \end{longtable}%
+}
+\renewcommand{\contentsname}{Table of Contents}
+
+
+
+% ========== Page geometry ==========
+\geometry{
+	a4paper,
+	left=3.2cm,
+	right=2.3cm,
+	top=2.5cm,
+	bottom=2.5cm
+}
+
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+\usepackage{pgfcalendar}
+\newcommand{\MonthYear}{%
+	\pgfcalendarmonthname{\month}~\the\year
+}
+
+% ========== Declarations & title blocks ==========
+\newcommand{\DeclarationHeader}{%
+	\begin{center}
+		{\fontsize{22pt}{18pt}\selectfont\bfseries\scshape{TRIBHUVAN UNIVERSITY}}\\[4mm]
+		{\fontsize{20pt}{20pt}\selectfont\bfseries\scshape{INSTITUTE OF ENGINEERING}}\\[4mm]
+		{\fontsize{20pt}{20pt}\selectfont\bfseries\scshape{KATHMANDU ENGINEERING COLLEGE}}\\[3mm]
+		{\fontsize{15pt}{20pt}\selectfont\bfseries{Kalimati, Kathmandu}}\\[15mm]
+		%\includegraphics[width=5cm]{LoGoKEC.png}
+		{\Huge \bfseries \underline{Declaration}} \\[10mm]
+	\end{center}
+}
+
+\DeclareRobustCommand{\UniversityTitleBlock}{%
+	\begin{center}
+		{\fontsize{27pt}{20pt}\selectfont\bfseries\scshape
+			TRIBHUVAN UNIVERSITY\par}
+		\vspace{-2.0mm}
+		{\fontsize{21pt}{20pt}\selectfont\bfseries\scshape
+			INSTITUTE OF ENGINEERING\par}
+		\vspace{-1.5mm}
+		{\fontsize{20pt}{20pt}\selectfont\bfseries\scshape
+			KATHMANDU ENGINEERING COLLEGE\par}
+		\vspace{-2mm}
+		{\fontsize{18pt}{20pt}\selectfont\bfseries
+			Kalimati, Kathmandu\par}
+		\vspace{6mm}
+		{\includegraphics[width=5cm]{LoGoKEC.png}\par}
+		\vspace{6mm}
+		{\Large\bfseries \underline{Project Report on}\par}
+		\vspace{-1mm}
+	\end{center}
+}
+
+\usepackage{xparse}
+\usepackage{etoolbox}
+\NewDocumentCommand{\Authors}{m}{%
+	\begin{center}
+		\bfseries
+		\forcsvlist{\authoritem}{#1}
+	\end{center}
+}
+\newcommand{\authoritem}[1]{#1\\}
+
+\ExplSyntaxOn
+\keys_define:nn { signature }
+{
+	name .tl_set:N = \l_signature_name_tl,
+	designation .tl_set:N = \l_signature_designation_tl,
+	affiliation .tl_set:N = \l_signature_affiliation_tl,
+}
+
+\NewDocumentCommand{\signatureblock}{m}
+{
+	\keys_set:nn { signature } { #1 }
+	\centering
+	\noindent\rule{6cm}{0.4pt}\\[0.2cm]
+	\textbf{\l_signature_name_tl}\\
+	(\l_signature_designation_tl)\\
+	\l_signature_affiliation_tl
+}
+\ExplSyntaxOff
+
+\newcommand{\SubmittedBy}[1]{%
+	\vfill
+	\textbf{\underline{SUBMITTED BY}:}\\[-3mm]
+	#1
+	\vspace{10mm}
+}
+
+\newcommand{\SubmittedTo}[1]{%
+	\textbf{\underline{SUBMITTED TO}:}\\[3mm]
+	{\fontsize{12pt}{12pt}\selectfont\bfseries\scshape{#1}}\\[5mm]
+}
+
+\renewcommand{\bibname}{\sc References}
+
+\onehalfspacing

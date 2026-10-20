@@ -327,7 +327,7 @@ All internal ceilings chamfered ≥45°. Strap slots use teardrop profiles. Boss
 4. **Seat LiPo** in perimeter pocket — route leads through dedicated channel
 5. **Mount ESP32-S3** on shelf — align USB-C — 2× M2.5 screws into standoffs
 6. **Slide TP4056** into end-cap alignment slot — align USB with port insert
-7. **Connect harnesses** (I2C → ESP32 GPIOs; LiPo → TP4056; TP4056 OUT → ESP32 ⚠ verify voltage)
+7. **Connect harnesses** (I2C → ESP32 GPIOs; LiPo → TP4056; TP4056 OUT → ESP32  verify voltage)
 8. **Close lid** — star-pattern screw tightening (4–6× M2.5), max 0.15 Nm
 9. **Install port insert** and dust covers
 10. **Thread Velcro strap** through all four slots
@@ -344,13 +344,13 @@ All internal ceilings chamfered ≥45°. Strap slots use teardrop profiles. Boss
 
 **Realistic prototype (3.5 mm + features)**: ~70–75 cm³, ~85–91 g, **NPR 360–400** incl. waste. Print time: **8–11 hours**.
 
-> ⚠ The earlier 18.5 cm³ / NPR 90 estimate is invalidated. Update thesis BOM.
+>  The earlier 18.5 cm³ / NPR 90 estimate is invalidated. Update thesis BOM.
 
 ---
 
 ## 15. Open Design Decisions (Resolve Before Final CAD)
 
-### ⚠ CRITICAL: ESP32-S3 Power Input Path
+###  CRITICAL: ESP32-S3 Power Input Path
 
 TP4056 outputs raw LiPo voltage (3.0–4.2V), not regulated 5V. Confirm the ESP32-S3 board's acceptable battery input pin before wiring. May need a boost converter.
 

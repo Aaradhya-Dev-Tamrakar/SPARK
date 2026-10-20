@@ -1,0 +1,7 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+SPARK currently provides offline human-fall model artifacts and tested gateway software, while its physical wearable pipeline remains incomplete. The intended system combines a threshold gate and quantized convolutional classifier on an ESP32-S3 with local incident storage, explanation, and PDF reporting on a laptop gateway. A display client consumes gateway records rather than performing BLE reception or explanation on the phone.
+
+The existing model preparation uses 100 Hz, two-second windows of 200 samples and six channels. Archived August evaluation reports give 87.81\% floating-point sensitivity and 0.9185 AUC-ROC on 6,712 held-out windows; the corresponding INT8 report gives 87.43\% sensitivity and 0.8717 AUC-ROC. A separate October Colab log reports 89.81\% sensitivity and 0.9272 AUC-ROC, with unresolved threshold provenance. These are archived experimental records inspected for this report, not rerun evaluations or physical wearable results.
+
+Driver, interpreter, and transport stubs prevent a claim of integrated MCU operation. Hardware timing, battery endurance, and approved Nepal cohort results remain unavailable. This progress report records implementation boundaries, separates model generations, and replaces calendar schedules with dependency gates. Human fall detection remains the completion objective; a planned forty-episode MuJoCo study appears only as an exploratory robotics appendix.

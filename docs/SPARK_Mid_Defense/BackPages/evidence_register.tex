@@ -1,0 +1,66 @@
+\chapter{Evidence Register and Pending Evaluations}
+\label{app:evidence}
+This register distinguishes reproducible inspection from archived measurements and historical reporting. The report folder contains copied result records and a SHA256 source manifest; the original raw data/model files remain local repository data rather than dependencies of this PDF build.
+
+\begin{longtable}{@{}p{1cm}p{4.6cm}p{8.2cm}@{}}
+\caption{Evidence used in this report.}\label{tab:evidence}\\\toprule
+ID & Source or local snapshot & Classification and supported claim\\\midrule
+\endfirsthead
+\toprule ID & Source or local snapshot & Classification and supported claim\\\midrule
+\endhead
+E01 & \path{training/data_prep/prepare_sisfall.py} & Source inspection: 100 Hz target, 200-sample windows, selected six count-based channels; no calibrated wrist-device transform established.\\
+E02 & \path{training/train_cnn.py} & Source inspection: CNN, grouped holdout assertions, validation threshold selection; implementation does not establish a completed device or cohort experiment.\\
+E03 & \path{evidence/test_report.txt} & August archived FP32 report, 6,712 windows / eight test subjects, default and tuned metrics. No model evaluation rerun.\\
+E04 & \path{evidence/quantization_report.txt} & August archived INT8 report: 18,904 bytes and degraded test metrics. Not a report for the newer export.\\
+E05 & \path{evidence/october_colab_excerpt.txt} & October archived log: split counts, threshold 0.4236, FP32 metrics. Its results are separate from August.\\
+E06 & \path{evidence/model_config.json} & October metadata: threshold 0.4065 and export size. Threshold disagrees with E05.\\
+E07 & \path{evidence/current_inspection.txt} & Current array/metadata inspection, header-byte identity, 65 passing tests, structural checks, and baseline lint failures.\\
+E08 & Firmware driver, inference, entrypoint and transport sources & Source inspection: real host gate/encoding; zero-sample driver, fixed-probability inference and actual transport stubs.\\
+E09 & Gateway receiver, explainer, storage, report and server sources & Source inspection and software tests: v1 event flow, peak fallback and optional gradient attribution. Not physical or clinical validation.\\
+E10 & Tracker and resumption/strategic plans & Historical reported laptop timings, estimated battery/BOM values, and proposed cohort/robotics work.\\
+E11 & Official bibliography entries & Verified external source identity and documentary simulator mechanisms. No SPARK robot experiment executed.\\\bottomrule
+\end{longtable}
+
+\section{Source paths and artifact identity}
+E03/E04/E06 originals are under \path{data/processed_sisfall/model/}. E05 is extracted from \path{training/colab_run_output.txt}, omitting unrelated private Drive paths. The \path{source_manifest.json} file records inspected byte lengths and SHA256 values for model generations and relevant implementation files.
+
+\textbf{Firmware sources}
+\begin{itemize}
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+\item Sensor driver: \path{firmware/main/drivers/mpu6050.cpp}
+\item Threshold gate: \path{firmware/main/layer1/gate.cpp}
+\item Model interface: \path{firmware/main/tflite/inference.cpp}
+\item Application entrypoint: \path{firmware/main/app_main.cpp}
+\item Event encoding and transport: \path{firmware/main/comms/output.cpp}
+\end{itemize}
+
+\textbf{Gateway sources}
+\begin{itemize}
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+\item Event schema: \path{gateway/receiver/wire_format.py}
+\item Transport reception: \path{gateway/receiver/receiver.py}
+\item Attribution: \path{gateway/shap_pipeline/explainer.py}
+\item Local storage: \path{gateway/storage/json_store.py}
+\item Incident reports: \path{gateway/report/pdf_report.py}
+\item Local API: \path{gateway/server.py}
+\end{itemize}
+
+\textbf{Locked event contract}: \path{docs/WIRE_FORMAT_v1.md}.
+
+
+Current measured header-byte identity is 18,912 bytes with SHA256 recorded in the inspection snapshot. The firmware byte array equals the local upgraded FlatBuffer. This is artifact evidence, not an interpreter execution test. Historical results from the 18,904-byte file do not automatically apply to those bytes.
+
+\clearpage
+\section{Evidence still required}
+\begin{table}[H]
+\centering\caption{Pending evaluation artifacts before a completed human-system thesis.}
+\begin{tabular}{@{}p{4cm}p{9.7cm}@{}}\toprule
+Area & Required evidence\\\midrule
+Model provenance & Immutable model/split/preprocessing manifests, threshold resolution, matched FP32/INT8 predictions and uncertainty.\\
+Logger/hardware & Real sensor traces, rate/jitter/gap statistics, axes/units verification, tensor arena and timing records.\\
+Approval/cohort & Institutional approval record, approved protocol, consent handling, cohort manifest and independent event annotations.\\
+Integrated pipeline & Real transport/reconnect/framing results, event identities, onset/contact matching, false alarms per non-fall hour and timing.\\
+Battery/enclosure & Measured current/runtime, actual capacity/operating modes, CAD dimensions/fit and slicer/print record.\\
+Robotics & Separate future simulation protocol execution and held-out analysis; physical robot study remains deferred.\\\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,47 @@
+\chapter{Available Results and Limitations}
+\section{Result provenance}
+Tables~\ref{tab:august} and \ref{tab:october} report archived output artifacts inspected during this preparation. Model inference and training were not rerun. August and October rows are distinct experiments with different splits and thresholds; they are not a controlled before/after comparison. Snapshot files and hashes are included under \texttt{evidence/}.
+
+\begin{table}[htbp]
+\centering\caption{August archived held-out results: 6,712 windows, including 1,575 FALL and 5,137 non-fall; the FP32 report identifies eight test subjects.}
+\label{tab:august}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Metric & FP32, $\tau=.5$ & FP32, $\tau=.3919$ & INT8, $\tau=.3919$\\\midrule
+Sensitivity & .8235 & .8781 & .8743\\
+Specificity & .8382 & .7818 & .7014\\
+F1 & .7005 & .6781 & .6139\\
+AUC-ROC & .9185 & .9185 & .8717\\\bottomrule
+\end{tabular}
+\end{table}
+The corresponding quantization report records 18,904 bytes, input $[1,200,6]$, and output $[1,2]$. It records a 0.0804 absolute specificity reduction and a 0.0468 AUC reduction after quantization. Flash-budget compliance concerns the model file alone. No full-device memory or latency result follows from this table.
+
+\begin{table}[htbp]
+\centering\caption{October Colab log, archived FP32 evaluation. Total source windows: 38,426; reported train/validation/test counts: 31,714/3,005/3,707.}
+\label{tab:october}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Metric & Default .5 & Youden .5611 & Safety .4236\\\midrule
+Sensitivity & .8057 & .7390 & .8981\\
+Specificity & .8559 & .9146 & .7621\\
+F1 & .7424 & .7560 & .7185\\
+AUC-ROC & .9272 & .9272 & .9272\\\bottomrule
+\end{tabular}
+\end{table}
+The October log records 126,856 augmented training windows and an 18,912-byte quantized export. The configuration instead lists a safety threshold of 0.4065 alongside the same safety metrics, while the log prints 0.4236. This disagreement blocks a settled deployed-threshold claim. The October INT8 export size is available; a matching held-out INT8 performance report is not established by the older August report. The 89.81\% safety sensitivity remains below the 90\% target.
+
+The 38,426-window corpus count is an inventory, not the denominator of either held-out table. Neither retained report supplies a complete immutable list of held-out subject IDs. The name of a split helper does not establish class stratification; subject grouping and class balance must each be checked from the run manifest.
+
+\section{Current verification and artifact inspection}
+Current local array inspection confirms $(38426,200,6)$ float32 windows, 38 subject values, and 34 activity codes in the metadata. A byte comparison confirms that the firmware header contains the newer 18,912-byte model, not the August 18,904-byte file. These checks confirm shape and identity; they do not establish deployed inference.
+
+The current Python suite passed 65 tests with 48 dependency warnings, and the repository structural verification passed four checks. Repository-wide Ruff verification failed on 23 pre-existing findings, and four files failed formatting checks. No unrelated code fixes or synchronization were performed as part of these reports. Software-test success does not validate actual I2C, physical BLE, battery life, or human evaluation.
+
+\section{Historical laptop timings}
+The tracker reports OpenVINO timing on an Intel Core Ultra 7 155H gateway over 5,000 inferences: CPU 0.131 ms, GPU 0.200 ms, and NPU 0.383 ms. These are \textbf{historical reported results}; the raw benchmark run and its complete warm-up/timing configuration were not reproduced here. They are not ESP32 latency, end-to-end detection delay, or power measurements.
+
+\section{Power and feasibility estimates}
+Using the nominal 1100 mAh capacity and assuming steady 90--130 mA current gives an idealized $t=C/I$ range of about 8.5--12.2 hours. This is an illustrative estimate, not measured endurance. Usable capacity, regulator losses, protection thresholds, sampling/radio duty cycle, and battery condition change the result. Older 8--11 h and 16--28 h narratives have incompatible mode assumptions and must not be presented as measured battery findings.
+
+\section{Statistical and domain limitations}
+Saved point estimates lack subject-clustered confidence intervals and complete immutable split manifests. Correlated windows are not independent volunteers. Future uncertainty analysis should resample at the subject or episode level, retaining paired predictions and reporting 95\% confidence intervals. For demographic cohorts with $n<30$, flag insufficient sample support and avoid subgroup rankings; the overall exploratory pilot must still report counts and limitations.
+
+Event sensitivity, false alarms per hour, physical timing, wrist transfer, and elderly clinical performance remain unmeasured. Integrated evaluation must include every annotated fall, including gate rejections; classifier recall alone conceals gate misses.

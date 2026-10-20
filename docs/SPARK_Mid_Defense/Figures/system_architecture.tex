@@ -1,0 +1,40 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  stage/.style={draw=black!60, rounded corners=2pt, align=center,
+    text width=2.05cm, minimum height=10mm, inner sep=3pt, font=\scriptsize},
+  planned/.style={stage, dashed, fill=black!2},
+  flow/.style={-{Stealth[length=3mm,width=2mm]}, line width=.85pt,
+    draw=black!70},
+  plannedflow/.style={flow, dashed}
+]
+\node[font=\small\bfseries] at (0,1.65)
+  {Wearable / MCU path --- intended; hardware validation pending};
+
+\node[planned] (sensor) at (-5.8,.55) {MPU6050\\acquisition};
+\node[planned] (buffer) at (-2.9,.55) {Timed window\\buffer};
+\node[planned] (gate) at (0,.55) {Layer 1\\threshold gate};
+\node[planned] (cnn) at (2.9,.55) {INT8 CNN};
+\node[planned] (transport) at (5.8,.55) {Event\\transport};
+\draw[plannedflow] (sensor.east) -- (buffer.west);
+\draw[plannedflow] (buffer.east) -- (gate.west);
+\draw[plannedflow] (gate.east) -- (cnn.west);
+\draw[plannedflow] (cnn.east) -- (transport.west);
+
+\node[font=\small\bfseries] at (0,-.45)
+  {Laptop gateway path --- software modules available};
+\node[stage] (parser) at (5.8,-1.4) {Event\\parser};
+\node[stage] (storage) at (2.9,-1.4) {Local JSON\\storage};
+\node[stage] (explain) at (0,-1.4) {Explanation\\and report};
+\node[stage] (api) at (-2.9,-1.4) {Local REST\\API};
+\node[stage] (client) at (-5.8,-1.4) {Display-only\\client};
+\draw[flow] (parser.west) -- (storage.east);
+\draw[flow] (storage.west) -- (explain.east);
+\draw[flow] (explain.west) -- (api.east);
+\draw[flow] (api.west) -- (client.east);
+\draw[plannedflow] (transport.south) -- (parser.north);
+
+\end{tikzpicture}
+\caption{Conceptual system architecture and data flow. Dashed boxes and arrows mark intended, hardware-unvalidated stages; solid boxes and arrows mark available gateway software.}
+\label{fig:architecture}
+\end{figure}

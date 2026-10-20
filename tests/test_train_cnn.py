@@ -135,9 +135,7 @@ class TestAsymmetricFocalLoss:
     def test_focal_loss_computes_finite_tensor(self):
         loss_fn = AsymmetricFocalLoss(gamma=2.0, alpha=0.75)
         y_true = tf.constant([0, 1, 1, 0], dtype=tf.int32)
-        y_pred = tf.constant(
-            [[0.9, 0.1], [0.2, 0.8], [0.8, 0.2], [0.95, 0.05]], dtype=tf.float32
-        )
+        y_pred = tf.constant([[0.9, 0.1], [0.2, 0.8], [0.8, 0.2], [0.95, 0.05]], dtype=tf.float32)
         val = loss_fn(y_true, y_pred)
         assert np.isfinite(val.numpy())
         assert val.numpy() > 0.0
@@ -236,4 +234,3 @@ class TestModelWithFocalAndCosine:
             lr_obj,
             tf.keras.optimizers.schedules.CosineDecayRestarts,
         )
-
