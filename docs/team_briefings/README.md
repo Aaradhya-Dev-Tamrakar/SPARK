@@ -1,7 +1,7 @@
-# SPARK — Pre-Hardware Task Briefings Master Index
+# SPARK — Team Task Briefings Master Index
 
-**Document Version:** 1.0 (September 24, 2026)  
-**Target Window:** Pre-Hardware Delivery / Software-in-the-Loop (SIL) Phase  
+**Document Version:** 2.0 (October 20, 2026)  
+**Target Window:** Pre-Hardware SIL Phase through Post-Hardware Live Validation  
 **Supervisor:** Er. Dipen Manandhar | **HOD:** Er. Suramya Sharma Dahal  
 **Department:** Electronics, Communication and Information Engineering, KEC / IOE / TU
 
@@ -17,7 +17,7 @@ These briefing files define the exact, independent deliverables each team member
 
 | Team Member | Subsystem Ownership | Standalone Briefing Document | Primary Deliverable |
 | :--- | :--- | :--- | :--- |
-| **Rupesh Kadel** *(79034)* | Embedded Systems & Firmware | [`RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md`](RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md) | Virtual ESP32-S3 firmware execution (QEMU/Wokwi), INT8 TFLite Micro tensor arena profiling, cycle-count benchmarks. |
+| **Rupesh Kadel** *(79034)* | Embedded Systems & Firmware | [`RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md`](RUPESH_FIRMWARE_PRE_HARDWARE_GUIDE.md) | Virtual ESP32-S3 firmware execution (QEMU/Wokwi), INT8 TFLite Micro tensor arena profiling, cycle-count benchmarks. **Updated Oct 20:** Post-hardware physical bring-up (Tasks 5–8), cohort data collection support (Tasks 9–10), and live end-to-end crash-mat validation (Tasks 11–12). |
 | **Sankalpa Lamsal** *(79039)* | Hardware & Mechanical CAD | [`SANKALPA_CAD_ENCLOSURE_GUIDE.md`](SANKALPA_CAD_ENCLOSURE_GUIDE.md) | Parametric 3D CAD bracer model (`.step`/`.stl`), virtual assembly with PCB footprints, TPU 95A slicer toolpaths & mass check. |
 | **Sonia Thapa** *(79043)* | Display Client & Validation | [`SONIA_MOBILE_CLIENT_GUIDE.md`](SONIA_MOBILE_CLIENT_GUIDE.md) | Layer 3 mobile/web UI, real-time event listener consuming `gateway/server.py`, interactive SHAP bar charts, PDF viewer. |
 

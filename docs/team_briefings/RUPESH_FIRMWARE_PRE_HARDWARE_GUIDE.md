@@ -1,18 +1,24 @@
-# Firmware Engineer Task Briefing (Pre-Hardware Phase)
+# Firmware Engineer Task Briefing
 
 **Assignee:** Rupesh Kadel (Roll 79034 / BEI)  
 **Subsystem:** Embedded Systems, ESP-IDF Firmware, Layer 1 Gate & On-Chip Inference  
 **Primary Directory:** [`firmware/`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/firmware/)  
-**Goal:** Deliver 100% verified, host- and emulator-tested firmware before physical ESP32-S3 boards arrive.
+**Last Updated:** October 20, 2026  
+**Goal:** Deliver verified firmware across pre-hardware simulation AND post-hardware physical validation phases.
+
+> [!NOTE]
+> This guide was originally created during the Pre-Hardware / Software-in-the-Loop (SIL) phase (September 24, 2026).
+> **§1–§3** cover SIL tasks (Wokwi/QEMU simulation, tensor arena profiling).
+> **§4–§6** cover post-hardware physical bring-up, cohort support, and live validation tasks added October 20, 2026.
 
 ---
 
-## 1. Why You Don't Need Physical Silicon Yet
+## 1. Why You Don't Need Physical Silicon Yet (SIL Phase)
 Professional embedded engineers do not wait for printed circuit boards to write firmware. Using **QEMU for ESP32-S3** and the **Wokwi Simulator**, you can simulate the ESP32-S3 dual-core Xtensa LX7 CPU, allocate the FreeRTOS heap, run the TFLite Micro interpreter, and feed synthetic 200 Hz IMU data via simulated I2C registers.
 
 ---
 
-## 2. Rupesh's Action Checklist
+## 2. Rupesh's SIL Action Checklist (Pre-Hardware)
 
 ### Task 1: Run the Native Host Unit Tests
 * **Objective:** Ensure all existing C++ algorithmic units pass natively on your machine without any microcontroller connected.
@@ -89,7 +95,114 @@ Professional embedded engineers do not wait for printed circuit boards to write 
 
 ---
 
-## 3. Defense Questions Rupesh Must Be Prepared to Answer
+## 3. SIL-Phase Defense Questions (Pre-Hardware)
+
+> These Q&As cover the software-in-the-loop simulation work. See **§6** for the full updated defense Q&A set including post-hardware questions.
+
+
+---
+
+## 4. Post-Hardware Physical Bring-Up Tasks (Phase 2)
+
+> **Context:** Departmental procurement of 3× ESP32-S3 WROOM-1 units and MPU6050 breakout boards. These tasks begin the moment physical silicon is available.
+
+### Task 5: Wire ESP32-S3 ↔ MPU6050 on Breadboard
+* **Objective:** Establish physical I2C communication between the ESP32-S3 and MPU6050.
+* **Wiring:**
+  * `SDA` → GPIO 4
+  * `SCL` → GPIO 5
+  * `INT` → GPIO 6
+* **Acceptance Criteria:** I2C scan detects MPU6050 at address `0x68`. Raw accelerometer/gyroscope register reads return valid data.
+
+---
+
+### Task 6: Flash Data Logger Firmware & Verify 200 Hz Serial Stream
+* **Objective:** Flash `SPARK_MODE_DATA_LOGGER` firmware and verify continuous high-speed streaming.
+* **Execution:**
+  ```bash
+  cd firmware
+  idf.py set-target esp32s3
+  idf.py menuconfig   # Set SPARK_FIRMWARE_MODE = 1 (DATA_LOGGER)
+  idf.py build flash monitor
+  ```
+* **Verification:** Run [`tools/record_cohort_data.py`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/tools/record_cohort_data.py) on the gateway laptop to receive and log clean CSV data at 921600 baud.
+* **Acceptance Criteria:** Stable 200 Hz 6-axis data stream (`Ax, Ay, Az, Gx, Gy, Gz`) with no dropped packets for ≥ 5 minutes continuous.
+
+---
+
+### Task 7: ESP-IDF Full Autonomous Firmware Compilation (GitHub Issue #11)
+* **Objective:** Compile the full autonomous detection pipeline firmware and perform static analysis.
+* **Execution:**
+  ```bash
+  cd firmware
+  idf.py set-target esp32s3
+  idf.py build
+  idf.py size-components   # Static memory audit
+  ```
+* **Verification Checklist (maps to [Issue #11](https://github.com/Aaradhya-Dev-Tamrakar/SPARK/issues/11)):**
+  - [ ] `alignas(16)` SIMD vector alignment verified with ESP-IDF Xtensa LX7 toolchain.
+  - [ ] `esp-nn` assembly kernel linkage confirmed for 1D convolution operators.
+  - [ ] `.rodata` Flash footprint for model ≤ 120 KB (expected: 18,912 bytes / 18.47 KB).
+  - [ ] Tensor Arena `AllocateTensors()` fits within 36.2 KiB internal SRAM budget.
+  - [ ] Clean compilation with zero linker errors.
+* **Acceptance Criteria:** `idf.py size-components` output logged and committed to the repository.
+
+---
+
+### Task 8: BLE GATT Event Notification (GitHub Issue #1)
+* **Objective:** Transmit fall detection events from the ESP32-S3 to the gateway laptop over Bluetooth Low Energy.
+* **Implementation:** Configure BLE GATT service (`6E400001-...`) with fall event notification characteristic (`6E400003-...`) matching [`docs/WIRE_FORMAT_v1.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/WIRE_FORMAT_v1.md).
+* **Verification:** Gateway laptop running [`gateway/receiver/receiver.py`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/gateway/receiver/receiver.py) (`BleReceiver`) successfully receives JSON event payload.
+* **Acceptance Criteria:** End-to-end event delivery: Layer 1 trigger → Layer 2 inference → BLE GATT notification → Gateway receives valid `WIRE_FORMAT_v1` JSON.
+
+---
+
+## 5. Data Collection & Live Validation Tasks (Phases 3–5)
+
+### Task 9: Assemble Wearable Logger Rig for KEC Cohort Collection
+* **Objective:** Build a self-contained wearable data collection rig.
+* **Components:**
+  * ESP32-S3 + MPU6050 (dorsal wrist mount)
+  * 1100 mAh LiPo battery + TP4056 charge module
+  * Velcro wrist strap + compression arm sleeve base layer
+* **Acceptance Criteria:** Logger worn on wrist, streams reliably for ≥ 30 minutes continuous. Battery hot-swap procedure documented.
+
+---
+
+### Task 10: Support KEC Cohort Data Collection Sessions
+* **Objective:** Provide on-site device handling, battery management, and real-time troubleshooting during the 34-activity data collection protocol with 12–20 KEC volunteers.
+* **Reference Protocol:** [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md)
+* **Acceptance Criteria:** All subjects complete the full protocol with no data drops or device failures.
+
+---
+
+### Task 11: Flash Post-Fine-Tuning Autonomous Firmware (Phase 4)
+* **Objective:** After transfer learning and re-quantization on Nepal cohort data, flash the updated INT8 model.
+* **Execution:**
+  1. Receive updated `spark_cnn_int8.h` from Aaradhya (generated by `quantize_model.py`).
+  2. Replace `firmware/main/models/spark_cnn_int8.h`.
+  3. Rebuild and flash:
+     ```bash
+     idf.py build flash
+     ```
+* **Acceptance Criteria:** Autonomous detection mode boots. Layer 1 gate triggers Layer 2 CNN on real physical impact.
+
+---
+
+### Task 12: End-to-End Live Crash-Mat Validation (Phase 5)
+* **Objective:** Perform live fall detection trial on gymnasium crash mats wearing the autonomous device.
+* **Full Pipeline Verification:**
+  1. Physical fall impact on crash mat
+  2. ESP32-S3 Layer 1 gate triggers ($|a| > 2.5g$)
+  3. Layer 2 INT8 CNN inference ($< 15\text{ ms}$)
+  4. BLE GATT notification transmitted to gateway laptop
+  5. Gateway computes $\text{Input} \times \nabla$ SHAP attribution
+  6. One-page clinical PDF generated automatically
+* **Acceptance Criteria:** Complete pipeline executes within 2 seconds from impact to PDF generation. At least 3 distinct fall types (Forward Trip, Lateral Slip, Syncope) successfully detected and reported.
+
+---
+
+## 6. Defense Questions Rupesh Must Be Prepared to Answer (Updated)
 
 **Q1: "Why did you choose an ESP32-S3 over standard ESP32 or STM32?"**  
 * **Answer:** *"The ESP32-S3 includes Xtensa PIE (Processor Instruction Extensions) vector instructions, enabling accelerated DSP and INT8 matrix multiplication for TensorFlow Lite Micro. It also provides integrated Bluetooth 5 (LE) on a single sub-$5 SoC without requiring external coprocessors."*
@@ -99,3 +212,9 @@ Professional embedded engineers do not wait for printed circuit boards to write 
 
 **Q3: "How did you verify your firmware before the boards arrived?"**  
 * **Answer:** *"We used QEMU and Wokwi virtual target environments with host-executable C++ unit tests. We validated memory allocation for the 35 KB tensor arena, simulated 200 Hz I2C register bursts, and verified serialization against our locked wire format schema."*
+
+**Q4: "What is the on-device inference latency and how does it affect real-time detection?"**  
+* **Answer:** *"The INT8 quantized CNN model occupies only 18.5 KB in Flash. On the ESP32-S3 with esp-nn SIMD acceleration, a single inference on a 200×6 window completes in under 15 ms. Combined with the Layer 1 gate latency of < 0.05 ms, the total on-device detection pipeline runs well within the 300 ms clinical response window."*
+
+**Q5: "How does the wearable communicate detected events to the caregiver?"**  
+* **Answer:** *"Upon a confirmed fall detection (Layer 2 confidence above the Youden-calibrated threshold), the ESP32-S3 transmits a BLE GATT notification containing the event timestamp, confidence score, and peak kinematic features as a JSON payload defined in our Wire Format v1 specification. The companion gateway laptop receives this within milliseconds and immediately generates an explainable clinical incident report."*
