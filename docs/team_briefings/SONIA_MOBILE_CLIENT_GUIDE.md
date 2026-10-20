@@ -3,13 +3,14 @@
 **Assignee:** Sonia Thapa (Roll 79043 / BEI)  
 **Subsystem:** Layer 3 Mobile/Web Display Client, Gateway API Consumption & Clinical Cohort Logistics  
 **Primary Directory:** [`gateway/`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/gateway/) & [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md)  
-**Current Phase:** Pre-Hardware Software-in-the-Loop (SIL) & Next-Semester Preparation
+**Current Phase:** Pre-Hardware Software-in-the-Loop (SIL) & Post-Hardware Live Validation  
+**Last Updated:** October 20, 2026
 
 ---
 
 ## 0. TL;DR — What You Own & What Is Already Built For You
 
-You **do not** need to wait for the physical ESP32-S3 hardware (which is scheduled for procurement next semester after the Dashain, Tihar, and Chhath holidays). The entire Layer 2 laptop gateway backend, replay simulator, feature attribution engine, and ReportLab PDF generator are **already built and passing all unit tests**.
+You **do not** need to wait for physical ESP32-S3 hardware. The entire Layer 2 laptop gateway backend, replay simulator, feature attribution engine, and ReportLab PDF generator are **already built and passing all unit tests**.
 
 Your responsibilities split into **two clear deliverables**:
 1. **Software Deliverable (Layer 3 Display Client):** Build a responsive Mobile/Web UI (Flutter, React Native, or PWA/Web App) that connects to [`gateway/server.py`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/gateway/server.py) over local Wi-Fi, displays real-time fall alerts, renders a 6-axis feature attribution bar chart, and opens/shares the one-page clinical PDF report.
@@ -142,13 +143,28 @@ You can build this as a **Progressive Web App (PWA) / Responsive Web UI**, **Flu
 - [ ] Trigger a simulated fall (`uv run python -m gateway.main --mode null`) on the laptop and capture screenshots/screen-recording of the alert appearing on the phone for our defense slides.
 
 ### Task 3: Prepare Printable Cohort Consent & Clipboard Tracking Forms
-Using [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md) (§2, §4, and §7), prepare two clean, print-ready documents (Word/Google Docs/LaTeX PDF) for our supervisor/HOD ethics submission and lab sessions:
-- [ ] **Document A — Volunteer Informed Consent & Screening Sheet:**
+Using [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPARK/docs/DATA_COLLECTION_PROTOCOL.md) (§2, §4, and §7), prepare two clean, print-ready documents in `docs/cohort_forms/`:
+- [ ] **Document A — Volunteer Informed Consent & Screening Sheet (`VOLUNTEER_CONSENT_FORM.md`):**
   - Study title, purpose, dorsal-wrist wear instructions, and 30 cm gymnastic crash-mat + 2-spotter safety guarantee.
   - Inclusion/Exclusion screening checkboxes (age 18–35, no fractures in past 12 months, no vestibular/cardiovascular conditions).
   - Participant ID (`SA01`–`SA20`), Age, Height (cm), Weight (kg), Dominant Wrist, Date, and Signature lines.
-- [ ] **Document B — 34-Activity Clipboard Trial Log (`SAxx`):**
+- [ ] **Document B — 34-Activity Clipboard Trial Log (`34_ACTIVITY_CLIPBOARD_LOG.md`):**
   - Checklist table covering all **15 Fall Trials (`F01`–`F15`)** and **19 ADL Trials (`D01`–`D19`)** with columns for `Trial R01`, `Trial R02`, `Trial R03`, filename check (`<Code>_SAxx_R0x.csv`), and operator notes.
+
+### Task 4: Connect Mobile App to Live Gateway BLE Stream (Post-Hardware)
+- [ ] Switch the caregiver display client from replay mode to the live hardware gateway stream (`uv run python -m gateway.main --mode ble`).
+- [ ] Verify that real falls triggered on the ESP32-S3 wearable node appear on the phone display within $\le 1.5\text{ seconds}$ over local Wi-Fi.
+
+### Task 5: KEC Cohort Collection Execution & Dataset Verification
+- [ ] Supervise participant intake, consent recording, and trial logging during crash-mat collection sessions at KEC.
+- [ ] Run automated dataset integrity checks after each session:
+  ```powershell
+  uv run python tools/verify_cohort_dataset.py --data-dir data/nepal_cohort
+  ```
+- [ ] Verify 100% completion across all $N=12\text{--}20$ volunteers without missing files or corrupted headers.
+
+### Task 6: Final Presentation Live Demo Integration
+- [ ] Demonstrate real-time fall alerting on a smartphone/tablet resting on the evaluation table during the supervisor and faculty panel defense.
 
 ---
 
@@ -163,3 +179,8 @@ Using [`docs/DATA_COLLECTION_PROTOCOL.md`](file:///f:/Aaradhya-Dev-Tamrakar/SPAR
 **Q3: "How does the UI help a nurse or caregiver who doesn't understand neural networks or SHAP?"**  
 * **Answer:** *"Instead of exposing raw model logits, the UI translates probabilities into clinical priority tiers—High Priority ($\ge 85\%$), Moderate Priority ($75\text{--}85\%$), and Routine Check ($<75\%$)—and pairs the 6-axis visual bar chart with a plain-language biomechanical summary (for example, highlighting dominant pitch rotation and forward surge in a forward trip) plus a one-page printable PDF incident report."*
 
+**Q4: "How does the system ensure patient data privacy and ethical compliance?"**  
+* **Answer:** *"All data remains on the local gateway storage; no telemetry or medical records are ever offloaded to public cloud servers. For our KEC trial cohort, all participant records are completely anonymized using Subject IDs (SA01–SA20), and written informed consent is secured under institutional guidelines before any data acquisition."*
+
+**Q5: "What is the clinical value of showing SHAP feature attributions to a caregiver or doctor?"**  
+* **Answer:** *"Standard fall detectors act as black boxes, simply reporting 'fall detected'. SPARK's 6-axis SHAP attribution reveals the exact biomechanical mechanism: distinguishing between a syncope collapse (dominated by vertical impact acceleration $a_z$) versus a dynamic forward slip (dominated by high pitch angular velocity $\omega_y$). This enables emergency triage to prepare the appropriate clinical intervention before reaching the patient."*
